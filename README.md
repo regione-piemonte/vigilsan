@@ -41,7 +41,7 @@ Server Web:
 Apache 2.4.58
 
 Framework :
-Angular versione 14
+Angular versione 13.3.11
 
 Application Server:
 Spring Boot environment version 3.2.4 
