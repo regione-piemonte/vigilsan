@@ -45,8 +45,11 @@ Angular versione 13.3.11
 
 Application Server:
 Spring Boot environment version 3.2.4 
+
 on jdk environment
+
 OpenJDK Runtime Environment Temurin-17.0.8.1+1 (build 17.0.8.1+1)
+
 OpenJDK 64-Bit Server VM Temurin-17.0.8.1+1 (build 17.0.8.1+1, mixed mode, sharing)
 
 Tipo di database:
