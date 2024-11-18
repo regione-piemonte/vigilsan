@@ -1,0 +1,2196 @@
+openapi: 3.0.1
+info:
+  title: API vigilsanpratiche
+  description: Componente API vigilsanpratiche del prodotto vigilsan
+  version: 1.0.0
+servers:
+  - url: /api
+paths:
+  /status:
+    get:
+      tags:
+        - system
+      description: ping
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: string
+  
+  /pratica:
+    get:
+      operationId: funzionalita_praticaGet
+      tags:
+        - pratica
+      description: Ritorna la pratica
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/pratica_id'
+        - $ref: '#/components/parameters/profilo_id'
+        - $ref: '#/components/parameters/ente_id'
+        - $ref: '#/components/parameters/struttura_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_pratica_estesa'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      operationId: funzionalita_praticaPost
+      tags:
+        - pratica
+      description: Inserisce la pratica
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_pratica_post'
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/ente_id'
+        - $ref: '#/components/parameters/profilo_id'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_pratica_post'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratica/moduli/zip/lista:
+    get:
+      operationId: funzionalita_praticaModuliZipListaGet
+      tags:
+        - pratica
+      description: Ritorna la lista di moduli della pratica
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/pratica_id'
+        - $ref: '#/components/parameters/profilo_id'
+        - $ref: '#/components/parameters/ente_id'
+        - $ref: '#/components/parameters/struttura_id'
+        - $ref: '#/components/parameters/filtro_data'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_zip_lista'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratica/requisiti/lista:
+    get:
+      operationId: funzionalita_praticaRequisitiListaGet
+      tags:
+        - pratica
+      description: Ritorna la lista dei requisiti 
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/pratica_id'
+        - $ref: '#/components/parameters/prescrizione_id'
+        - $ref: '#/components/parameters/pratica_det_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_checklist_req_esteso'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratica/requisiti:
+    get:
+      operationId: funzionalita_praticaRequisitiGet
+      tags:
+        - pratica
+      description: Ritorna il requisito specifico 
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/pratica_id'
+        - $ref: '#/components/parameters/prescrizione_id'
+        - $ref: '#/components/parameters/pratica_det_id'
+        - $ref: '#/components/parameters/clreq_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_pratica_requisiti'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      operationId: funzionalita_praticaRequisitiPost
+      tags:
+        - pratica
+      description: Inserisce modifica la associazione fra pratica e requisiti
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_pratica_clreq_post'
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_pratica_clreq_post'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratica/dettaglio/requisiti/lista:
+    get:
+      operationId: funzionalita_praticaDettaglioRequisitiListaGet
+      tags:
+        - pratica
+      description: Ritorna la lista delle pratica dettaglio requisiti
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/pratica_det_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_pratica_dettaglio_clreq_esteso'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratica/requisiti/esito/lista:
+    get:
+      operationId: funzionalita_praticaRequisitiEsitoListaGet
+      tags:
+        - pratica
+      description: Ritorna la decodifica degli esito requisiti
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_clreq_esito'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratica/dettaglio/requisiti:
+    post:
+      operationId: funzionalita_praticaDettaglioRequisitiPost
+      tags:
+        - pratica
+      description: Inserisce modifica la associazione fra pratica dettaglio e requisiti
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_pratica_dettaglio_clreq'
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_pratica_dettaglio_clreq'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratica/dettaglio/requisiti/delete:
+    post:
+      operationId: funzionalita_praticaDettaglioRequisitiDeletePost
+      tags:
+        - pratica
+      description: rimuove la associazione fra pratica dettaglio e requisiti
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_pratica_dettaglio_clreq'
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_pratica_dettaglio_clreq'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratica/genera/diario:
+    post:
+      operationId: funzionalita_praticaGeneraDiairioGet
+      tags:
+        - pratica
+      description: Ritorna il diario della pratica formato pdf
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_chiave_valore_list'
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/pratica_id'
+        - $ref: '#/components/parameters/profilo_id'
+        - $ref: '#/components/parameters/ente_id'
+        - $ref: '#/components/parameters/struttura_id'
+        - $ref: '#/components/parameters/filtro_data'
+      responses:
+        "201":
+          description: CREATED
+          headers:
+            Content-Disposition:
+              description: Il nome del file scaricato
+              schema:
+                type: string
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /pratica/modulo:
+    post:
+      operationId: funzionalita_praticaModuloPost
+      tags:
+        - pratica
+      description: modufica il modulo della pratica
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_pratica_post'
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/ente_id'
+        - $ref: '#/components/parameters/profilo_id'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_pratica_post'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratica/dettaglio:
+    post:
+      operationId: funzionalita_praticaDettaglioPost
+      tags:
+        - pratica
+      description: Inserisce la pratica
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_pratica_dettaglio'
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/profilo_id'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_pratica_dettaglio'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratica/dettaglio/scadenze:
+    get:
+      operationId: funzionalita_praticaDettaglioScadenzeGet
+      tags:
+        - pratica
+      description: Ritorna la pratica dettaglio scadenze
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/profilo_id'
+        - $ref: '#/components/parameters/ente_id'
+        - $ref: '#/components/parameters/struttura_id'
+        - $ref: '#/components/parameters/data_da'
+        - $ref: '#/components/parameters/data_a'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_pratica_scadenza'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratica/tipo/lista:
+    get:
+      operationId: funzionalita_praticaTipoListaGet
+      tags:
+        - pratica
+      description: Ritorna la decodifica del pratica tipo
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_pratica_tipo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratica/lista:
+    get:
+      operationId: funzionalita_praticaListaGet
+      tags:
+        - pratica
+      description: Ritorna la lista delle pratiche
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/ente_id'
+        - $ref: '#/components/parameters/struttura_id'
+        - $ref: '#/components/parameters/profilo_id'
+        - $ref: '#/components/parameters/tipo_pratica_id'
+        - $ref: '#/components/parameters/stato_pratica_id'
+        - $ref: '#/components/parameters/tipo_prescrizione_id'
+        - $ref: '#/components/parameters/stato_prescrizione_id'
+        - $ref: '#/components/parameters/data_apertura_prescrizione_da'
+        - $ref: '#/components/parameters/data_apertura_prescrizione_a'
+        - $ref: '#/components/parameters/data_chiusura_prescrizione_da'
+        - $ref: '#/components/parameters/data_chiusura_prescrizione_a'
+        - $ref: '#/components/parameters/tipo_appuntamento_id'
+        - $ref: '#/components/parameters/stato_appuntamento_id'
+        - $ref: '#/components/parameters/data_inizio_appuntamento_da'
+        - $ref: '#/components/parameters/data_inizio_appuntamento_a'
+        - $ref: '#/components/parameters/data_fine_appuntamento_da'
+        - $ref: '#/components/parameters/data_fine_appuntamento_a'
+        - $ref: '#/components/parameters/data_pratica_apertura_da'
+        - $ref: '#/components/parameters/data_pratica_apertura_a'
+        - $ref: '#/components/parameters/data_pratica_chiusura_da'
+        - $ref: '#/components/parameters/data_pratica_chiusura_a'
+        - $ref: '#/components/parameters/page_number'
+        - $ref: '#/components/parameters/row_per_page'
+        - $ref: '#/components/parameters/descending'
+        - $ref: '#/components/parameters/order_by'
+        - $ref: '#/components/parameters/filter_struttura'
+        - $ref: '#/components/parameters/filter_utente'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_pratica_estesa'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratica/stato/lista:
+    get:
+      operationId: funzionalita_praticaStatoGet
+      tags:
+        - pratica
+      description: Ritorna la decodifica del pratica stato
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_pratica_stato'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratica/azione:
+    get:
+      operationId: funzionalita_praticaAzioneGet
+      tags:
+        - pratica
+      description: Ritorna la lista delle azioni possibili
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/profilo_id'
+        - $ref: '#/components/parameters/pratica_tipo_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_azioni_estese'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratica/inseribili/lista:
+    get:
+      operationId: funzionalita_praticaInseribilieGet
+      tags:
+        - pratica
+      description: Ritorna le pratiche inseribili
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/ente_id'
+        - $ref: '#/components/parameters/profilo_id'
+        - $ref: '#/components/parameters/pratica_tipo_id'
+        - $ref: '#/components/parameters/struttura_tipo_id'
+        - $ref: '#/components/parameters/data_chiusura_max'
+        - $ref: '#/components/parameters/filter_struttura'  
+        - $ref: '#/components/parameters/page_number'
+        - $ref: '#/components/parameters/row_per_page'
+        - $ref: '#/components/parameters/descending'
+        - $ref: '#/components/parameters/order_by'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_pratica_ridotta_estesa'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /prescrizione/tipo/lista:
+    get:
+      operationId: funzionalita_prescrizioneTipoListaGet
+      tags:
+        - prescrizione
+      description: Ritorna la decodifica della prescrizione tipo
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_prescrizione_tipo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'     
+  /appuntamento/soggetto:
+    post:
+      operationId: funzionalita_appuntamentoSoggettoPost
+      tags:
+        - appuntamento
+      description: insert su appuntamento soggetto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_appuntamento_soggetto'
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_appuntamento_soggetto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /appuntamento/soggetto/delete:
+    post:
+      operationId: funzionalita_appuntamentoSoggettoDeletePost
+      tags:
+        - appuntamento
+      description: delete logica su appuntamento soggetto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_appuntamento_soggetto'
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_appuntamento_soggetto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /appuntamento/soggetto/lista:
+    get:
+      operationId: funzionalita_appuntamentoSoggettoListaGet
+      tags:
+        - appuntamento
+      description: lista appuntamento soggetto dato appuntamento
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/appuntamento_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_appuntamento_soggetto_esteso'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /appuntamento/soggetto/ruolo/decodifica/lista:
+    get:
+      operationId: funzionalita_appuntamentoSoggettoRuoloDecodificaListaGet
+      tags:
+        - ente
+      description: Ritorna la lista dei ruoli appuntamento soggetto
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_ruolo_appuntamento_soggetto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /prescrizione/stato/lista:
+    get:
+      operationId: funzionalita_prescrizioneStatoGet
+      tags:
+        - prescrizione
+      description: Ritorna la decodifica della prescrizione stato
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_prescrizione_stato'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /appuntamento/tipo/lista:
+    get:
+      operationId: funzionalita_appuntamentoTipoListaGet
+      tags:
+        - appuntamento
+      description: Ritorna la decodifica dell appuntamento tipo
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_appuntamento_tipo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /appuntamento/stato/lista:
+    get:
+      operationId: funzionalita_appuntamentoStatoGet
+      tags:
+        - appuntamento
+      description: Ritorna la decodifica dell appuntamento stato
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_appuntamento_stato'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /nuovapratica/struttura/tipo/lista:
+    get:
+      operationId: funzionalita_nuovapraticaStrutturaTipoListaGet
+      tags:
+        - nuovapratica
+      description: Ritorna la lista di struttura tipo filtrata per ente tipo id
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/ente_tipo_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_struttura_tipo_ridotto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /nuovapratica/pratica/tipo/lista:
+    get:
+      operationId: funzionalita_nuovapraticaPraticaTipoListaGet
+      tags:
+        - nuovapratica
+      description: Ritorna le pratiche tipo filtrate per ente tipo id
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/ente_tipo_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_pratica_tipo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+  parameters:
+    page_number:
+      description: numero di pagine per paginazione
+      in: query
+      name: page_number
+      schema:
+        type: integer
+        default: 1
+        format: int64
+    row_per_page:
+      description: righe per pagina per paginazione
+      in: query
+      name: row_per_page
+      schema:
+        type: integer
+        default: 10
+        format: int64
+    descending:
+      description: ordinamento direzione per paginazione
+      in: query
+      name: descending
+      schema: 
+        default: true
+        type: boolean
+    order_by:
+      description: chiave ordinamento per paginazione
+      in: query
+      name: order_by
+      schema: 
+        default: 1
+        type: string
+    session_id:
+      description: Contiene l'id della sessione corrente su log session
+      in: query
+      name: s_id
+      schema:
+        type: integer
+        format: int32
+    ente_tipo_id:
+      in: query
+      name: ente_tipo_id
+      schema:
+        type: integer
+        format: int32
+    appuntamento_id:
+      in: query
+      name: appuntamento_id
+      schema:
+        type: integer
+        format: int32
+    prescrizione_id:
+      in: query
+      name: prescrizione_id
+      schema:
+        type: integer
+        format: int32
+    struttura_id:
+      description: Contiene l'id della struttura corrente
+      in: query
+      name: struttura_id
+      schema:
+        type: integer
+        format: int32
+    filtro_data:
+      in: query
+      name: filtro_data
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd
+    tipo_pratica_id:
+      description: Contiene l'id del tipo pratica
+      in: query
+      name: tipo_pratica_id
+      schema:
+        type: integer
+        format: int32
+    stato_pratica_id:
+      description: Contiene l'id dello stato pratica
+      in: query
+      name: stato_pratica_id
+      schema:
+        type: integer
+        format: int32
+    tipo_prescrizione_id:
+      description: Contiene l'id del tipo pratica
+      in: query
+      name: tipo_prescrizione_id
+      schema:
+        type: integer
+        format: int32
+    stato_prescrizione_id:
+      description: Contiene l'id dello stato pratica
+      in: query
+      name: stato_prescrizione_id
+      schema:
+        type: integer
+        format: int32
+    tipo_appuntamento_id:
+      description: Contiene l'id del tipo appuntamento
+      in: query
+      name: tipo_appuntamento_id
+      schema:
+        type: integer
+        format: int32
+    stato_appuntamento_id:
+      description: Contiene l'id dello stato appuntamento
+      in: query
+      name: stato_appuntamento_id
+      schema:
+        type: integer
+        format: int32
+    data_apertura_prescrizione_da:
+      description: Contiene la data prescrizione da 
+      in: query
+      name: data_apertura_prescrizione_da
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd HH:mm:ss
+    data_apertura_prescrizione_a:
+      description: Contiene la data prescrizione a
+      in: query
+      name: data_apertura_prescrizione_a
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd HH:mm:ss
+    data_chiusura_prescrizione_da:
+      description: Contiene la data chiusura prescrizione da
+      in: query
+      name: data_chiusura_prescrizione_da
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd HH:mm:ss
+    data_chiusura_prescrizione_a:
+      description: Contiene la data chiusura prescrizione a
+      in: query
+      name: data_chiusura_prescrizione_a
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dddd HH:mm:ss
+    data_inizio_appuntamento_da:
+      description: Contiene la data inizio appuntamento da
+      in: query
+      name: data_inizio_appuntamento_da
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dddd HH:mm:ss
+    data_inizio_appuntamento_a:
+      description: Contiene la data inizio appuntamento a
+      in: query
+      name: data_inizio_appuntamento_a
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dddd HH:mm:ss
+    data_fine_appuntamento_da:
+      description: Contiene la data fine appuntamento da
+      in: query
+      name: data_fine_appuntamento_da
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dddd HH:mm:ss
+    data_fine_appuntamento_a:
+      description: Contiene la data fine appuntamento a
+      in: query
+      name: data_fine_appuntamento_a
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd HH:mm:ss
+    data_pratica_apertura_da:
+      description: Contiene la pratica apertura da
+      in: query
+      name: data_pratica_apertura_da
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd HH:mm:ss
+    data_pratica_apertura_a:
+      description: Contiene la data pratica apetrtura a
+      in: query
+      name: data_pratica_apertura_a
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd HH:mm:ss
+    data_pratica_chiusura_da:
+      description: Contiene la data pratica chuiusura da
+      in: query
+      name: data_pratica_chiusura_da
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd HH:mm:ss
+    data_pratica_chiusura_a:
+      description: Contiene la data pratica chuiusura a
+      in: query
+      name: data_pratica_chiusura_a
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd HH:mm:ss
+    data_da:
+      description: Contiene una data
+      in: query
+      name: data_da
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd
+    data_a:
+      description: Contiene una data
+      in: query
+      name: data_a
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd
+    header_shib_identita_codice_fiscale:
+      description: Contiene il codice fiscale dell utente loggato ottenuto tramite shibboleth
+      name: Shib-Identita-CodiceFiscale
+      in: header
+      schema:
+        type: string
+      required: true
+    ente_id:
+      description: Contiene l'id dell'ente corrente
+      in: query
+      name: ente_id
+      schema:
+        type: integer
+        format: int32
+    profilo_id:
+      description: Contiene l'id del profilo corrente
+      in: query
+      name: profilo_id
+      schema:
+        type: integer
+        format: int32
+    pratica_id:
+      description: Contiene l'id del profilo corrente
+      in: query
+      name: pratica_id
+      schema:
+        type: integer
+        format: int32
+    pratica_det_id:
+      in: query
+      name: pratica_det_id
+      schema:
+        type: integer
+        format: int32
+    clreq_id:
+      in: query
+      name: clreq_id
+      schema:
+        type: integer
+        format: int32
+    pratica_tipo_id:
+      in: query
+      name: pratica_tipo_id
+      schema:
+        type: integer
+        format: int32
+    struttura_tipo_id:
+      in: query
+      name: struttura_tipo_id
+      schema:
+        type: integer
+        format: int32
+    data_chiusura_max:
+      description: Contiene una data con formato yyyy-MM-dd
+      in: query
+      name: data_chiusura_max
+      schema:
+        type: string
+    filter_struttura:
+      description: filtro per struttura
+      in: query
+      name: filter_struttura
+      schema:
+        type: string
+    filter_utente:
+      description: filtro per utente
+      in: query
+      name: filter_utente
+      schema:
+        type: string
+  responses:
+    BadRequest:
+      description: La richiesta fatta dal client è errata.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errore'
+    Forbidden:
+      description: La richiesta fatta dal client è errata.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errore'
+      headers:
+        X-Request-ID:
+          description: Ritorno del parametro ricevuto nella request.
+          schema:
+            type: string           
+    NotFound:
+      description: La richiesta fatta dal client errata.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errore'
+      headers:
+        X-Request-ID:
+          description: Ritorno del parametro ricevuto nella request.
+          schema:
+            type: string
+    InternalServerError:
+      description: La richiesta fatta dal client errata.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errore'
+      headers:
+        X-Request-ID:
+          description: Ritorno del parametro ricevuto nella request.
+          schema:
+            type: string
+  schemas:
+    model_clreq_esito:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model esito clreq
+          properties:
+            clreqEsitoId:
+              type: integer
+              format: int32
+            clreqEsitoCod:
+              type: string
+            clreqEsitoDesc:
+              type: string
+            clreqEsitoOrd:
+              type: string
+    model_pratica_dettaglio_clreq_esteso:
+      allOf:
+        - $ref: '#/components/schemas/model_pratica_dettaglio_clreq'
+        - type: object
+          title: Model pratica dettaglio clreq estesa
+          properties:
+            checklistReq:
+              $ref: '#/components/schemas/model_checklist_req'
+            clreqEsito:
+              $ref: '#/components/schemas/model_clreq_esito'
+    model_pratica_dettaglio_clreq:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model pratica dettaglio clreq
+          properties:
+            praticaDetClreqId:
+              type: integer
+              format: int32
+            praticaDetId:
+              type: integer
+              format: int32
+            clreqId:
+              type: integer
+              format: int32
+            clreqEsitoId:
+              type: integer
+              format: int32
+            moduloCompilatoId:
+              type: integer
+              format: int32
+            note:
+              type: string
+    model_pratica_clreq_post:
+      allOf:
+        - $ref: '#/components/schemas/model_pratica_clreq'
+        - type: object
+          title: Model pratica clreq for post
+          properties:
+            clreqList:
+              type: array
+              items:
+                type: integer
+                format: int32
+    model_pratica_clreq:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model pratica clreq
+          properties:
+            praticaClreqId:
+              type: integer
+              format: int32
+            praticaId:
+              type: integer
+              format: int32
+            prescrizioneId:
+              type: integer
+              format: int32
+            appuntamentoId:
+              type: integer
+              format: int32
+            clreqId:
+              type: integer
+              format: int32
+    model_checklist_req:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model checklist req
+          properties:
+            clreqId:
+              type: integer
+              format: int32
+            clreqCod:
+              type: string
+            clreqDesc:
+              type: string
+            clreqOrd:
+              type: string
+            clreqHint:
+              type: string
+            clreqIdPadre:
+              type: integer
+              format: int32
+            moduloId:
+              type: integer
+              format: int32
+    model_checklist_req_esteso:
+      allOf:
+        - $ref: '#/components/schemas/model_checklist_req'
+        - type: object
+          title: Model checklist req
+          properties:
+            flgSelezionato:
+              type: boolean
+            flgSelezionabile:
+              type: boolean
+            flgConforme:
+              type: boolean
+    model_pratica_requisiti:
+      type: object
+      title: model get pratica requisiti
+      properties:
+        clreqId:
+          type: integer
+          format: int32
+        praticaDetId:
+          type: integer
+          format: int32
+        dataoraAzione:
+          type: string
+          format: date
+        azioneDesc:
+          type: string
+        clreqEsitoId:
+          type: integer
+          format: int32
+        clreqEsitoCod:
+          type: string
+        clreqEsitoDesc:
+          type: string
+        moduloCompilatoId:
+          type: integer
+          format: int32
+        note:
+          type: string
+        prescrizioneId:
+          type: integer
+          format: int32
+        prescrizioneTipoId:
+          type: integer
+          format: int32
+        prescrizioneNumero:
+          type: string
+        prescrizioneTipoDesc:
+          type: string
+        appuntamentoId:
+          type: integer
+          format: int32
+        appuntamentoTipoId:
+          type: integer
+          format: int32
+        appuntamentoNumero:
+          type: string
+        appuntamentoTipoDesc:
+          type: string
+        flgModificabile:
+          type: boolean
+    model_pratica_ridotta_estesa:
+      allOf:
+        - $ref: '#/components/schemas/model_pratica'
+        - type: object
+          title: Model pratica estesa
+          properties:
+            praticaTipo:
+              $ref: '#/components/schemas/model_pratica_tipo'
+            azioneIniziale:
+              $ref: '#/components/schemas/model_azione_estesa'
+            moduloId:
+              type: integer
+              format: int32
+    model_zip_lista:
+      type: object
+      title: 'model file into zip'
+      properties:
+        folderName:
+          type: string
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_zip'
+    model_zip:
+      type: object
+      title: 'model file into zip'
+      properties:
+        fileName:
+          type: string
+        moduloCompilatoId:
+          type: integer
+          format: int32
+        fileId:
+          type: integer
+          format: int32
+    model_pratica_estesa:
+      allOf:
+        - $ref: '#/components/schemas/model_pratica'
+        - type: object
+          title: Model pratica estesa
+          properties:
+            appuntamenti:
+              type: array
+              items:
+                $ref: '#/components/schemas/model_appuntamento_esteso'
+            prescrizioni:
+              type: array
+              items:
+                $ref: '#/components/schemas/model_prescrizione_esteso'
+            attivita:
+              type: array
+              items:
+                $ref: '#/components/schemas/model_pratica_dettaglio_estesa_pratica'
+            tipo:
+              $ref: '#/components/schemas/model_pratica_tipo'
+            moduloId:
+              type: integer
+              format: int32
+            moduloCompilatoId:
+              type: integer
+              format: int32
+    model_appuntamento:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model appuntamento 
+          properties:
+            appuntamentoId:
+              type: integer
+              format: int32
+            appuntamentoTipoId:
+              type: integer
+              format: int32
+            praticaId:
+              type: integer
+              format: int32
+            dataoraInizio:
+              type: string
+              format: date
+            dataoraFine:
+              type: string
+              format: date
+            dataoraApertura:
+              type: string
+              format: date
+            dataoraChiusura:
+              type: string
+              format: date
+            appuntamentoNumero:
+              type: string
+    model_appuntamento_esteso:
+      allOf:
+        - $ref: '#/components/schemas/model_appuntamento'
+        - type: object
+          title: Model appuntamento esteso 
+          properties:
+            appuntamentoStato:
+              $ref: '#/components/schemas/model_appuntamento_stato'
+            appuntamentoTipo:
+              $ref: '#/components/schemas/model_appuntamento_tipo'
+            azioneDesc:
+              type: string
+            moduloId:
+              type: integer
+              format: int32
+            moduloCompilatoId:
+              type: integer
+              format: int32
+    model_appuntamento_stato:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model appuntamento stato 
+          properties:
+            appuntamentoStatoId:
+              type: integer
+              format: int32
+            appuntamentoStatoCod:
+              type: string
+            appuntamentoStatoDesc:
+              type: string
+            appuntamentoStatoIniziale:
+              type: boolean
+            appuntamentoStatoFinale:
+              type: boolean
+    model_prescrizione:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model prescrizione 
+          properties:
+            prescrizioneId:
+              type: integer
+              format: int32
+            prescrizioneTipoId:
+              type: integer
+              format: int32
+            praticaId:
+              type: integer
+              format: int32
+            dataoraApertura:
+              type: string
+              format: date
+            dataoraChiusura:
+              type: string
+              format: date
+            prescrizioneNumero:
+              type: string
+    model_prescrizione_esteso:
+      allOf:
+        - $ref: '#/components/schemas/model_prescrizione'
+        - type: object
+          title: Model prescrizione esteso 
+          properties:
+            prescrizioneStato:
+              $ref: '#/components/schemas/model_prescrizione_stato'
+            prescrizioneTipo:
+              $ref: '#/components/schemas/model_prescrizione_tipo'
+            azioneDesc:
+              type: string
+            moduloId:
+              type: integer
+              format: int32
+            moduloCompilatoId:
+              type: integer
+              format: int32
+    model_prescrizione_stato:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model prescrizione stato 
+          properties:
+            prescrizioneStatoId:
+              type: integer
+              format: int32
+            prescrizioneStatoCod:
+              type: string
+            prescrizioneStatoDesc:
+              type: string
+            prescrizioneStatoIniziale:
+              type: boolean
+            prescrizioneStatoFinale:
+              type: boolean
+    model_pratica_post:
+      allOf:
+        - $ref: '#/components/schemas/model_pratica'
+        - type: object
+          title: Model prescrizione esteso 
+          properties:
+            praticaDettaglio:
+              $ref: '#/components/schemas/model_pratica_dettaglio_post'
+    model_pratica:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model pratica 
+          properties:
+            praticaId:
+              type: integer
+              format: int32
+            praticaTipoId:
+              type: integer
+              format: int32
+            enteId:
+              type: integer
+              format: int32
+            strutturaId:
+              type: integer
+              format: int32
+            dataoraApertura:
+              type: string
+              format: date
+            dataoraChiusura:
+              type: string
+              format: date
+            praticaNumero:
+              type: string
+    model_azioni_estese:
+      type: object
+      title: Model generico
+      properties:
+        pratica:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_azione_estesa'
+        prescrizione:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_azione_estesa'
+        appuntamento:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_azione_estesa'
+    model_azione_estesa:
+      allOf:
+        - $ref: '#/components/schemas/model_azione'
+        - type: object
+          title: Model pratica 
+          properties:
+            prescrizioneTipoId:
+              type: integer
+              format: int32
+            appuntamentoTipoId:
+              type: integer
+              format: int32
+            azioneInizialePrescrizione:
+              type: boolean
+            azioneInizialeAppuntamento:
+              type: boolean
+            azioneInizialePratica:
+              type: boolean
+            moduloId:
+              type: integer
+              format: int32
+            statoIdLista:
+              type: array
+              items:
+                type: integer
+                format: int32
+    model_pratica_dettaglio_esteso:
+      allOf:
+        - $ref: '#/components/schemas/model_pratica_dettaglio'
+        - type: object
+          title: Model pratica dettaglo estesa
+          properties:
+            pratica:
+              $ref: '#/components/schemas/model_pratica'
+    model_pratica_dettaglio_estesa_pratica:
+      allOf:
+        - $ref: '#/components/schemas/model_pratica_dettaglio'
+        - type: object
+          title: Model pratica dettaglo estesa
+          properties:
+            praticaStato:
+              $ref: '#/components/schemas/model_pratica_stato'
+            appuntamentoStato:
+              $ref: '#/components/schemas/model_appuntamento_stato'
+            prescrizioneStato:
+              $ref: '#/components/schemas/model_prescrizione_stato'
+            azioneDesc:
+              type: string
+            moduloId:
+              type: integer
+              format: int32
+            flgClreqEsito:
+              type: boolean
+            flgBloccato:
+              type: boolean
+    model_pratica_dettaglio_post:
+      allOf:
+        - $ref: '#/components/schemas/model_pratica_dettaglio'
+        - type: object
+          title: Model pratica 
+          properties:
+            dataoraInizio:
+              type: string
+              format: date
+            dataoraFine:
+              type: string
+              format: date
+            prescrizioneNumero:
+              type: string
+            appuntamentoNumero:
+              type: string
+    model_pratica_dettaglio:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model pratica 
+          properties:
+            praticaDetId:
+              type: integer
+              format: int32
+            praticaId:
+              type: integer
+              format: int32
+            praticaStatoId:
+              type: integer
+              format: int32
+            prescrizioneId:
+              type: integer
+              format: int32
+            prescrizioneStatoId:
+              type: integer
+              format: int32
+            appuntamentoId:
+              type: integer
+              format: int32
+            appuntamentoStatoId:
+              type: integer
+              format: int32
+            azioneId:
+              type: integer
+              format: int32
+            dataoraAzione:
+              type: string
+              format: date
+            moduloCompilatoId:
+              type: integer
+              format: int32
+            note:
+              type: string
+            profiloId:
+              type: integer
+              format: int32
+            flgScadenza:
+              type: string
+            profiloIdScadenza:
+              type: integer
+              format: int32
+    model_azione_config:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model azione config
+          properties:
+            azione_config_id:
+              type: integer
+              format: int32
+            azione_id:
+              type: integer
+              format: int32
+            pratica_tipo_id:
+              type: integer
+              format: int32
+            profilo_id:
+              type: integer
+              format: int32
+            abilitazione:
+              type: string
+    model_pratica_workflow:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model azione pratica workflow
+          properties:
+            pratica_workflow_id:
+              type: integer
+              format: int32
+            pratica_tipo_id:
+              type: integer
+              format: int32
+            azione_id:
+              type: integer
+              format: int32
+            modulo_id:
+              type: integer
+              format: int32
+            pratica_stato_id_iniziale:
+              type: integer
+              format: int32
+            pratica_stato_id_finale:
+              type: integer
+              format: int32
+    model_appuntamento_config:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model appuntamento config
+          properties:
+            appuntamento_config_id:
+              type: integer
+              format: int32
+            pratica_tipo_id:
+              type: integer
+              format: int32
+            pratica_stato_id:
+              type: integer
+              format: int32
+            appuntamento_tipo_id:
+              type: integer
+              format: int32
+    model_appuntamento_workflow:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model azione appuntamento workflow
+          properties:
+            appuntamento_workflow_id:
+              type: integer
+              format: int32
+            pratica_tipo_id:
+              type: integer
+              format: int32
+            appuntamento_tipo_id:
+              type: integer
+              format: int32
+            azione_id:
+              type: integer
+              format: int32
+            modulo_id:
+              type: integer
+              format: int32
+            appuntamento_stato_id_iniziale:
+              type: integer
+              format: int32
+            appuntamento_stato_id_finale:
+              type: integer
+              format: int32
+    model_prescrizione_workflow:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model azione appuntamento workflow
+          properties:
+            prescrizione_workflow_id:
+              type: integer
+              format: int32
+            pratica_tipo_id:
+              type: integer
+              format: int32
+            prescrizione_tipo_id:
+              type: integer
+              format: int32
+            azione_id:
+              type: integer
+              format: int32
+            modulo_id:
+              type: integer
+              format: int32
+            prescrizione_stato_id_iniziale:
+              type: integer
+              format: int32
+            prescrizione_stato_id_finale:
+              type: integer
+              format: int32
+    model_prescrizione_config:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model prescrizione config
+          properties:
+            prescrizione_config_id:
+              type: integer
+              format: int32
+            prescrizione_tipo_id:
+              type: integer
+              format: int32
+            pratica_tipo_id:
+              type: integer
+              format: int32
+            pratica_stato_id:
+              type: integer
+              format: int32
+    model_pratica_scadenza_generata:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model pratica scadenza generata
+          properties:
+            pratica_scadenza_generata_id:
+              type: integer
+              format: int32
+            pratica_tipo_id:
+              type: integer
+              format: int32
+            azione_id:
+              type: integer
+              format: int32
+            azione_id_scadenza:
+              type: integer
+              format: int32
+            giorni_scadenza:
+              type: integer
+              format: int32
+            profilo_id:
+              type: integer
+              format: int32
+            prescrizione_tipo_id:
+              type: integer
+              format: int32
+            appuntamento_tipo_id:
+              type: integer
+              format: int32
+    model_pratica_scadenza_annullata:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model pratica scadenza annullata
+          properties:
+            pratica_scadenza_annullata_id:
+              type: integer
+              format: int32
+            pratica_tipo_id:
+              type: integer
+              format: int32
+            azione_id:
+              type: integer
+              format: int32
+            azione_id_scadenza:
+              type: integer
+              format: int32
+    model_pratica_tipo:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model pratica tipo
+          properties:
+            praticaTipoId:
+              type: integer
+              format: int32
+            praticaTipoCod:
+              type: string
+            praticaTipoDesc:
+              type: string
+    model_pratica_stato:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model pratica tipo
+          properties:
+            praticaStatoId:
+              type: integer
+              format: int32
+            praticaStatoCod:
+              type: string
+            praticaStatoDesc:
+              type: string
+            praticaStatoFinale:
+              type: boolean
+    model_prescrizione_tipo:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model prescrizione tipo
+          properties:
+            prescrizioneTipoId:
+              type: integer
+              format: int32
+            prescrizioneTipoCod:
+              type: string
+            prescrizioneTipoDesc:
+              type: string
+    model_appuntamento_tipo:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model appuntamento tipo
+          properties:
+            appuntamentoTipoId:
+              type: integer
+              format: int32
+            appuntamentoTipoCod:
+              type: string
+            appuntamentoTipoDesc:
+              type: string
+    model_struttura_tipo_ridotto:
+      type: object
+      title: Model struttura tipo ridotto
+      properties:
+        strutturaTipoId:
+          type: integer
+          format: int32
+        strutturaTipoCod:
+          type: string
+        strutturaTipoDesc:
+          type: string
+    model_azione:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model azione
+          properties:
+            azioneId:
+              type: integer
+              format: int32
+            azioneCod:
+              type: string
+            azioneDesc:
+              type: string
+    model_pratica_scadenza:
+      type: object
+      title: Model pratica scadenza
+      properties:
+        dataoraScadenza:
+          type: string
+          format: date
+        flgScadenza:
+          type: string
+        scadenzaDesc:
+          type: string
+        praticaId:
+          type: integer
+          format: int32
+        prescrizioneId:
+          type: integer
+          format: int32
+        appuntamentoId:
+          type: integer
+          format: int32
+        enteId:
+          type: integer
+          format: int32
+        enteCod:
+          type: string
+        enteDesc:
+          type: string
+        strutturaId:
+          type: integer
+          format: int32
+        strutturaCod:
+          type: string
+        strutturaCodArpe:
+          type: string
+        strutturaDesc:
+          type: string
+        praticaTipoId:
+          type: integer
+          format: int32
+        praticaTipoCod:
+          type: string
+        praticaTipoDesc:
+          type: string
+        dataoraApertura:
+          type: string
+          format: date
+        dataoraChiusura:
+          type: string
+          format: date
+        prescrizioneTipoId:
+          type: integer
+          format: int32
+        prescrizioneTipoCod:
+          type: string
+        prescrizioneTipoDesc:
+          type: string
+        appuntamentoTipoId:
+          type: integer
+          format: int32
+        appuntamentoTipoCod:
+          type: string
+        appuntamentoTipoDesc:
+          type: string
+    model_generico:
+      type: object
+      title: Model generico
+      properties:
+        validitaInizio:
+          type: string
+          format: date
+        validitaFine:
+          type: string
+          format: date
+        dataCreazione:
+          type: string
+          format: date
+        dataModifica:
+          type: string
+          format: date
+        dataCancellazione:
+          type: string
+          format: date
+        utenteCreazione:
+          type: string
+        utenteModifica:
+          type: string
+        utenteCancellazione:
+          type: string
+    model_appuntamento_soggetto:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model appuntamento soggetto 
+          properties:
+            appuntamentoSoggettoId:
+              type: integer
+              format: int32
+            appuntamentoId:
+              type: integer
+              format: int32
+            soggettoId:
+              type: integer
+              format: int32
+            ruoloAppuntamentoSoggettoId:
+              type: integer
+              format: int32
+    model_ruolo_appuntamento_soggetto:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model ruolo appuntamento soggetto 
+          properties:
+            ruoloAppuntamentoSoggettoId:
+              type: integer
+              format: int32
+            ruoloAppuntamentoSoggettoCod:
+              type: string
+            ruoloAppuntamentoSoggettoDesc:
+              type: string
+    model_ruolo_ente_soggetto:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model ente soggetto
+          properties:
+            ruoloEnteSoggettoId:
+              type: integer
+              format: int32
+            ruoloEnteSoggettoCod:
+              type: string
+            ruoloEnteSoggettoDesc:
+              type: string
+    model_appuntamento_soggetto_esteso:
+      allOf:
+        - $ref: '#/components/schemas/model_appuntamento_soggetto'
+        - type: object
+          title: Model appuntamento soggetto esteso
+          properties:
+            ruoloAppuntamentoSoggetto:
+              $ref: '#/components/schemas/model_ruolo_appuntamento_soggetto'
+            ruoloEnteSoggetto:
+              $ref: '#/components/schemas/model_ruolo_ente_soggetto'
+    model_chiave_valore:
+      type: object
+      properties:
+        chiave:
+            type: string
+        valore:
+            type: string
+    model_chiave_valore_list:
+      type: object
+      properties:
+        chiaveValore:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_chiave_valore'
+    boolean_crit:
+      type: object
+      properties:
+        eq:
+          type: boolean
+    string_crit:
+      type: object
+      properties:
+        eq:
+          type: string
+        ne:
+          type: string
+        lt:
+          type: string
+        lte:
+          type: string
+        gt:
+          type: string
+        gte:
+          type: string
+        in:
+          type: array
+          items:
+            type: string
+        nin:
+          type: array
+          items:
+            type: string
+        c:
+          type: string
+        ci:
+          type: string
+        s:
+          type: string
+        si:
+          type: string
+        e:
+          type: string
+        ei:
+          type: string
+      description: criterio su singola property di tipo stringa
+    integer_crit:
+      type: object
+      properties:
+        eq:
+          type: integer
+          format: int32
+        ne:
+          type: integer
+          format: int32
+        lt:
+          type: integer
+          format: int32
+        lte:
+          type: integer
+          format: int32
+        gt:
+          type: integer
+          format: int32
+        gte:
+          type: integer
+          format: int32
+        in:
+          type: array
+          items:
+            type: integer
+            format: int32
+        nin:
+          type: array
+          items:
+            type: integer
+            format: int32
+      description: criterio su singola property di tipo integer
+    date_crit:
+      type: object
+      properties:
+        eq:
+          type: string
+          format: date
+        ne:
+          type: string
+          format: date
+        lt:
+          type: string
+          format: date
+        lte:
+          type: string
+          format: date
+        gt:
+          type: string
+          format: date
+        gte:
+          type: string
+          format: date
+        in:
+          type: array
+          items:
+            type: string
+            format: date
+        nin:
+          type: array
+          items:
+            type: string
+            format: date
+      description: criterio su singola property di tipo data
+    errore:
+      title: '[ERRORE] Generico'
+      type: object
+      properties:
+        status:
+          type: integer
+        code:
+          type: string
+        title:
+          type: string
+        detail:
+          type: array
+          items:
+            $ref: '#/components/schemas/errore_dettaglio'
+        links:
+          type: array
+          items:
+            type: string
+    errore_dettaglio:
+      title: '[ERRORE] Dettaglio'
+      type: object
+      properties:
+        chiave:
+          type: string
+        valore:
+          type: string
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        messaggioCittadino:
+          type: string
+        errorMessage:
+          type: string
+        fields:
+          type: string
+          nullable: true
