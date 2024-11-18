@@ -1,0 +1,871 @@
+openapi: 3.0.1
+info:
+  title: API vigilsanmoduli
+  description: Componente API vigilsanmoduli del prodotto vigilsan
+  version: 1.0.0
+servers:
+  - url: /api
+paths:
+  /status:
+    get:
+      tags:
+        - system
+      description: ping
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: string
+  /file:
+    post:
+      operationId: funzionalita_filePost
+      tags:
+        - file
+      description: inserisce un file su db
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_file_post'
+      parameters: 
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/session_id'
+      responses:
+        "201":
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_file'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+    get:
+      operationId: funzionalita_fileGet
+      tags:
+        - file
+      description: Scarica un file dato l'id
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/session_id'    
+        - in: query
+          name: file_id
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: l'id del file da scaricare da scaricare.
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Disposition:
+              description: Il nome del file scaricato
+              schema:
+                type: string
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /zip:
+    post:
+      operationId: funzionalita_zipGet
+      tags:
+        - zip
+      description: torna un zip di file e o moduli
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_zip_lista'
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/session_id'    
+      responses:
+        "201":
+          description: OK
+          headers:
+            Content-Disposition:
+              description: lo zip formato
+              schema:
+                type: string
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /file/content/type/lista:
+    get:
+      operationId: funzionalita_fileContentTypeListaGet
+      tags:
+        - file
+      description: Ritorna la decodifica dei content type
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_file_content_type'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /file/tipo:
+    get:
+      operationId: funzionalita_fileTipoGet
+      tags:
+        - file
+      description: Ritorna la decodifica del file tipo
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/file_tipo_cod'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                  $ref: '#/components/schemas/model_file_tipo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /modulo:
+    get:
+      operationId: funzionalita_moduloGet
+      tags:
+        - modulo
+      description: Ritorna un modulo da compilare dato l'id
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/header_x_request_id'
+      - $ref: '#/components/parameters/header_x_codice_servizio'   
+      - $ref: '#/components/parameters/session_id'    
+      - name: modulo_id
+        in: query
+        schema: 
+          type: integer
+          format: int32    
+      - name: modulo_compilato_id
+        in: query
+        schema: 
+          type: integer
+          format: int32    
+      - name: ridotto
+        in: query
+        schema: 
+          type: boolean
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_modulo_esteso'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      operationId: funzionalita_moduloPost
+      tags:
+        - modulo
+      description: inserisce i valori del modulo compilato
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_modulo_post'
+      parameters: 
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/session_id'
+      responses:
+        "201":
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_modulo_post'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /modulo/pdf:
+    get:
+      operationId: funzionalita_moduloPdfGet
+      tags:
+        - modulo
+      description: Ritorna un modulo da compilare dato l'id
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/header_x_request_id'
+      - $ref: '#/components/parameters/header_x_codice_servizio'   
+      - $ref: '#/components/parameters/session_id'    
+      - name: modulo_id
+        in: query
+        schema: 
+          type: integer
+          format: int32    
+      - name: modulo_compilato_id
+        in: query
+        schema: 
+          type: integer
+          format: int32    
+      - name: ridotto
+        in: query
+        schema: 
+          type: boolean
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Disposition:
+              description: Il nome del file scaricato
+              schema:
+                type: string
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+components:
+  parameters:
+    header_content_type:
+      description: MIME Type del file che viene caricato come allegato
+      name: Content-Type
+      in: header
+      schema:
+        type: string
+        enum:
+          - document/pdf
+          - image/jpeg
+          - image/png 
+    header_shib_identita_codice_fiscale:
+      description: Contiene il codice fiscale dell utente loggato ottenuto tramite shibboleth
+      name: Shib-Identita-CodiceFiscale
+      in: header
+      schema:
+        type: string
+      required: true
+    header_x_request_id:
+      description: Contiene un id univoco (`uuid v4`) della chiamata HTTP che viene generato dal front-end, viene propagato agli strati successivi e viene restituito al front-end assieme alla response, permettendo così di tracciare l intero ciclo di vita della richiesta
+      in: header
+      name: X-Request-Id      
+      schema:
+        type: string
+      required: true
+    header_x_forwarded_for:
+      description: Contiene un elenco degli ip che hanno gestito la richiesta.Utile per log e audit.Il formato della stringa è <ip-front-end>, <ip-primo-server>, ..., <ip-ultimo-server> Es. `10.10.10.10, 10.38.45.68, 10.128.69.244`
+      in: header
+      name: X-Forwarded-For      
+      schema:
+        type: string
+      required: true
+    header_x_codice_servizio:
+      in: header
+      name: X-Codice-Servizio    
+      description: Contiene una stringa identificativa del servizio chiamante (es.COD)
+      schema:
+        type: string
+      required: true
+    session_id:
+      description: Contiene l'id della sessione corrente su log session
+      in: query
+      name: s_id      
+      schema:
+          type: integer
+          format: int32
+    file_tipo_cod:
+      description: Contiene l'id della sessione corrente su log session
+      in: query
+      name: file_tipo_cod      
+      schema:
+          type: string
+  responses:
+    BadRequest:
+      description: La richiesta fatta dal client è errata.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errore'
+      headers:
+        X-Request-ID:
+          description: Ritorno del parametro ricevuto nella request.
+          schema:
+            type: string  
+    Forbidden:
+      description: La richiesta fatta dal client è errata.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errore'
+      headers:
+        X-Request-ID:
+          description: Ritorno del parametro ricevuto nella request.
+          schema:
+            type: string              
+    NotFound:
+      description: La richiesta fatta dal client errata.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errore'
+      headers:
+        X-Request-ID:
+          description: Ritorno del parametro ricevuto nella request.
+          schema:
+            type: string
+    InternalServerError:
+      description: La richiesta fatta dal client errata.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errore'
+      headers:
+        X-Request-ID:
+          description: Ritorno del parametro ricevuto nella request.
+          schema:
+            type: string
+            
+  schemas:
+    model_zip_lista:
+      type: object
+      title: 'model file into zip'
+      properties:
+        folderName:
+          type: string
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_zip'
+    model_zip:
+      type: object
+      title: 'model file into zip'
+      properties:
+        fileName:
+          type: string
+        moduloCompilatoId:
+          type: integer
+          format: int32
+        fileId:
+          type: integer
+          format: int32
+    model_file:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model file
+          properties:
+            fileId:
+              type: integer
+              format: int32
+            fileTipoId:
+              type: integer
+              format: int32
+            fileName:
+              type: string
+            fileSize:
+              type: integer
+              format: int32
+            fileContentTypeId:
+              type: integer
+              format: int32
+            filePath:
+              type: string
+            cfFirmaVerificata:
+              type: string
+            fileNameOrig:
+              type: string
+    model_generico:
+      type: object
+      title: Model generico
+      properties:
+        validitaInizio:
+          type: string
+          format: date
+        validitaFine:
+          type: string
+          format: date
+        dataCreazione:
+          type: string
+          format: date
+        dataModifica:
+          type: string
+          format: date
+        dataCancellazione:
+          type: string
+          format: date
+        utenteCreazione:
+          type: string
+        utenteModifica:
+          type: string
+        utenteCancellazione:
+          type: string
+    model_file_content_type:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model file content type
+          properties:
+            fileContentTypeId:
+              type: integer
+              format: int32
+            fileContentTypeCod:
+              type: string
+            fileContentTypeDesc:
+              type: string
+            fileContentTypeOrd:
+              type: string
+            fileContentTypeHint:
+              type: string
+            fileContentTypeMime:
+              type: string
+            fileContentTypeExt:
+              type: string
+    model_file_post:
+      type: object
+      title: 'Model file post'
+      properties:
+        cfVerificaFirma:
+          type: array
+          items:
+            type: string
+        base64File:
+          type: string
+        fileTipoId:
+          type: integer
+          format: int32
+        fileContentTypeId:
+          type: integer
+          format: int32
+        fileName:
+          type: string
+        enteCod:
+          type: string
+        strutturaCod:
+          type: string
+        soggettoId:
+          type: integer
+          format: int32
+    model_modulo_post:
+      type: object
+      title: 'Model modulo post'
+      properties:
+        moduloCompilatoId:
+          type: integer
+          format: int32
+        note:
+          type: string
+        modulo:
+           $ref: '#/components/schemas/model_modulo_esteso'
+    model_modulo_esteso:
+      allOf:
+      - $ref: '#/components/schemas/model_modulo'
+      - type: object
+        title: 'Model modulo esteso'
+        properties:
+          note:
+            type: string
+          listaPlaceOlder:
+            type: array
+            items:
+              $ref: '#/components/schemas/model_chiave_valore'
+    model_chiave_valore:
+      type: object
+      title: 'Model chiave valore'
+      properties:
+        chiave:
+          type: string
+        valore:
+          type: string
+    model_modulo:
+      type: object
+      title: 'Model modulo'
+      properties:
+        moduloId:
+          type: integer
+          format: int32
+        moduloCod:
+          type: string
+        moduloDesc:
+          type: string
+        moduloOrd:
+          type: string
+        moduloTitolo:
+          type: string
+        moduloIdPadre:
+          type: integer
+          format: int32
+        validitaInizio:
+          type: string
+          format: date
+        validitaFine:
+          type: string
+          format: date
+        dataCreazione:
+          type: string
+          format: date
+        dataModifica:
+          type: string
+          format: date
+        dataCancellazione:
+          type: string
+          format: date
+        utenteCreazione:
+          type: string
+        utenteModifica:
+          type: string
+        utenteCancellazione:
+          type: string
+        sezioni:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_modulo'
+        voci:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_voce'
+        regole:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_modulo_regola_ridotto'
+    model_modulo_regola_ridotto:
+      type: object
+      title: 'Model modulo regola'
+      properties:
+        moduloRegolaId:
+          type: integer
+          format: int32
+        moduloRegolaTipo:
+          type: string
+        moduloRegolaExec:
+          type: string
+        moduloRegolaErrore:
+          type: string
+    model_voce:
+      type: object
+      title: 'Model voce'
+      properties:
+        moduloId:
+          type: integer
+          format: int32
+        moduloVoceId:
+          type: integer
+          format: int32
+        moduloVoceCod:
+          type: string
+        moduloVoceDesc:
+          type: string
+        moduloVoceHint:
+          type: string
+        moduloVoceIdPadre:
+          type: integer
+          format: int32
+        moduloVoceTipoDati:
+          type: string
+        moduloVoceUnitaMisura:
+          type: string
+        moduloVoceDescCheck:
+          type: string
+        moduloListaId:
+          type: integer
+          format: int32
+        fileGruppoId:
+          type: integer
+          format: int32
+        valore:
+          type: string
+        flgCheck:
+          type: boolean
+        note:
+          type: string
+        lista:
+            $ref: '#/components/schemas/model_voce_lista'
+        regole:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_voce_regola'
+        fileGruppo:
+            $ref: '#/components/schemas/model_file_gruppo'
+        voci:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_voce'
+    model_file_gruppo:
+      type: object
+      title: 'Model voce file gruppo'
+      properties:
+        fileGruppoCod:
+          type: string
+        fileGruppoDesc:
+          type: string
+        fileTipi:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_file_tipo'
+    model_file_tipo:
+      type: object
+      title: 'Model file tipo'
+      properties:
+        fileTipoId:
+          type: integer
+          format: int32
+        fileTipoCod:
+          type: string
+        fileTipoDesc:
+          type: string
+        fileTipoHint:
+          type: string
+        fileTipoObbligatorio:
+          type: boolean
+        fileTipoFirmaRichiesta:
+          type: boolean
+        fileId:
+          type: integer
+          format: int32
+        fileName:
+          type: string
+        note:
+          type: string
+        fileContentTypes:
+          type: array
+          items:
+            type: integer
+            format: int32
+    model_voce_lista:
+      type: object
+      title: 'Model voce lista'
+      properties:
+        moduloListaCod:
+          type: string
+        moduloListaDesc:
+          type: string
+        moduloListaHint:
+          type: string
+        moduloListaId:
+          type: integer
+          format: int32
+        moduloListaOccMin:
+          type: integer
+          format: int32
+        moduloListaOccMax:
+          type: integer
+          format: int32
+        valori:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_voce_lista_valore'
+    model_voce_lista_valore:
+      type: object
+      title: 'Model voce lista valore'
+      properties:
+        moduloListaValoreId:
+          type: integer
+          format: int32
+        moduloListaValoreCod:
+          type: string
+        moduloListaValoreDesc:
+          type: string
+        moduloListaValoreHint:
+          type: string
+        valore:
+          type: boolean
+    model_voce_regola:
+      type: object
+      title: 'Model voce regola'
+      properties:
+        moduloVoceRegolaTipo:
+          type: string
+        moduloVoceRegolaErrore:
+          type: string
+        moduloVoceRegolaExec:
+          type: string
+    boolean_crit:
+      type: object
+      properties:
+        eq:
+          type: boolean
+    string_crit:
+      type: object
+      properties:
+        eq:
+          type: string
+        ne:
+          type: string
+        lt:
+          type: string
+        lte:
+          type: string
+        gt:
+          type: string
+        gte:
+          type: string
+        in:
+          type: array
+          items:
+            type: string
+        nin:
+          type: array
+          items:
+            type: string
+        c:
+          type: string
+        ci:
+          type: string
+        s:
+          type: string
+        si:
+          type: string
+        e:
+          type: string
+        ei:
+          type: string
+      description: criterio su singola property di tipo stringa
+    integer_crit:
+      type: object
+      properties:
+        eq:
+          type: integer
+          format: int32
+        ne:
+          type: integer
+          format: int32
+        lt:
+          type: integer
+          format: int32
+        lte:
+          type: integer
+          format: int32
+        gt:
+          type: integer
+          format: int32
+        gte:
+          type: integer
+          format: int32
+        in:
+          type: array
+          items:
+            type: integer
+            format: int32
+        nin:
+          type: array
+          items:
+            type: integer
+            format: int32
+      description: criterio su singola property di tipo integer
+    date_crit:
+      type: object
+      properties:
+        eq:
+          type: string
+          format: date
+        ne:
+          type: string
+          format: date
+        lt:
+          type: string
+          format: date
+        lte:
+          type: string
+          format: date
+        gt:
+          type: string
+          format: date
+        gte:
+          type: string
+          format: date
+        in:
+          type: array
+          items:
+            type: string
+            format: date
+        nin:
+          type: array
+          items:
+            type: string
+            format: date
+      description: criterio su singola property di tipo data
+    errore:
+      title: '[ERRORE] Generico'
+      type: object
+      properties:
+        status:
+          type: integer
+        code:
+          type: string
+        title:
+          type: string
+        detail:
+          type: array
+          items:
+            $ref: '#/components/schemas/errore_dettaglio'
+        links:
+          type: array
+          items:
+            type: string
+    errore_dettaglio:
+      title: '[ERRORE] Dettaglio'
+      type: object
+      properties:
+        chiave:
+          type: string
+        valore:
+          type: string  
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        messaggioCittadino:
+          type: string
+        errorMessage:
+          type: string
+        fields:
+          type: string
+          nullable: true
