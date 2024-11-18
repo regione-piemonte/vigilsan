@@ -1,0 +1,4514 @@
+openapi: 3.0.1
+info:
+  title: API vigilsanfrontendsrv
+  description: Componente BFF vigilsanfrontendsrv del prodotto vigilsan
+  version: 1.0.0
+servers:
+  - url: /bff
+paths:
+  /users/me:
+    get:
+      operationId: getCurrentUser
+      summary: get current user
+      description: restituisce le informazioni relative all'utente corrente (me)
+      tags:
+        - security
+      responses:
+        "200":
+          description: l'utente corrente (se l'applicazione è securizzata e se è stata effettuata l'autenticazione). 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfo'
+        "404":
+          description: se l'applicazione non è securizzata o se non è stata effettuata l'autenticazione
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+            description: Unexpected error
+            content:
+              application/problem+json:
+                schema:
+                    $ref: '#/components/schemas/Error'
+  /modulo:
+    get:
+      operationId: funzionalita_moduloGet
+      tags:
+        - modulo
+      description: Ritorna un modulo da compilare dato l'id
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/header_x_request_id'
+      - $ref: '#/components/parameters/header_x_codice_servizio'
+      - name: modulo_id
+        in: query
+        schema: 
+          type: integer
+          format: int32
+      - name: modulo_compilato_id
+        in: query
+        schema: 
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_modulo_esteso'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /modulo/pdf:
+    get:
+      operationId: funzionalita_moduloPdfGet
+      tags:
+        - modulo
+      description: Ritorna un modulo in formato pdf dato l'id
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/header_x_request_id'
+        - $ref: '#/components/parameters/header_x_codice_servizio'
+        - name: modulo_id
+          in: query
+          schema: 
+            type: integer
+            format: int32
+        - name: modulo_compilato_id
+          in: query
+          schema: 
+            type: integer
+            format: int32
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Disposition:
+              description: Il nome del file scaricato
+              schema:
+                type: string
+            Content-Length:
+              description: la lunghezza del file scaricato
+              schema:
+                type: integer
+                format: int32
+            Content-Type:
+              description: tipo di file
+              schema:
+                type: string
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /file:
+    get:
+      operationId: funzionalita_fileGet
+      tags:
+        - file
+      description: Scarica un file dato l'id
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/header_x_request_id'
+        - $ref: '#/components/parameters/header_x_codice_servizio' 
+        - in: query
+          name: file_id
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: l'id del file da scaricare da scaricare.
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Disposition:
+              description: Il nome del file scaricato
+              schema:
+                type: string
+            Content-Length:
+              description: la lunghezza del file scaricato
+              schema:
+                type: integer
+                format: int32
+            Content-Type:
+              description: tipo di file
+              schema:
+                type: string
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      operationId: funzionalita_filePost
+      tags:
+        - file
+      description: inserisce un file su db
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_file_post_bff'
+      parameters: 
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/header_x_request_id'
+      - $ref: '#/components/parameters/header_x_codice_servizio'
+      responses:
+        "201":
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_file'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /file/content/type/lista:
+    get:
+      operationId: funzionalita_fileContentTypeListaGet
+      tags:
+        - file
+      description: Ritorna la decodifica dei content type
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/x_access_token'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_file_content_type'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /utente/login:
+    get:
+      operationId: getJwtToken
+      summary: get profilo corrente
+      description: restituisce le informazioni relative all'utente e profilo corrente
+      parameters:
+        - $ref: '#/components/parameters/header_x_forwarded_for'
+        - name: token 
+          in: query
+          required: true
+          schema: 
+            type: string
+      tags:
+        - security
+      responses:
+        "200":
+          description: il codice jwt per l'utente corrente. 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/model_decodifica_jwt'
+        "404":
+          description: se l'applicazione non è securizzata o se non è stata effettuata l'autenticazione
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+            description: Unexpected error
+            content:
+              application/problem+json:
+                schema:
+                    $ref: '#/components/schemas/Error'
+  /profilo/decodifica/lista:
+    get:
+      operationId: funzionalita_profiloDecodificaLista
+      tags:
+        - profilo
+      description: Ritorna la lista dei profili su applicativo
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_profilo'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /utente/login/profilo:
+    get:
+      operationId: getJwtTokenWhitProfilo
+      summary: get profilo corrente con profilo selezionato
+      description: restituisce il token jwt all'utente con profilo selezionato
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      - $ref: '#/components/parameters/header_x_forwarded_for'
+      - name: struttura_id
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: profiloId 
+        in: query
+        required: true
+        schema: 
+          type: integer
+          format: int32
+      tags:
+        - security
+      responses:
+        "200":
+          description: il codice jwt per l'utente corrente. 
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /utente/logout:
+    get:
+      operationId: funzionalita_utenteLogoutGet
+      tags:
+        - security
+      description: fa logout utente e torna l'url per redirect
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      - $ref: '#/components/parameters/header_x_forwarded_for'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_logout'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /struttura/parametro/lista:
+    get:
+      operationId: funzionalita_strutturaParametroGet
+      tags:
+        - struttura
+      description: Ritorna la lista dei parametri legati alla struttura
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      - $ref: '#/components/parameters/struttura_id'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_parametro'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /struttura:
+    get:
+      operationId: funzionalita_strutturaEstesaGet
+      tags:
+        - struttura
+      description: Ritorna la struttura estesa
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      - $ref: '#/components/parameters/struttura_id'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_struttura_estesa'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /struttura/lista:
+    get:
+      operationId: funzionalita_strutturaListaGet
+      tags:
+        - struttura
+      description: Ritorna la lista delle strutture
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      - $ref: '#/components/parameters/filter'
+      - $ref: '#/components/parameters/ruolo_ente_struttura_cod'
+      - $ref: '#/components/parameters/page_number'
+      - $ref: '#/components/parameters/row_per_page'
+      - $ref: '#/components/parameters/descending'
+      - $ref: '#/components/parameters/order_by'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_struttura'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /arpe/struttura/dettaglio:
+    get:
+      operationId: funzionalita_arpeStrutturaDettaglioGet
+      tags:
+      - arpe
+      description: Ritorna le informazioni da arpe legate alla struttura corrente
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      - name: struttura_id
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_arpe_struttura_dettaglio_esteso'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /rilevazione/compilabile/lista:
+    get:
+
+      operationId: funzionalita_rilevazione_compilabile_lista_get
+      tags:
+        - rilevazione
+      description: Ritorna la lista delle rilevazioni da compilare per struttura
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      - name: modulo_config_cod
+        in: query
+        required: true
+        schema: 
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_rilevazione_esteso'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /rilevazione/compilata/lista:
+    get:
+      operationId: funzionalita_rilevazione_compilata_lista_get
+      tags:
+        - rilevazione
+      description: Ritorna la lista delle rilevazioni compilate per struttura
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      - name: modulo_config_cod
+        in: query
+        required: true
+        schema: 
+          type: string    
+      - name: page_number
+        in: query
+        schema: 
+          type: integer
+          format: int64    
+      - name: row_per_page
+        in: query
+        schema: 
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_rilevazione_esteso'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /rilevazione/compilata/lista/csv:
+    get:
+      operationId: funzionalita_rilevazione_compilata_lista_csv_get
+      tags:
+        - rilevazione
+      description: Ritorna la lista delle rilevazioni compilate per struttura in formato csv
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/x_access_token'
+        - $ref: '#/components/parameters/modulo_config_cod'
+        - $ref: '#/components/parameters/data_rilevazione_da'
+        - $ref: '#/components/parameters/data_rilevazione_a'
+        - $ref: '#/components/parameters/struttura_categoria_cod'
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Disposition:
+              description: Il nome del file scaricato
+              schema:
+                type: string
+            Content-Length:
+              description: la lunghezza del file scaricato
+              schema:
+                type: integer
+                format: int32
+            Content-Type:
+              description: tipo di file
+              schema:
+                type: string
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /rilevazione/storico/csv:
+    get:
+      operationId: funzionalita_documentazioneStoricoCsv
+      tags:
+        - rilevazione
+      description: Ritorna un csv dello storico delle rilevazioni
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/header_x_request_id'
+        - $ref: '#/components/parameters/header_x_forwarded_for'
+        - name: tipo
+          in: query
+          schema: 
+            type: string
+        - name: data_rilevazione_da
+          in: query
+          schema: 
+            type: string
+        - name: data_rilevazione_a
+          in: query
+          schema: 
+            type: string
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Disposition:
+              description: Il nome del file scaricato
+              schema:
+                type: string
+            Content-Length:
+              description: la lunghezza del file scaricato
+              schema:
+                type: integer
+                format: int32
+            Content-Type:
+              description: tipo di file
+              schema:
+                type: string
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /rilevazione/modulo/lista:
+    get:
+      operationId: funzionalita_rilevazione_modulo_lista_get
+      tags:
+        - rilevazione
+      description: Ritorna la lista dei moduli data la rilevazione
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      - $ref: '#/components/parameters/modulo_config_gruppo_cod'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_modulo_config_ridotto'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /rilevazione:
+    post:
+      operationId: funzionalita_rilevazionePost
+      tags:
+        - rilevazione
+      description: inserisce i valori del modulo compilato associati alla rilevazione
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_modulo_rilevazione'
+      parameters: 
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      responses:
+        "201":
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_modulo_rilevazione'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /documentazione/compilabile/lista:
+    get:
+
+      operationId: funzionalita_documentazioneCompilabileListaGet
+      tags:
+        - documentazione
+      description: Ritorna la lista delle documentazioni da compilare per struttura
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      - name: modulo_config_cod
+        in: query
+        required: true
+        schema: 
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_documentazione_esteso'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /documentazione/compilata/lista:
+    get:
+      operationId: funzionalita_documentazioneCompilataListaGet
+      tags:
+        - documentazione
+      description: Ritorna la lista delle documentazioni compilate per struttura
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      - name: modulo_config_cod
+        in: query
+        required: true
+        schema: 
+          type: string    
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_documentazione_esteso'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /documentazione/modulo/lista:
+    get:
+      operationId: funzionalita_documentazioneModuloListaGet
+      tags:
+        - documentazione
+      description: Ritorna la lista dei moduli data la documentazione
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      - $ref: '#/components/parameters/modulo_config_gruppo_cod'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_modulo_config_ridotto'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /documentazione:
+    post:
+      operationId: funzionalita_documentazionePost
+      tags:
+        - documentazione
+      description: inserisce i valori del modulo compilato associati alla documentazione
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_modulo_documentazione'
+      parameters: 
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      responses:
+        "201":
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_modulo_documentazione'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /documentazione/verifica:
+    post:
+      operationId: funzionalita_documentazioneVerificaPost
+      tags:
+        - documentazione
+      description: inserisce o modifica la verifica documentazione
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_verifica_documentazione'
+      parameters: 
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      responses:
+        "201":
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_verifica_documentazione'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /ente/soggetto/lista:
+    get:
+      operationId: funzionalita_enteSoggettoListaGet
+      tags:
+      - ente
+      description: Ritorna la lista degli utenti per ente
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'  
+      - $ref: '#/components/parameters/ente_ruolo_id'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_ente_soggetto_esteso'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /ente/soggetto/ruolo/decodifica/lista:
+    get:
+      operationId: funzionalita_enteSoggettoRuoloDecodificaListaGet
+      tags:
+        - ente
+      description: Ritorna la lista dei ruoli ente soggetto validi
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'  
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_ruolo_ente_soggetto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /ente/soggetto:
+    post:
+      operationId: funzionalita_enteSoggettoPost
+      tags:
+        - ente
+      description: Inserisce o modifica l'associazione ente soggetto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_ente_soggetto'
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_ente_soggetto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /ente/soggetto/invalida:
+    post:
+      operationId: funzionalita_enteSoggettoInvalidaPost
+      tags:
+        - ente
+      description: invalida l'associazione ente soggetto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_ente_soggetto'
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_ente_soggetto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /ente/soggetto/delete:
+    post:
+      operationId: funzionalita_enteSoggettoDeletePost
+      tags:
+        - ente
+      description: cancella l'associazione ente soggetto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_ente_soggetto'
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_ente_soggetto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /ospite:
+    get:
+      operationId: funzionalita_ospiteGet
+      tags:
+      - ospite
+      description: Ritorna l'ospite by id
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      - name: soggetto_id
+        in: query
+        description: soggetto id da selezionare
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_ospite_esteso'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      operationId: funzionalita_ospitePost
+      tags:
+      - ospite
+      description: Inserisce il soggetto se gia presente torna l'oggetto soggetto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_soggetto'
+      parameters: 
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      responses:
+        "201":
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_soggetto'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /ospite/lista:
+    get:
+      operationId: funzionalita_ospiteListaGet
+      tags:
+      - ospite
+      description: Ritorna la lista degli ospiti
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      - name: filter
+        in: query
+        schema:
+          type: string
+      - name: ospite_stato_id
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: data_ingresso_da
+        in: query
+        schema:
+          type: string
+          description: data in formato yyyy-MM-dd
+      - name: data_ingresso_a
+        in: query
+        schema:
+          type: string
+          description: data in formato yyyy-MM-dd
+      - name: data_uscita_da
+        in: query
+        schema:
+          type: string
+          description: data in formato yyyy-MM-dd
+      - name: data_uscita_a
+        in: query
+        schema:
+          type: string
+          description: data in formato yyyy-MM-dd    
+      - $ref: '#/components/parameters/page_number'
+      - $ref: '#/components/parameters/row_per_page'
+      - $ref: '#/components/parameters/descending'
+      - $ref: '#/components/parameters/order_by'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_soggetto_esteso_lista'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /ospite/lista/csv:
+    get:
+      operationId: funzionalita_ospiteListaCsvGet
+      tags:
+      - ospite
+      description: Ritorna la lista degli ospiti in formato csv
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      - name: filter
+        in: query
+        schema:
+          type: string
+      - name: ospite_stato_id
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: data_ingresso_da
+        in: query
+        schema:
+          type: string
+          description: data in formato yyyy-MM-dd
+      - name: data_ingresso_a
+        in: query
+        schema:
+          type: string
+          description: data in formato yyyy-MM-dd
+      - name: data_uscita_da
+        in: query
+        schema:
+          type: string
+          description: data in formato yyyy-MM-dd
+      - name: data_uscita_a
+        in: query
+        schema:
+          type: string
+          description: data in formato yyyy-MM-dd  
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Disposition:
+              description: Il nome del file scaricato
+              schema:
+                type: string
+            Content-Length:
+              description: la lunghezza del file scaricato
+              schema:
+                type: integer
+                format: int32
+            Content-Type:
+              description: tipo di file
+              schema:
+                type: string
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /ospite/stato/lista:
+    get:
+      operationId: funzionalita_ospiteStatoListaGet
+      tags:
+      - ospite
+      description: Ritorna la lista di decodifica di ospite stato lista
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_ospite_stato'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /ospite/condizioni/lista:
+    get:
+      operationId: funzionalita_ospiteCondizioniListaGet
+      tags:
+      - ospite
+      description: Ritorna la lista di decodifica di ospite condizioni
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_ospite_condizioni'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /ospite/movimento/tipo/lista:
+    get:
+      operationId: funzionalita_ospiteMovimentoTipoListaGet
+      tags:
+      - movimento
+      description: Ritorna la lista di decodifica degli ospite movimento tipo
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_ospite_movimento_tipo_esteso'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /ospite/movimento/{id}:
+    delete:
+      operationId: funzionalita_ospiteMovimentoDelete
+      tags:
+      - movimento
+      description: cancella il movimento dell'ospite
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/x_access_token'
+        - name: id
+          in: path
+          description: ID della risorsa da eliminare
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '204':
+          description: Risorsa eliminata con successo
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /pratiche/parametro/lista:
+    get:
+      operationId: funzionalita_praticheParametroGet
+      tags:
+        - pratica
+      description: Ritorna la lista dei parametri legati alla pratica
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      - $ref: '#/components/parameters/struttura_id'
+      - $ref: '#/components/parameters/code'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_parametro'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /pratiche/pratica:
+    get:
+      operationId: funzionalita_praticaGet
+      tags:
+        - pratica
+      description: Ritorna la pratica
+      parameters:
+        - $ref: '#/components/parameters/x_access_token'
+        - $ref: '#/components/parameters/pratica_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_pratica_estesa'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      operationId: funzionalita_praticaPost
+      tags:
+      - pratica
+      description: Inserisce una pratica
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_pratica_for_post'
+      parameters: 
+      - $ref: '#/components/parameters/x_access_token'
+      responses:
+        "201":
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_pratica_estesa'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /pratiche/pratica/zip:
+    get:
+      operationId: funzionalita_praticaZipGet
+      tags:
+        - pratica
+      description: Crea un pacchetto di file per le pratiche
+      parameters:
+        - $ref: '#/components/parameters/x_access_token'
+        - $ref: '#/components/parameters/pratica_id'
+        - $ref: '#/components/parameters/filtro_data'
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Disposition:
+              description: Il nome del file scaricato
+              schema:
+                type: string
+            Content-Length:
+              description: la lunghezza del file scaricato
+              schema:
+                type: integer
+                format: int32
+            Content-Type:
+              description: tipo di file
+              schema:
+                type: string
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /pratiche/pratica/dettaglio/modulo:
+    post:
+      operationId: funzionalita_praticaDettaglioModuloPost
+      tags:
+      - pratica
+      description: Modifica il modulo in una pratica
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_pratica_for_post'
+      parameters: 
+      - $ref: '#/components/parameters/x_access_token'
+      responses:
+        "201":
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_pratica_estesa'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /ospite/movimento:
+    post:
+      operationId: funzionalita_ospiteMovimentoPost
+      tags:
+      - movimento
+      description: Inserisce il movimento dell'ospite
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_ospite_movimento_post'
+      parameters: 
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      responses:
+        "201":
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_ospite_movimento'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /pratiche/pratica/dettaglio/scadenze:
+    get:
+      operationId: funzionalita_praticaDettaglioScadenzeGet
+      tags:
+        - pratica
+      description: Ritorna la pratica dettaglio scadenze
+      parameters:
+        - $ref: '#/components/parameters/x_access_token'
+        - $ref: '#/components/parameters/data_da'
+        - $ref: '#/components/parameters/data_a'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_pratica_scadenza'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratiche/pratica/tipo/lista:
+    get:
+      operationId: funzionalita_praticaTipoListaGet
+      tags:
+        - pratica
+      description: Ritorna la decodifica del pratica tipo
+      parameters:
+        - $ref: '#/components/parameters/x_access_token'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_pratica_tipo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /pratiche/pratica/azione:
+    get:
+      operationId: funzionalita_praticaAzioneGet
+      tags:
+        - pratica
+      description: Ritorna la lista delle azioni possibili
+      parameters:
+        - $ref: '#/components/parameters/x_access_token'
+        - $ref: '#/components/parameters/pratica_tipo_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_azioni_estese'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratiche/pratica/lista:
+    get:
+      operationId: funzionalita_praticaListaGet
+      tags:
+        - pratica
+      description: Ritorna la lista delle pratiche
+      parameters:
+        - $ref: '#/components/parameters/x_access_token'
+        - $ref: '#/components/parameters/tipo_pratica_id'
+        - $ref: '#/components/parameters/stato_pratica_id'
+        - $ref: '#/components/parameters/tipo_prescrizione_id'
+        - $ref: '#/components/parameters/stato_prescrizione_id'
+        - $ref: '#/components/parameters/data_apertura_prescrizione_da'
+        - $ref: '#/components/parameters/data_apertura_prescrizione_a'
+        - $ref: '#/components/parameters/data_chiusura_prescrizione_da'
+        - $ref: '#/components/parameters/data_chiusura_prescrizione_a'
+        - $ref: '#/components/parameters/tipo_appuntamento_id'
+        - $ref: '#/components/parameters/stato_appuntamento_id'
+        - $ref: '#/components/parameters/data_inizio_appuntamento_da'
+        - $ref: '#/components/parameters/data_inizio_appuntamento_a'
+        - $ref: '#/components/parameters/data_fine_appuntamento_da'
+        - $ref: '#/components/parameters/data_fine_appuntamento_a'
+        - $ref: '#/components/parameters/data_pratica_apertura_da'
+        - $ref: '#/components/parameters/data_pratica_apertura_a'
+        - $ref: '#/components/parameters/data_pratica_chiusura_da'
+        - $ref: '#/components/parameters/data_pratica_chiusura_a'
+        - $ref: '#/components/parameters/page_number'
+        - $ref: '#/components/parameters/row_per_page'
+        - $ref: '#/components/parameters/descending'
+        - $ref: '#/components/parameters/order_by'
+        - $ref: '#/components/parameters/filter_struttura'
+        - $ref: '#/components/parameters/filter_utente'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_pratica_estesa_list'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratiche/pratica/stato/lista:
+    get:
+      operationId: funzionalita_praticaStatoGet
+      tags:
+        - pratica
+      description: Ritorna la decodifica del pratica stato
+      parameters:
+        - $ref: '#/components/parameters/x_access_token'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_pratica_stato'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratiche/pratica/inseribili/lista:
+    get:
+      operationId: funzionalita_praticaInseribilieGet
+      tags:
+        - pratica
+      description: Ritorna le pratiche inseribili
+      parameters:
+        - $ref: '#/components/parameters/x_access_token'
+        - $ref: '#/components/parameters/pratica_tipo_id'
+        - $ref: '#/components/parameters/struttura_tipo_id'
+        - $ref: '#/components/parameters/data_chiusura_max'
+        - $ref: '#/components/parameters/filter_struttura'  
+        - $ref: '#/components/parameters/page_number'
+        - $ref: '#/components/parameters/row_per_page'
+        - $ref: '#/components/parameters/descending'
+        - $ref: '#/components/parameters/order_by'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_pratica_ridotta_estesa'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratiche/prescrizione/tipo/lista:
+    get:
+      operationId: funzionalita_prescrizioneTipoListaGet
+      tags:
+        - prescrizione
+      description: Ritorna la decodifica della prescrizione tipo
+      parameters:
+        - $ref: '#/components/parameters/x_access_token'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_prescrizione_tipo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratiche/prescrizione/stato/lista:
+    get:
+      operationId: funzionalita_prescrizioneStatoGet
+      tags:
+        - prescrizione
+      description: Ritorna la decodifica della prescrizione stato
+      parameters:
+        - $ref: '#/components/parameters/x_access_token'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_prescrizione_stato'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratiche/appuntamento/tipo/lista:
+    get:
+      operationId: funzionalita_appuntamentoTipoListaGet
+      tags:
+        - appuntamento
+      description: Ritorna la decodifica dell appuntamento tipo
+      parameters:
+        - $ref: '#/components/parameters/x_access_token'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_appuntamento_tipo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratiche/appuntamento/stato/lista:
+    get:
+      operationId: funzionalita_appuntamentoStatoGet
+      tags:
+        - appuntamento
+      description: Ritorna la decodifica dell appuntamento stato
+      parameters:
+        - $ref: '#/components/parameters/x_access_token'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_appuntamento_stato'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratiche/nuovapratica/struttura/tipo/lista:
+    get:
+      operationId: funzionalita_nuovapraticaStrutturaTipoListaGet
+      tags:
+        - nuovapratica
+      description: Ritorna la lista di struttura tipo filtrata per ente tipo id
+      parameters:
+        - $ref: '#/components/parameters/x_access_token'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_struttura_tipo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratiche/nuovapratica/pratica/tipo/lista:
+    get:
+      operationId: funzionalita_nuovapraticaPraticaTipoListaGet
+      tags:
+        - nuovapratica
+      description: Ritorna le pratiche tipo filtrate per ente tipo id
+      parameters:
+        - $ref: '#/components/parameters/x_access_token'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_pratica_tipo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratiche/appuntamento/soggetto/lista:
+    get:
+      operationId: funzionalita_appuntamentoSoggettoListaGet
+      tags:
+        - pratica
+      description: lista appuntamento soggetto dato appuntamento
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      - $ref: '#/components/parameters/appuntamento_id'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_appuntamento_soggetto_esteso'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /pratiche/appuntamento/soggetto/ruolo/decodifica/lista:
+    get:
+      operationId: funzionalita_appuntamentoSoggettoRuoloDecodificaListaGet
+      tags:
+        - pratica
+      description: Ritorna la lista dei ruoli appuntamento soggetto
+      parameters:
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_ruolo_appuntamento_soggetto'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /pratiche/appuntamento/soggetto/delete:
+    post:
+      operationId: funzionalita_appuntamentoSoggettoDeletePost
+      tags:
+      - pratica
+      description: delete logica su appuntamento soggetto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_appuntamento_soggetto'
+      parameters: 
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      responses:
+        "201":
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_appuntamento_soggetto'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /pratiche/appuntamento/soggetto:
+    post:
+      operationId: funzionalita_appuntamentoSoggettoPost
+      tags:
+      - pratica
+      description: insert su appuntamento soggetto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_appuntamento_soggetto'
+      parameters: 
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/x_access_token'
+      responses:
+        "201":
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_appuntamento_soggetto'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /pratiche/pratica/requisiti/lista:
+    get:
+      operationId: funzionalita_praticaRequisitiListaGet
+      tags:
+        - pratica
+      description: Ritorna la lista dei requisiti 
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/x_access_token'
+        - $ref: '#/components/parameters/pratica_id'
+        - $ref: '#/components/parameters/prescrizione_id'
+        - $ref: '#/components/parameters/pratica_det_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_checklist_req_esteso'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratiche/pratica/requisiti:
+    get:
+      operationId: funzionalita_praticaRequisitiGet
+      tags:
+        - pratica
+      description: Ritorna il requisito specifico 
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/x_access_token'
+        - $ref: '#/components/parameters/pratica_id'
+        - $ref: '#/components/parameters/prescrizione_id'
+        - $ref: '#/components/parameters/pratica_det_id'
+        - $ref: '#/components/parameters/clreq_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_pratica_requisiti'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      operationId: funzionalita_praticaRequisitiPost
+      tags:
+        - pratica
+      description: Inserisce modifica la associazione fra pratica e requisiti
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_pratica_clreq_post'
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/x_access_token'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_pratica_clreq_post'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratiche/pratica/dettaglio/requisiti/lista:
+    get:
+      operationId: funzionalita_praticaDettaglioRequisitiListaGet
+      tags:
+        - pratica
+      description: Ritorna la lista delle pratica dettaglio requisiti
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/x_access_token'
+        - $ref: '#/components/parameters/pratica_det_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_pratica_dettaglio_clreq_esteso'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratiche/pratica/requisiti/esito/lista:
+    get:
+      operationId: funzionalita_praticaRequisitiEsitoListaGet
+      tags:
+        - pratica
+      description: Ritorna la decodifica degli esito requisiti
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/x_access_token'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_clreq_esito'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratiche/pratica/dettaglio/requisiti:
+    post:
+      operationId: funzionalita_praticaDettaglioRequisitiPost
+      tags:
+        - pratica
+      description: Inserisce modifica la associazione fra pratica dettaglio e requisiti
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_pratica_dettaglio_clreq_esteso'
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/x_access_token'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_pratica_dettaglio_clreq_esteso'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pratiche/pratica/dettaglio/requisiti/delete:
+    post:
+      operationId: funzionalita_praticaDettaglioRequisitiDeletePost
+      tags:
+        - pratica
+      description: rimuove la associazione fra pratica dettaglio e requisiti
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_pratica_dettaglio_clreq'
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/x_access_token'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_pratica_dettaglio_clreq'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /notifica/gestione/documentale:
+    post:
+      operationId: funzionalita_notificaGestioneDocumentalePost
+      tags:
+        - notifica
+      description: aggiunge notifica per gestione documentale
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_notifica'
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/x_access_token'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_notifica'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+  parameters:
+    header_content_type:
+      description: MIME Type del file che viene caricato come allegato
+      name: Content-Type
+      in: header
+      schema:
+        type: string
+        enum:
+          - document/pdf
+          - image/jpeg
+          - image/png 
+    header_shib_identita_codice_fiscale:
+      description: Contiene il codice fiscale dell utente loggato ottenuto tramite shibboleth
+      name: Shib-Identita-CodiceFiscale
+      in: header
+      schema:
+        type: string 
+        default: AAAAAA00A11L000T 
+      required: true
+    header_x_request_id:
+      description: Contiene un id univoco (`uuid v4`) della chiamata HTTP che viene generato dal front-end, viene propagato agli strati successivi e viene restituito al front-end assieme alla response, permettendo così di tracciare l intero ciclo di vita della richiesta
+      in: header
+      name: X-Request-Id      
+      schema:
+        type: string
+      required: true
+    header_x_forwarded_for:
+      description: Contiene un elenco degli ip che hanno gestito la richiesta.Utile per log e audit.Il formato della stringa è <ip-front-end>, <ip-primo-server>, ..., <ip-ultimo-server> Es. `10.10.10.10, 10.38.45.68, 10.128.69.244`
+      in: header
+      name: X-Forwarded-For      
+      schema:
+        type: string
+      required: true
+    struttura_id:
+      description: Contiene l'id della struttura
+      in: query
+      name: struttura_id
+      schema:
+        type: integer
+        format: int32
+    code:
+      description: Contiene un codice
+      in: query
+      name: code
+      schema:
+        type: string
+    header_x_codice_servizio:
+      in: header
+      name: X-Codice-Servizio    
+      description: Contiene una stringa identificativa del servizio chiamante (es.COD)
+      schema:
+        type: string
+      required: true
+    x_access_token:
+      in: header
+      name: x-access-token    
+      description: Contiene il jwt con le informazioni elgate al profilo
+      schema:
+        type: string
+        default: '{{jwtToken}}'
+      required: true
+    tipo_pratica_id:
+      description: Contiene l'id del tipo pratica
+      in: query
+      name: tipo_pratica_id
+      schema:
+        type: integer
+        format: int32
+    stato_pratica_id:
+      description: Contiene l'id dello stato pratica
+      in: query
+      name: stato_pratica_id
+      schema:
+        type: integer
+        format: int32
+    tipo_prescrizione_id:
+      description: Contiene l'id del tipo pratica
+      in: query
+      name: tipo_prescrizione_id
+      schema:
+        type: integer
+        format: int32
+    stato_prescrizione_id:
+      description: Contiene l'id dello stato pratica
+      in: query
+      name: stato_prescrizione_id
+      schema:
+        type: integer
+        format: int32
+    tipo_appuntamento_id:
+      description: Contiene l'id del tipo appuntamento
+      in: query
+      name: tipo_appuntamento_id
+      schema:
+        type: integer
+        format: int32
+    stato_appuntamento_id:
+      description: Contiene l'id dello stato appuntamento
+      in: query
+      name: stato_appuntamento_id
+      schema:
+        type: integer
+        format: int32
+    data_apertura_prescrizione_da:
+      description: Contiene la data prescrizione da 
+      in: query
+      name: data_apertura_prescrizione_da
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd HH:mm:ss
+    data_apertura_prescrizione_a:
+      description: Contiene la data prescrizione a
+      in: query
+      name: data_apertura_prescrizione_a
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd HH:mm:ss
+    data_chiusura_prescrizione_da:
+      description: Contiene la data chiusura prescrizione da
+      in: query
+      name: data_chiusura_prescrizione_da
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd HH:mm:ss
+    data_chiusura_prescrizione_a:
+      description: Contiene la data chiusura prescrizione a
+      in: query
+      name: data_chiusura_prescrizione_a
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd HH:mm:ss
+    data_inizio_appuntamento_da:
+      description: Contiene la data inizio appuntamento da
+      in: query
+      name: data_inizio_appuntamento_da
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd HH:mm:ss
+    data_inizio_appuntamento_a:
+      description: Contiene la data inizio appuntamento a
+      in: query
+      name: data_inizio_appuntamento_a
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd HH:mm:ss
+    data_fine_appuntamento_da:
+      description: Contiene la data fine appuntamento da
+      in: query
+      name: data_fine_appuntamento_da
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd HH:mm:ss
+    data_fine_appuntamento_a:
+      description: Contiene la data fine appuntamento a
+      in: query
+      name: data_fine_appuntamento_a
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd HH:mm:ss
+    data_pratica_apertura_da:
+      description: Contiene la pratica apertura da
+      in: query
+      name: data_pratica_apertura_da
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd HH:mm:ss
+    data_pratica_apertura_a:
+      description: Contiene la data pratica apetrtura a
+      in: query
+      name: data_pratica_apertura_a
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd HH:mm:ss
+    data_pratica_chiusura_da:
+      description: Contiene la data pratica chuiusura da
+      in: query
+      name: data_pratica_chiusura_da
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd HH:mm:ss
+    data_pratica_chiusura_a:
+      description: Contiene la data pratica chuiusura a
+      in: query
+      name: data_pratica_chiusura_a
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd HH:mm:ss
+    ruolo_ente_struttura_cod:
+      in: query
+      name: ruolo_ente_struttura_cod
+      schema:
+        type: string
+    filter:
+      in: query
+      name: filter
+      schema:
+        type: string
+    page_number:
+      description: numero di pagine per paginazione
+      in: query
+      name: page_number
+      schema:
+        type: integer
+        default: 1
+        format: int64
+    row_per_page:
+      description: righe per pagina per paginazione
+      in: query
+      name: row_per_page
+      schema:
+        type: integer
+        default: 10
+        format: int64
+    descending:
+      description: ordinamento direzione per paginazione
+      in: query
+      name: descending
+      schema: 
+        default: true
+        type: boolean
+    order_by:
+      description: chiave ordinamento per paginazione
+      in: query
+      name: order_by
+      schema: 
+        default: 1
+        type: string
+    modulo_config_gruppo_cod:
+      description: Contiene il modulo config gruppo cod 
+      in: query
+      name: modulo_config_gruppo_cod
+      required: true
+      schema:
+        type: string
+    pratica_id:
+      in: query
+      name: pratica_id
+      schema:
+        type: integer
+        format: int32
+    filtro_data:
+      in: query
+      name: filtro_data
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd
+    appuntamento_id:
+      in: query
+      name: appuntamento_id
+      schema:
+        type: integer
+        format: int32
+    prescrizione_id:
+      in: query
+      name: prescrizione_id
+      schema:
+        type: integer
+        format: int32
+    pratica_det_id:
+      in: query
+      name: pratica_det_id
+      schema:
+        type: integer
+        format: int32
+    clreq_id:
+      in: query
+      name: clreq_id
+      schema:
+        type: integer
+        format: int32
+    pratica_tipo_id:
+      in: query
+      name: pratica_tipo_id
+      schema:
+        type: integer
+        format: int32
+    struttura_tipo_id:
+      in: query
+      name: struttura_tipo_id
+      schema:
+        type: integer
+        format: int32
+    data_chiusura_max:
+      description: Contiene una data con formato yyyy-MM-dd
+      in: query
+      name: data_chiusura_max
+      schema:
+        type: string
+    filter_struttura:
+      description: filtro per struttura
+      in: query
+      name: filter_struttura
+      schema:
+        type: string
+    filter_utente:
+      description: filtro per utente
+      in: query
+      name: filter_utente
+      schema:
+        type: string
+    modulo_config_cod:
+      description: Contiene il modulo config cod 
+      in: query
+      name: modulo_config_cod
+      required: true
+      schema:
+        type: string
+    data_rilevazione_da:
+      description: data in formato yyyy-MM-dd 
+      in: query
+      name: data_rilevazione_da
+      schema:
+        type: string
+    data_rilevazione_a:
+      description: data in formato yyyy-MM-dd 
+      in: query
+      name: data_rilevazione_a
+      schema:
+        type: string
+    data_da:
+      description: Contiene una data
+      in: query
+      name: data_da
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd
+    data_a:
+      description: Contiene una data
+      in: query
+      name: data_a
+      schema:
+        type: string
+        description: data in formato yyyy-MM-dd
+    struttura_categoria_cod:
+      description: Contiene il cod della struttura categoria 
+      in: query
+      name: struttura_categoria_cod
+      schema:
+        type: string
+    ente_ruolo_id:
+      in: query
+      name: ente_ruolo_id
+      schema:
+        type: integer
+        format: int32
+  responses:
+    BadRequest:
+      description: La richiesta fatta dal client è errata.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errore'
+    Forbidden:
+      description: La richiesta fatta dal client è errata.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errore'
+      headers:
+        X-Request-ID:
+          description: Ritorno del parametro ricevuto nella request.
+          schema:
+            type: string           
+    NotFound:
+      description: La richiesta fatta dal client errata.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errore'
+      headers:
+        X-Request-ID:
+          description: Ritorno del parametro ricevuto nella request.
+          schema:
+            type: string
+    InternalServerError:
+      description: La richiesta fatta dal client errata.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errore'
+      headers:
+        X-Request-ID:
+          description: Ritorno del parametro ricevuto nella request.
+          schema:
+            type: string
+
+  schemas:
+    model_clreq_esito:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model esito clreq
+          properties:
+            clreqEsitoId:
+              type: integer
+              format: int32
+            clreqEsitoCod:
+              type: string
+            clreqEsitoDesc:
+              type: string
+            clreqEsitoOrd:
+              type: string
+    model_pratica_dettaglio_clreq_esteso:
+      allOf:
+        - $ref: '#/components/schemas/model_pratica_dettaglio_clreq'
+        - type: object
+          title: Model pratica dettaglio clreq estesa
+          properties:
+            checklistReq:
+              $ref: '#/components/schemas/model_checklist_req'
+            clreqEsito:
+              $ref: '#/components/schemas/model_clreq_esito'
+            moduloCompilato:
+              $ref: '#/components/schemas/model_modulo_post'
+    model_pratica_dettaglio_clreq:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model pratica dettaglio clreq
+          properties:
+            praticaDetClreqId:
+              type: integer
+              format: int32
+            praticaDetId:
+              type: integer
+              format: int32
+            clreqId:
+              type: integer
+              format: int32
+            clreqEsitoId:
+              type: integer
+              format: int32
+            moduloCompilatoId:
+              type: integer
+              format: int32
+            note:
+              type: string
+    model_pratica_clreq_post:
+      allOf:
+        - $ref: '#/components/schemas/model_pratica_clreq'
+        - type: object
+          title: Model pratica clreq for post
+          properties:
+            clreqList:
+              type: array
+              items:
+                type: integer
+                format: int32
+    model_pratica_clreq:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model pratica clreq
+          properties:
+            praticaClreqId:
+              type: integer
+              format: int32
+            praticaId:
+              type: integer
+              format: int32
+            prescrizioneId:
+              type: integer
+              format: int32
+            appuntamentoId:
+              type: integer
+              format: int32
+            clreqId:
+              type: integer
+              format: int32
+    model_checklist_req:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model checklist req
+          properties:
+            clreqId:
+              type: integer
+              format: int32
+            clreqCod:
+              type: string
+            clreqDesc:
+              type: string
+            clreqOrd:
+              type: string
+            clreqHint:
+              type: string
+            clreqIdPadre:
+              type: integer
+              format: int32
+            moduloId:
+              type: integer
+              format: int32
+    model_pratica_requisiti:
+      type: object
+      title: model get pratica requisiti
+      properties:
+        clreqId:
+          type: integer
+          format: int32
+        praticaDetId:
+          type: integer
+          format: int32
+        dataoraAzione:
+          type: string
+          format: date
+        azioneDesc:
+          type: string
+        clreqEsitoId:
+          type: integer
+          format: int32
+        clreqEsitoCod:
+          type: string
+        clreqEsitoDesc:
+          type: string
+        moduloCompilatoId:
+          type: integer
+          format: int32
+        note:
+          type: string
+        prescrizioneId:
+          type: integer
+          format: int32
+        prescrizioneTipoId:
+          type: integer
+          format: int32
+        prescrizioneNumero:
+          type: string
+        prescrizioneTipoDesc:
+          type: string
+        appuntamentoId:
+          type: integer
+          format: int32
+        appuntamentoTipoId:
+          type: integer
+          format: int32
+        appuntamentoNumero:
+          type: string
+        appuntamentoTipoDesc:
+          type: string
+        flgModificabile:
+          type: boolean
+    model_checklist_req_esteso:
+      allOf:
+        - $ref: '#/components/schemas/model_checklist_req'
+        - type: object
+          title: Model checklist req
+          properties:
+            flgSelezionato:
+              type: boolean
+            flgSelezionabile:
+              type: boolean
+            flgConforme:
+              type: boolean
+    model_pratica_ridotta_estesa:
+      allOf:
+        - $ref: '#/components/schemas/model_pratica'
+        - type: object
+          title: Model pratica estesa
+          properties:
+            praticaTipo:
+              $ref: '#/components/schemas/model_pratica_tipo'
+            azioneIniziale:
+              $ref: '#/components/schemas/model_azione_estesa'
+            ente:
+              $ref: '#/components/schemas/model_ente'
+            struttura:
+              $ref: '#/components/schemas/model_struttura'
+            moduloId:
+              type: integer
+              format: int32
+    model_pratica_dettaglio_esteso:
+      allOf:
+        - $ref: '#/components/schemas/model_pratica_dettaglio'
+        - type: object
+          title: Model pratica dettaglo estesa
+          properties:
+            pratica:
+              $ref: '#/components/schemas/model_pratica'
+            struttura:
+              $ref: '#/components/schemas/model_struttura'
+    model_pratica_dettaglio:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model pratica 
+          properties:
+            praticaDetId:
+              type: integer
+              format: int32
+            praticaId:
+              type: integer
+              format: int32
+            praticaStatoId:
+              type: integer
+              format: int32
+            prescrizioneId:
+              type: integer
+              format: int32
+            prescrizioneStatoId:
+              type: integer
+              format: int32
+            appuntamentoId:
+              type: integer
+              format: int32
+            appuntamentoStatoId:
+              type: integer
+              format: int32
+            azioneId:
+              type: integer
+              format: int32
+            dataoraAzione:
+              type: string
+              format: date
+            moduloCompilatoId:
+              type: integer
+              format: int32
+            note:
+              type: string
+            profiloId:
+              type: integer
+              format: int32
+            flgScadenza:
+              type: string
+            profiloIdScadenza:
+              type: integer
+              format: int32
+    model_pratica:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model pratica 
+          properties:
+            praticaId:
+              type: integer
+              format: int32
+            praticaTipoId:
+              type: integer
+              format: int32
+            enteId:
+              type: integer
+              format: int32
+            strutturaId:
+              type: integer
+              format: int32
+            dataoraApertura:
+              type: string
+              format: date
+            dataoraChiusura:
+              type: string
+              format: date
+            praticaNumero:
+              type: string
+    model_azioni_estese:
+      type: object
+      title: Model generico
+      properties:
+        pratica:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_azione_estesa'
+        prescrizione:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_azione_estesa'
+        appuntamento:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_azione_estesa'
+    model_azione_estesa:
+      allOf:
+        - $ref: '#/components/schemas/model_azione'
+        - type: object
+          title: Model pratica 
+          properties:
+            prescrizioneTipoId:
+              type: integer
+              format: int32
+            appuntamentoTipoId:
+              type: integer
+              format: int32
+            azioneInizialePrescrizione:
+              type: boolean
+            azioneInizialeAppuntamento:
+              type: boolean
+            azioneInizialePratica:
+              type: boolean
+            moduloId:
+              type: integer
+              format: int32
+            statoIdLista:
+              type: array
+              items:
+                type: integer
+                format: int32
+    model_pratica_estesa_list:
+      allOf:
+        - $ref: '#/components/schemas/model_pratica'
+        - type: object
+          title: Model pratica estesa
+          properties:
+            appuntamenti:
+              type: array
+              items:
+                $ref: '#/components/schemas/model_appuntamento_esteso'
+            prescrizioni:
+              type: array
+              items:
+                $ref: '#/components/schemas/model_prescrizione_esteso'
+    model_prescrizione:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model prescrizione 
+          properties:
+            prescrizioneId:
+              type: integer
+              format: int32
+            prescrizioneTipoId:
+              type: integer
+              format: int32
+            praticaId:
+              type: integer
+              format: int32
+            dataoraApertura:
+              type: string
+              format: date
+            dataoraChiusura:
+              type: string
+              format: date
+            prescrizioneNumero:
+              type: string
+    model_prescrizione_esteso:
+      allOf:
+        - $ref: '#/components/schemas/model_prescrizione'
+        - type: object
+          title: Model prescrizione esteso 
+          properties:
+            prescrizioneStato:
+              $ref: '#/components/schemas/model_prescrizione_stato'
+            prescrizioneTipo:
+              $ref: '#/components/schemas/model_prescrizione_tipo'
+            azioneDesc:
+              type: string
+            moduloId:
+              type: integer
+              format: int32
+    model_appuntamento:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model appuntamento 
+          properties:
+            appuntamentoId:
+              type: integer
+              format: int32
+            appuntamentoTipoId:
+              type: integer
+              format: int32
+            praticaId:
+              type: integer
+              format: int32
+            dataoraInizio:
+              type: string
+              format: date
+            dataoraFine:
+              type: string
+              format: date
+            dataoraApertura:
+              type: string
+              format: date
+            dataoraChiusura:
+              type: string
+              format: date
+            appuntamentoNumero:
+              type: string
+    model_appuntamento_esteso:
+      allOf:
+        - $ref: '#/components/schemas/model_appuntamento'
+        - type: object
+          title: Model appuntamento esteso 
+          properties:
+            appuntamentoStato:
+              $ref: '#/components/schemas/model_appuntamento_stato'
+            appuntamentoTipo:
+              $ref: '#/components/schemas/model_appuntamento_tipo'
+            azioneDesc:
+              type: string
+    model_pratica_for_post:
+      allOf:
+        - $ref: '#/components/schemas/model_pratica'
+        - type: object
+          title: Model prescrizione esteso 
+          properties:
+            moduloCompilato:
+              $ref: '#/components/schemas/model_modulo_post'
+            praticaDettaglio:
+              $ref: '#/components/schemas/model_pratica_dettaglio_post'
+    model_pratica_post:
+      allOf:
+        - $ref: '#/components/schemas/model_pratica_for_post'
+        - type: object
+          title: Model prescrizione esteso 
+          properties:
+            moduloCompilato:
+              $ref: '#/components/schemas/model_modulo_post'
+            appuntamenti:
+              type: array
+              items:
+                $ref: '#/components/schemas/model_appuntamento_esteso'
+            prescrizioni:
+              type: array
+              items:
+                $ref: '#/components/schemas/model_prescrizione_esteso'
+            attivita:
+              type: array
+              items:
+                $ref: '#/components/schemas/model_pratica_dettaglio_estesa_pratica'
+            tipo:
+              $ref: '#/components/schemas/model_pratica_tipo'
+            struttura:
+              $ref: '#/components/schemas/model_struttura_estesa'
+            ente:
+              $ref: '#/components/schemas/model_ente_esteso'
+    model_pratica_dettaglio_post:
+      allOf:
+        - $ref: '#/components/schemas/model_pratica_dettaglio'
+        - type: object
+          title: Model pratica 
+          properties:
+            dataoraInizio:
+              type: string
+              format: date
+            dataoraFine:
+              type: string
+              format: date
+            prescrizioneNumero:
+              type: string
+            appuntamentoNumero:
+              type: string
+    model_pratica_estesa:
+      allOf:
+        - $ref: '#/components/schemas/model_pratica'
+        - type: object
+          title: Model pratica estesa
+          properties:
+            praticaDettaglio:
+              $ref: '#/components/schemas/model_pratica_dettaglio'
+            moduloCompilato:
+              $ref: '#/components/schemas/model_modulo_post'
+            appuntamenti:
+              type: array
+              items:
+                $ref: '#/components/schemas/model_appuntamento_esteso'
+            prescrizioni:
+              type: array
+              items:
+                $ref: '#/components/schemas/model_prescrizione_esteso'
+            attivita:
+              type: array
+              items:
+                $ref: '#/components/schemas/model_pratica_dettaglio_estesa_pratica'
+            tipo:
+              $ref: '#/components/schemas/model_pratica_tipo'
+            moduloId:
+              type: integer
+              format: int32
+            moduloCompilatoId:
+              type: integer
+              format: int32
+            struttura:
+              $ref: '#/components/schemas/model_struttura_estesa'
+            ente:
+              $ref: '#/components/schemas/model_ente_esteso'
+    model_pratica_dettaglio_estesa_pratica:
+      allOf:
+        - $ref: '#/components/schemas/model_pratica_dettaglio'
+        - type: object
+          title: Model pratica dettaglo estesa
+          properties:
+            praticaStato:
+              $ref: '#/components/schemas/model_pratica_stato'
+            appuntamentoStato:
+              $ref: '#/components/schemas/model_appuntamento_stato'
+            prescrizioneStato:
+              $ref: '#/components/schemas/model_prescrizione_stato'
+            azioneDesc:
+              type: string
+            moduloId:
+              type: integer
+              format: int32
+            flgClreqEsito:
+              type: boolean
+            flgBloccato:
+              type: boolean
+    model_azione:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model azione
+          properties:
+            azioneId:
+              type: integer
+              format: int32
+            azioneCod:
+              type: string
+            azioneDesc:
+              type: string
+    model_pratica_tipo:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model pratica tipo
+          properties:
+            praticaTipoId:
+              type: integer
+              format: int32
+            praticaTipoCod:
+              type: string
+            praticaTipoDesc:
+              type: string
+    model_pratica_stato:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model pratica tipo
+          properties:
+            praticaStatoId:
+              type: integer
+              format: int32
+            praticaStatoCod:
+              type: string
+            praticaStatoDesc:
+              type: string
+            praticaStatoFinale:
+              type: boolean
+    model_prescrizione_tipo:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model prescrizione tipo
+          properties:
+            prescrizioneTipoId:
+              type: integer
+              format: int32
+            prescrizioneTipoCod:
+              type: string
+            prescrizioneTipoDesc:
+              type: string
+    model_prescrizione_stato:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model prescrizione stato
+          properties:
+            prescrizioneStatoId:
+              type: integer
+              format: int32
+            prescrizioneStatoCod:
+              type: string
+            prescrizioneStatoDesc:
+              type: string
+            prescrizioneStatoFinale:
+              type: boolean
+    model_appuntamento_tipo:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model appuntamento tipo
+          properties:
+            appuntamentoTipoId:
+              type: integer
+              format: int32
+            appuntamentoTipoCod:
+              type: string
+            appuntamentoTipoDesc:
+              type: string
+    model_appuntamento_stato:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model appuntamento stato
+          properties:
+            appuntamentoStatoId:
+              type: integer
+              format: int32
+            appuntamentoStatoCod:
+              type: string
+            appuntamentoStatoDesc:
+              type: string
+            appuntamentoStatoFinale:
+              type: boolean
+    model_natura:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: 'Model natura'
+        properties:
+          strutturaNaturaId:
+            type: integer
+            format: int32
+          strutturaNaturaCod:
+            type: string
+          strutturaNaturaCodArpe:
+            type: string
+          strutturaNaturaDesc:
+            type: string
+    model_ente_soggetto:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model ente soggetto
+          properties:
+            enteSoggId:
+              type: integer
+              format: int32
+            enteId:
+              type: integer
+              format: int32
+            soggettoId:
+              type: integer
+              format: int32
+            ruoloEnteSoggettoId:
+              type: integer
+              format: int32
+    model_ente_soggetto_esteso:
+      allOf:
+        - $ref: '#/components/schemas/model_ente_soggetto'
+        - type: object
+          title: Model ente soggetto esteso
+          properties:
+            ruoloEnteSoggetto:
+              $ref: '#/components/schemas/model_ruolo_ente_soggetto'
+            soggetto:
+              $ref: '#/components/schemas/model_soggetto'
+    model_ruolo_ente_soggetto:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model ente soggetto
+          properties:
+            ruoloEnteSoggettoId:
+              type: integer
+              format: int32
+            ruoloEnteSoggettoCod:
+              type: string
+            ruoloEnteSoggettoDesc:
+              type: string
+    model_file:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: 'Model file'
+        properties:
+          fileId:
+            type: integer
+            format: int32
+          fileTipoId:
+            type: integer
+            format: int32
+          fileName:
+            type: string
+          fileSize:
+            type: integer
+            format: int32
+          fileContentType:
+            type: string
+          filePath:
+            type: string
+          cfFirmaVerificata:
+            type: string
+    model_file_post_bff:
+      type: object
+      title: 'Model file post bff'
+      properties:
+        base64File:
+          type: string
+        fileTipoId:
+          type: integer
+          format: int32
+        fileContentTypeId:
+          type: integer
+          format: int32
+        fileName:
+          type: string
+        enteId:
+          type: integer
+          format: int32
+        strutturaId:
+          type: integer
+          format: int32
+        soggettoId:
+          type: integer
+          format: int32
+    model_modulo_rilevazione:
+      type: object
+      title: 'Model modulo rilevazione'
+      properties:
+        rilevazione:
+          $ref: '#/components/schemas/model_rilevazione'
+        moduloCompilato:
+          $ref: '#/components/schemas/model_modulo_post'
+    model_modulo_documentazione:
+      type: object
+      title: 'Model modulo documentazione'
+      properties:
+        documentazione:
+          $ref: '#/components/schemas/model_documentazione'
+        moduloCompilato:
+          $ref: '#/components/schemas/model_modulo_post'
+    model_modulo_post:
+      type: object
+      title: 'Model modulo post'
+      properties:
+        moduloCompilatoId:
+          type: integer
+          format: int32
+        note:
+          type: string
+        modulo:
+           $ref: '#/components/schemas/model_modulo_esteso'
+    model_modulo_esteso:
+      allOf:
+      - $ref: '#/components/schemas/model_modulo'
+      - type: object
+        title: 'Model modulo esteso'
+        properties:
+          note:
+            type: string
+          listaPlaceOlder:
+            type: array
+            items:
+              $ref: '#/components/schemas/model_chiave_valore'
+    model_documentazione_esteso:
+      allOf:     # Combines the BasicErrorModel and the inline model
+        - $ref: '#/components/schemas/model_documentazione'
+        - type: object
+          title: 'Model documentazione estesa'
+          properties:
+            verificaDocumentazione:
+              $ref: '#/components/schemas/model_verifica_documentazione'
+            strutturaCategoria:
+                $ref: '#/components/schemas/model_struttura_categoria'
+            modulo:
+              $ref: '#/components/schemas/model_modulo_ridotto'
+            moduloConfigCod:
+              type: string
+            moduloConfigDesc:
+              type: string
+            docFlgObbligatorio:
+              type: boolean
+    model_rilevazione_esteso:
+      allOf:     # Combines the BasicErrorModel and the inline model
+        - $ref: '#/components/schemas/model_rilevazione'
+        - type: object
+          title: 'Model rilevazione estesa'
+          properties:
+            strutturaCategoria:
+                $ref: '#/components/schemas/model_struttura_categoria'
+            modulo:
+              $ref: '#/components/schemas/model_modulo_ridotto'
+    model_modulo_compilato:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: 'Model modulo compilato'
+        properties:
+          moduloCompilatoId:
+            type: integer
+            format: int32
+          moduloId:
+            type: integer
+            format: int32
+          note:
+            type: string
+    model_rilevazione:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: 'Model rilevazione'
+        properties:
+          rilevazioneId:
+            type: integer
+            format: int32
+          strutturaId:
+            type: integer
+            format: int32
+          strCatId:
+            type: integer
+            format: int32
+          moduloCompilatoId:
+            type: integer
+            format: int32
+          moduloConfigId:
+            type: integer
+            format: int32
+          dataoraRilevazione:
+            type: string
+            format: date
+    model_modulo_config_ridotto:
+      type: object
+      title: Model modulo config ridotto
+      properties:
+        moduloConfigCod:
+          type: string
+        moduloConfigOrd:
+          type: string
+        moduloConfigDesc:
+          type: string
+        moduloConfigId:
+            type: integer
+            format: int32
+        reccount:
+            type: integer
+            format: int32
+        docFlgObbligatorio:
+          type: boolean
+    model_modulo_ridotto:
+      type: object
+      properties:
+        moduloId:
+          type: integer
+          format: int32
+        moduloCod:
+          type: string
+        moduloDesc:
+          type: string
+        moduloOrd:
+          type: string
+        moduloCompilatoId:
+          type: integer
+          format: int32
+        note:
+          type: integer
+          format: int32
+        moduloCompilatoRidotto:
+          $ref: '#/components/schemas/model_modulo'
+    model_verifica_documentazione:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model verifica documentazione
+          properties:
+            verificaDocumentazioneId:
+              type: integer
+              format: int32
+            documentazioneId:
+              type: integer
+              format: int32
+            dataoraVerifica:
+              type: string
+              format: date
+            esitoVerifica:
+              type: boolean
+            note:
+              type: string
+            notificaId:
+              type: integer
+              format: int32
+    model_pratica_scadenza:
+      type: object
+      title: Model pratica scadenza
+      properties:
+        dataoraScadenza:
+          type: string
+          format: date
+        flgScadenza:
+          type: string
+        scadenzaDesc:
+          type: string
+        praticaId:
+          type: integer
+          format: int32
+        prescrizioneId:
+          type: integer
+          format: int32
+        appuntamentoId:
+          type: integer
+          format: int32
+        enteId:
+          type: integer
+          format: int32
+        enteCod:
+          type: string
+        enteDesc:
+          type: string
+        strutturaId:
+          type: integer
+          format: int32
+        strutturaCod:
+          type: string
+        strutturaCodArpe:
+          type: string
+        strutturaDesc:
+          type: string
+        praticaTipoId:
+          type: integer
+          format: int32
+        praticaTipoCod:
+          type: string
+        praticaTipoDesc:
+          type: string
+        dataoraApertura:
+          type: string
+          format: date
+        dataoraChiusura:
+          type: string
+          format: date
+        prescrizioneTipoId:
+          type: integer
+          format: int32
+        prescrizioneTipoCod:
+          type: string
+        prescrizioneTipoDesc:
+          type: string
+        appuntamentoTipoId:
+          type: integer
+          format: int32
+        appuntamentoTipoCod:
+          type: string
+        appuntamentoTipoDesc:
+          type: string
+    model_documentazione:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: 'Model documentazione'
+        properties:
+          documentazioneId:
+            type: integer
+            format: int32
+          strutturaId:
+            type: integer
+            format: int32
+          strCatId:
+            type: integer
+            format: int32
+          moduloCompilatoId:
+            type: integer
+            format: int32
+          moduloConfigId:
+            type: integer
+            format: int32
+          dataoraDocumentazione:
+            type: string
+            format: date
+          dataoraScadenza:
+            type: string
+            format: date
+          occorrenza:
+            type: integer
+            format: int32
+    UserInfo:
+      type: object
+      properties:
+        nome:
+          type: string
+        cognome:
+          type: string
+        ente:
+          type: string
+        ruolo:
+          type: string
+        codFisc:
+          type: string
+        livAuth:
+          type: integer
+        community:
+          type: string
+    model_decodifica_jwt:
+      type: object
+      properties:
+        profiloId:
+          type: integer
+          format: int32
+        soggetto:
+            $ref: '#/components/schemas/model_soggetto'
+        struttura:
+            $ref: '#/components/schemas/model_struttura_estesa'
+        ente:
+            $ref: '#/components/schemas/model_ente_esteso'
+        ruolo:
+            $ref: '#/components/schemas/model_ruolo'
+        applicativo:
+            $ref: '#/components/schemas/model_applicativo'
+        profili:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_profilo'
+        funzioni:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_applicativo_operazione_ridotto_custom'
+    model_chiave_valore:
+      type: object
+      properties:
+        chiave:
+            type: string
+        valore:
+            type: string
+    model_chiave_valore_list:
+      type: object
+      properties:
+        chiaveValore:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_chiave_valore'
+    model_applicativo_operazione_ridotto_custom:
+      type: object
+      title: Model applicativo operazione ridotto custom
+      properties:
+        funzione:
+          type: string
+        permesso:
+          type: string
+    model_logout:
+      type: object
+      properties:
+        redirectUrl:
+          type: string
+    model_utente:
+      type: object
+      properties:
+        soggetto:
+            $ref: '#/components/schemas/model_soggetto'
+        struttura:
+            $ref: '#/components/schemas/model_struttura'
+        ente:
+            $ref: '#/components/schemas/model_ente'
+    model_profilo:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: 'Model profilo'
+        properties:
+          profiloId:
+            type: integer
+            format: int32
+          profiloCod:
+            type: string
+          profiloDesc:
+            type: string
+    model_applicativo:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: 'Model applicativo'
+        properties:
+          applicativoId:
+            type: integer
+            format: int32
+          applicativoCod:
+            type: string
+          applicativoDesc:
+            type: string
+    model_ruolo:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: 'Model ruolo'
+        properties:
+          ruoloId:
+            type: integer
+            format: int32
+          ruoloCod:
+            type: string
+          ruoloDesc:
+            type: string
+    model_ente_tipo:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model ente tipo
+          properties:
+            enteTipoId:
+              type: integer
+              format: int32
+            enteTipoCod:
+              type: string
+            enteTipoDesc:
+              type: string
+    model_ente_esteso:
+      allOf:
+      - $ref: '#/components/schemas/model_ente'
+      - type: object
+        title: 'Model ente esteso'
+        properties:
+          enteTipo:
+            $ref: '#/components/schemas/model_ente_tipo'
+    model_ente:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: 'Model ente'
+        properties:
+          enteId:
+            type: integer
+            format: int32
+          enteCod:
+            type: string
+          enteCodConfiguratore:
+            type: string
+          enteDesc:
+            type: string
+          enteTipoId:
+            type: integer
+            format: int32
+    model_struttura_estesa:
+      allOf:     # Combines the BasicErrorModel and the inline model
+        - $ref: '#/components/schemas/model_struttura'
+        - type: object
+          title: 'Model struttura estesa'
+          properties:
+            natura:
+                $ref: '#/components/schemas/model_natura'
+            asl:
+              type: array
+              items:
+                $ref: '#/components/schemas/model_ente'
+            comune:
+                $ref: '#/components/schemas/model_comune_esteso'
+            strutturaAccreditamento:
+                $ref: '#/components/schemas/model_struttura_accreditamento'
+            strutturaTipo:
+                $ref: '#/components/schemas/model_struttura_tipo'
+            strutturaTitolarita:
+                $ref: '#/components/schemas/model_struttura_titolarita'
+            categorie:
+              type: array
+              items:
+                $ref: '#/components/schemas/model_struttura_categoria'
+    model_struttura:
+      type: object
+      title: Model struttura
+      properties:
+        strutturaId:
+          type: integer
+          format: int32
+        strutturaCod:
+          type: string
+        strutturaCodConfiguratore:
+          type: string
+        strutturaCodArpe:
+          type: string
+        strutturaDesc:
+          type: string
+        strutturaTipoId:
+          type: integer
+          format: int32
+        comuneId:
+          type: integer
+          format: int32
+        indirizzo:
+          type: string
+        cap:
+          type: string
+        coordSrid:
+          type: string
+        coordX:
+          type: string
+        coordY:
+          type: string
+        strutturaNaturaId:
+          type: integer
+          format: int32
+        strutturaAccreditamentoId:
+          type: integer
+          format: int32
+        strutturaTitolaritaId:
+          type: integer
+          format: int32
+        validitaInizio:
+          type: string
+          format: date
+        validitaFine:
+          type: string
+          format: date
+        dataCreazione:
+          type: string
+          format: date
+        dataModifica:
+          type: string
+          format: date
+        dataCancellazione:
+          type: string
+          format: date
+        utenteCreazione:
+          type: string
+        utenteModifica:
+          type: string
+        utenteCancellazione:
+          type: string
+    model_struttura_categoria:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: Model struttura categoria
+        properties:
+          strutturaCategoriaId:
+            type: integer
+            format: int32
+          strutturaCategoriaCod:
+            type: string
+          strutturaCategoriaDesc:
+            type: string
+    model_struttura_titolarita:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: Model struttura titolarita
+        properties:
+          strutturaTitolaritaId:
+            type: integer
+            format: int32
+          strutturaTitolaritaCod:
+            type: string
+          strutturaTitolaritaCodArpe:
+            type: string
+          strutturaTitolaritaDesc:
+            type: string
+    model_struttura_accreditamento:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: Model struttura accreditamento
+        properties:
+          strutturaAccreditamentoId:
+            type: integer
+            format: int32
+          strutturaAccreditamentoCod:
+            type: string
+          strutturaAccreditamentoCodArpe:
+            type: string
+          strutturaAccreditamentoDesc:
+            type: string
+    model_struttura_tipo:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: Model struttura tipo
+        properties:
+          strutturaTipoId:
+            type: integer
+            format: int32
+          strutturaTipoCod:
+            type: string
+          strutturaTipoDesc:
+            type: string
+    model_generico:
+      type: object
+      title: Model generico
+      properties:
+        validitaInizio:
+          type: string
+          format: date
+        validitaFine:
+          type: string
+          format: date
+        dataCreazione:
+          type: string
+          format: date
+        dataModifica:
+          type: string
+          format: date
+        dataCancellazione:
+          type: string
+          format: date
+        utenteCreazione:
+          type: string
+        utenteModifica:
+          type: string
+        utenteCancellazione:
+          type: string
+    model_comune_esteso:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: Model comune esteso
+        properties:
+          comuneId:
+            type: integer
+            format: int32
+          comuneCod:
+            type: string
+          comuneDesc:
+            type: string
+          provinciaId:
+            type: integer
+            format: int32
+          provincia:
+            $ref: '#/components/schemas/model_provincia_esteso'
+    model_provincia_esteso:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: Model provincia esteso
+        properties:
+          provinciaId:
+            type: integer
+            format: int32
+          provinciaCod:
+            type: string
+          provinciaSigla:
+            type: string
+          provinciaDesc:
+            type: string
+          regioneId:
+            type: integer
+            format: int32
+          regione:
+              $ref: '#/components/schemas/model_regione'
+    model_regione:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: Model regione
+        properties:
+          regioneId:
+            type: integer
+            format: int32
+          regioneCod:
+            type: string
+          regioneDesc:
+            type: string
+    model_soggetto_esteso_lista:
+      allOf:
+      - $ref: '#/components/schemas/model_soggetto'
+      - type: object
+        title: Model soggetto esteso per lista
+        properties:
+          strutturaSoggetto:
+            $ref: '#/components/schemas/model_struttura_soggetto'
+          ruoloStruttura:
+            $ref: '#/components/schemas/model_ruolo_struttura_soggetto'
+          ultimoStato:
+            $ref: '#/components/schemas/model_ospite_stato_ultimo'
+          dataPrimoIngresso:
+            type: string
+            format: date
+          dataUltimaUscita:
+            type: string
+            format: date
+          strutturaCategoriaDesc:
+            type: string
+    model_struttura_soggetto:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: Model struttura soggetto
+        properties:
+          strSoggId:
+            type: integer
+            format: int32
+          strutturaId:
+            type: integer
+            format: int32
+          soggettoId:
+            type: integer
+            format: int32
+          ruoloStrutturaSoggettoId:
+            type: integer
+            format: int32
+    model_ruolo_struttura_soggetto:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model ruolo struttura
+          properties:
+            ruoloStrutturaSoggettoId:
+              type: integer
+              format: int32
+            ruoloStrutturaSoggettoCod:
+              type: string
+            ruoloStrutturaSoggettoDesc:
+              type: string
+    model_ospite_stato_ultimo:
+      allOf:
+      - $ref: '#/components/schemas/model_ospite_stato'
+      - type: object
+        title: Model ultimo ospite stato
+        properties:
+          dataMovimento:
+            type: string
+            format: date
+    model_ospite_stato:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: Model ospite stato
+        properties:
+          ospiteStatoId:
+            type: integer
+            format: int32
+          ospiteStatoCod:
+            type: string
+          ospiteStatoDesc:
+            type: string
+          ospiteStatoOrd:
+            type: string
+          ospiteStatoHint:
+            type: string
+          flgPresenza:
+            type: boolean
+          flgPosto:
+            type: boolean
+    model_ospite_condizioni:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: Model ospite condizioni
+        properties:
+          ospiteCondizioniId:
+            type: integer
+            format: int32
+          ospiteCondizioniCod:
+            type: string
+          ospiteCondizioniDesc:
+            type: string
+          ospiteCondizioniOrd:
+            type: string
+          ospiteCondizioniHint:
+            type: string
+    model_ospite_esteso:
+      allOf:
+      - $ref: '#/components/schemas/model_soggetto'
+      - type: object
+        title: 'Model ospite'
+        properties:
+          ospiteMovimento:
+            type: array
+            items:
+              $ref: '#/components/schemas/model_ospite_movimento_esteso'
+    model_soggetto:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: 'Model soggetto'
+        properties:
+          soggettoId:
+            type: integer
+            format: int32
+          codiceFiscale:
+            type: string
+          nome:
+            type: string
+          cognome:
+            type: string
+          presenteConfiguratore:
+            type: boolean
+          dataNascita:
+            type: string
+            format: date
+    model_modulo:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: 'Model modulo'
+        properties:
+          moduloId:
+            type: integer
+            format: int32
+          moduloCod:
+            type: string
+          moduloDesc:
+            type: string
+          moduloOrd:
+            type: string
+          moduloIdPadre:
+            type: integer
+            format: int32
+          sezioni:
+            type: array
+            items:
+              $ref: '#/components/schemas/model_modulo'
+          voci:
+            type: array
+            items:
+              $ref: '#/components/schemas/model_voce'
+          regole:
+            type: array
+            items:
+              $ref: '#/components/schemas/model_modulo_regola_ridotto'
+    model_modulo_regola_ridotto:
+      type: object
+      title: 'Model modulo regola'
+      properties:
+        moduloRegolaId:
+          type: integer
+          format: int32
+        moduloRegolaTipo:
+          type: string
+        moduloRegolaExec:
+          type: string
+        moduloRegolaErrore:
+          type: string
+    model_voce:
+      type: object
+      title: 'Model voce'
+      properties:
+        moduloId:
+          type: integer
+          format: int32
+        moduloVoceId:
+          type: integer
+          format: int32
+        moduloVoceCod:
+          type: string
+        moduloVoceDesc:
+          type: string
+        moduloVoceHint:
+          type: string
+        moduloVoceIdPadre:
+          type: integer
+          format: int32
+        moduloVoceTipoDati:
+          type: string
+        moduloVoceUnitaMisura:
+          type: string
+        moduloListaId:
+          type: integer
+          format: int32
+        fileGruppoId:
+          type: integer
+          format: int32
+        moduloVoceDescCheck:
+          type: string
+        flgCheck:
+          type: boolean
+        valore:
+          type: string
+        note:
+          type: string
+        lista:
+            $ref: '#/components/schemas/model_voce_lista'
+        regole:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_voce_regola'
+        fileGruppo:
+            $ref: '#/components/schemas/model_file_gruppo'
+        voci:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_voce'
+    model_file_gruppo:
+      type: object
+      title: 'Model voce file gruppo'
+      properties:
+        fileGruppoCod:
+          type: string
+        fileGruppoDesc:
+          type: string
+        fileTipi:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_file_tipo'
+    model_file_tipo:
+      type: object
+      title: 'Model file tipo'
+      properties:
+        fileTipoId:
+          type: integer
+          format: int32
+        fileTipoCod:
+          type: string
+        fileTipoDesc:
+          type: string
+        fileTipoHint:
+          type: string
+        fileTipoObbligatorio:
+          type: boolean
+        fileTipoFirmaRichiesta:
+          type: boolean
+        fileId:
+          type: integer
+          format: int32
+        fileName:
+          type: string
+        note:
+          type: string
+        fileContentTypes:
+          type: array
+          items:
+            type: integer
+            format: int32
+    model_voce_lista:
+      type: object
+      title: 'Model voce lista'
+      properties:
+        moduloListaCod:
+          type: string
+        moduloListaDesc:
+          type: string
+        moduloListaHint:
+          type: string
+        moduloListaId:
+          type: integer
+          format: int32
+        moduloListaOccMin:
+          type: integer
+          format: int32
+        moduloListaOccMax:
+          type: integer
+          format: int32
+        valori:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_voce_lista_valore'
+    model_voce_lista_valore:
+      type: object
+      title: 'Model voce lista valore'
+      properties:
+        moduloListaValoreId:
+          type: integer
+          format: int32
+        moduloListaValoreCod:
+          type: string
+        moduloListaValoreDesc:
+          type: string
+        moduloListaValoreHint:
+          type: string
+        valore:
+          type: boolean
+    model_voce_regola:
+      type: object
+      title: 'Model voce regola'
+      properties:
+        moduloVoceRegolaTipo:
+          type: string
+        moduloVoceRegolaErrore:
+          type: string
+        moduloVoceRegolaExec:
+          type: string    
+    model_ospite_movimento_tipo:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: Model ospite movimento
+        properties:
+          ospiteMovimentoTipoId:
+            type: integer
+            format: int32
+          ospiteMovimentoTipoCod:
+            type: string
+          ospiteMovimentoTipoDesc:
+            type: string       
+          ospiteMovimentoTipoOrd:
+            type: string       
+          ospiteMovimentoTipoHint:
+            type: string 
+          ospiteStatoId:
+            type: integer
+            format: int32 
+    model_ospite_movimento_tipo_esteso:
+      allOf:
+      - $ref: '#/components/schemas/model_ospite_movimento_tipo'
+      - type: object
+        title: Model ospite movimento
+        properties:
+          ospiteMovimentoTipoConfig:
+            type: array
+            items:
+              $ref: '#/components/schemas/model_ospite_movimento_tipo_config'
+    model_ospite_movimento_tipo_esteso_generico:
+      allOf:
+        - $ref: '#/components/schemas/model_ospite_movimento_tipo'
+        - type: object
+          title: Model ospite movimento
+          properties:
+            ospiteStato:
+              $ref: '#/components/schemas/model_ospite_stato'
+    model_ospite_movimento_tipo_config:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: Model ospite movimento
+        properties:
+          ospiteMovimentoTipoCfgId:
+            type: integer
+            format: int32
+          ospiteMovimentoTipoId:
+            type: integer
+            format: int32
+          ospiteStatoId:
+            type: integer
+            format: int32    
+    model_ospite_movimento_esteso:  
+      allOf:
+      - $ref: '#/components/schemas/model_ospite_movimento'
+      - type: object
+        title: Model ospite movimento esteso
+        properties:
+          ospiteMovimentoTipo:
+            $ref: '#/components/schemas/model_ospite_movimento_tipo_esteso_generico'
+          ospiteCondizioni:
+            $ref: '#/components/schemas/model_ospite_condizioni'
+          strutturaCategoria:
+            $ref: '#/components/schemas/model_struttura_categoria'
+    model_ospite_movimento_post:  
+      allOf:
+      - $ref: '#/components/schemas/model_ospite_movimento'
+      - type: object
+        title: Model ospite movimento post
+        properties:
+          soggettoId:
+            type: integer
+            format: int32
+    model_ospite_movimento:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: Model ospite movimento
+        properties:
+          ospiteMovimentoId:
+            type: integer
+            format: int32
+          dataMovimento:
+            type: string
+            format: date
+          strSoggId:
+            type: integer
+            format: int32
+          ospiteMovimentoTipoId:
+            type: integer
+            format: int32
+          ospiteCondizioniId:
+            type: integer
+            format: int32
+          strutturaIdOd:
+            type: integer
+            format: int32
+          note:
+            type: string
+          strutturaCategoriaId:
+            type: integer
+            format: int32
+    model_parametro:
+      type: object
+      properties:
+        chiave:
+            type: string
+        valore:
+            type: string
+    model_arpe_struttura_dettaglio_esteso:
+      allOf:
+      - $ref: '#/components/schemas/model_arpe_struttura_dettaglio'
+      - type: object
+        title: Model arpe struttura dettaglio esteso 
+        properties:
+          arpeAssistenzaTipo:
+            $ref: '#/components/schemas/model_arpe_assistenza_tipo'
+          arpeAttivitaClasse:
+            $ref: '#/components/schemas/model_arpe_attivita_classe'
+          arpeAttivita:
+            $ref: '#/components/schemas/model_arpe_attivita'
+          arpeDisciplina:
+            $ref: '#/components/schemas/model_arpe_disciplina'
+          arpeStrutturaTipo:
+            $ref: '#/components/schemas/model_arpe_struttura_tipo'
+    model_arpe_assistenza_tipo:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: Model arpe assistenza tipo
+        properties:
+          arpeAssistenzaTipoId:
+            type: integer
+            format: int32
+          arpeAssistenzaTipoCod:
+            type: string
+          arpeAssistenzaTipoDesc:
+            type: string
+    model_arpe_attivita_classe:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: Model arpe attivita classe
+        properties:
+          arpeAttivitaClasseId:
+            type: integer
+            format: int32
+          arpeAttivitaClasseCod:
+            type: string
+          arpeAttivitaClasseDesc:
+            type: string
+    model_arpe_attivita:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: Model arpe attivita
+        properties:
+          arpeAttivitaId:
+            type: integer
+            format: int32
+          arpeAttivitaCod:
+            type: string
+          arpeAttivitaDesc:
+            type: string
+    model_arpe_disciplina:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: Model arpe disciplina
+        properties:
+          arpeDisciplinaId:
+            type: integer
+            format: int32
+          arpeDisciplinaCod:
+            type: string
+          arpeDisciplinaDesc:
+            type: string
+    model_arpe_struttura_tipo:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: Model arpe struttura tipo
+        properties:
+          arpeStrutturaTipoId:
+            type: integer
+            format: int32
+          arpeStrutturaTipoCod:
+            type: string
+          arpeStrutturaTipoDesc:
+            type: string
+    model_arpe_struttura_dettaglio:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: Model arpe struttura dettaglio
+        properties:
+          arpeStrDettId:
+            type: integer
+            format: int32
+          strutturaId:
+            type: integer
+            format: int32
+          arpeStrutturaTipoId:
+            type: integer
+            format: int32
+          arpeAssistenzaTipoId:
+            type: integer
+            format: int32     
+          arpeAttivitaId:
+            type: integer
+            format: int32
+          arpeAttivitaClasseId:
+            type: integer
+            format: int32
+          arpeDisciplinaId:
+            type: integer
+            format: int32
+          arpeDataAttivazioneStruttura:
+            type: string
+            format: date
+          arpeDataAttivazioneAssistenza:
+            type: string
+            format: date             
+          arpeDataAttivazioneAttivita:
+            type: string
+            format: date 
+    model_appuntamento_soggetto:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model appuntamento soggetto 
+          properties:
+            appuntamentoSoggettoId:
+              type: integer
+              format: int32
+            appuntamentoId:
+              type: integer
+              format: int32
+            soggettoId:
+              type: integer
+              format: int32
+            ruoloAppuntamentoSoggettoId:
+              type: integer
+              format: int32
+    model_ruolo_appuntamento_soggetto:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model ruolo appuntamento soggetto 
+          properties:
+            ruoloAppuntamentoSoggettoId:
+              type: integer
+              format: int32
+            ruoloAppuntamentoSoggettoCod:
+              type: string
+            ruoloAppuntamentoSoggettoDesc:
+              type: string
+    model_appuntamento_soggetto_esteso:
+      allOf:
+        - $ref: '#/components/schemas/model_appuntamento_soggetto'
+        - type: object
+          title: Model appuntamento soggetto esteso
+          properties:
+            ruoloAppuntamentoSoggetto:
+              $ref: '#/components/schemas/model_ruolo_appuntamento_soggetto'
+            ruoloEnteSoggetto:
+              $ref: '#/components/schemas/model_ruolo_ente_soggetto'
+            soggetto:
+              $ref: '#/components/schemas/model_soggetto'
+    model_file_content_type:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model file content type
+          properties:
+            fileContentTypeId:
+              type: integer
+              format: int32
+            fileContentTypeCod:
+              type: string
+            fileContentTypeDesc:
+              type: string
+            fileContentTypeOrd:
+              type: string
+            fileContentTypeHint:
+              type: string
+            fileContentTypeMime:
+              type: string
+            fileContentTypeExt:
+              type: string
+    model_zip_lista:
+      type: object
+      title: 'model file into zip'
+      properties:
+        folderName:
+          type: string
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_zip'
+    model_zip:
+      type: object
+      title: 'model file into zip'
+      properties:
+        fileName:
+          type: string
+        moduloCompilatoId:
+          type: integer
+          format: int32
+        fileId:
+          type: integer
+          format: int32
+    model_notifica:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model notifica
+          properties:
+            notificaId:
+              type: integer
+              format: int32
+            profiloId:
+              type: integer
+              format: int32
+            enteId:
+              type: integer
+              format: int32
+            strutturaId:
+              type: integer
+              format: int32
+            soggettoId:
+              type: integer
+              format: int32
+            title:
+              type: string
+            bodyTextShort:
+              type: string
+            bodyTextLong:
+              type: string
+            bodyHtml:
+              type: string
+    boolean_crit:
+      type: object
+      properties:
+        eq:
+          type: boolean
+    string_crit:
+      type: object
+      properties:
+        eq:
+          type: string
+        ne:
+          type: string
+        lt:
+          type: string
+        lte:
+          type: string
+        gt:
+          type: string
+        gte:
+          type: string
+        in:
+          type: array
+          items:
+            type: string
+        nin:
+          type: array
+          items:
+            type: string
+        c:
+          type: string
+        ci:
+          type: string
+        s:
+          type: string
+        si:
+          type: string
+        e:
+          type: string
+        ei:
+          type: string
+      description: criterio su singola property di tipo stringa
+    integer_crit:
+      type: object
+      properties:
+        eq:
+          type: integer
+          format: int32
+        ne:
+          type: integer
+          format: int32
+        lt:
+          type: integer
+          format: int32
+        lte:
+          type: integer
+          format: int32
+        gt:
+          type: integer
+          format: int32
+        gte:
+          type: integer
+          format: int32
+        in:
+          type: array
+          items:
+            type: integer
+            format: int32
+        nin:
+          type: array
+          items:
+            type: integer
+            format: int32
+      description: criterio su singola property di tipo integer
+    date_crit:
+      type: object
+      properties:
+        eq:
+          type: string
+          format: date
+        ne:
+          type: string
+          format: date
+        lt:
+          type: string
+          format: date
+        lte:
+          type: string
+          format: date
+        gt:
+          type: string
+          format: date
+        gte:
+          type: string
+          format: date
+        in:
+          type: array
+          items:
+            type: string
+            format: date
+        nin:
+          type: array
+          items:
+            type: string
+            format: date
+      description: criterio su singola property di tipo data
+    errore:
+      title: '[ERRORE] Generico'
+      type: object
+      properties:
+        status:
+          type: integer
+        code:
+          type: string
+        title:
+          type: string
+        detail:
+          type: array
+          items:
+            $ref: '#/components/schemas/errore_dettaglio'
+        links:
+          type: array
+          items:
+            type: string
+    errore_dettaglio:
+      title: '[ERRORE] Dettaglio'
+      type: object
+      properties:
+        chiave:
+          type: string
+        valore:
+          type: string  
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        messaggioCittadino:
+          type: string
+        errorMessage:
+          type: string
+        fields:
+          type: string
