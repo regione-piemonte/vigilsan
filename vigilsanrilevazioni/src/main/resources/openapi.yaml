@@ -1,0 +1,956 @@
+openapi: 3.0.1
+info:
+  title: API vigilsanrilevazioni
+  description: Componente API vigilsanrilevazioni del prodotto vigilsan
+  version: 1.0.0
+servers:
+  - url: /api
+paths:
+  /status:
+    get:
+      tags:
+        - system
+      description: ping
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: string
+  /documentazione/verifica:
+    post:
+      operationId: funzionalita_documentazioneVerificaPost
+      tags:
+        - documentazione
+      description: inserisce fa insert o update della verifica documentazione
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_verifica_documentazione'
+      parameters: 
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/session_id'
+      responses:
+        "201":
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_verifica_documentazione'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /documentazione:
+    post:
+      operationId: funzionalita_documentazionePost
+      tags:
+        - documentazione
+      description: inserisce fa insert o update della documentazione
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_documentazione'
+      parameters: 
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/session_id'
+      responses:
+        "201":
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_documentazione'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /documentazione/parametro:
+    post:
+      operationId: funzionalita_documentazioneParametroPost
+      tags:
+        - documentazione
+      description: Ritorna il valore di un parametro dati n parametri e la struttura
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_chiave_valore_list'
+      parameters: 
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/session_id'   
+      - $ref: '#/components/parameters/struttura_id'
+      responses:
+        "201":
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_chiave_valore_list'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+    get:
+      operationId: funzionalita_documentazioneParametroGet
+      tags:
+        - documentazione
+      description: Ritorna il valore di un parametro dato il codice e la struttura
+      parameters:
+      - $ref: '#/components/parameters/session_id'   
+      - $ref: '#/components/parameters/struttura_id' 
+      - name: parametro_cod
+        in: query
+        required: true
+        schema: 
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_parametro'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /documentazione/parametro/lista:
+    get:
+      operationId: funzionalita_documentazioneParametroListaGet
+      tags:
+        - documentazione
+      description: Ritorna i valori di un parametro dato il codice e la struttura
+      parameters:
+      - $ref: '#/components/parameters/session_id'   
+      - $ref: '#/components/parameters/struttura_id' 
+      - name: parametro_cod
+        in: query
+        required: true
+        schema: 
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_parametro'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /documentazione/compilabile/lista:
+    get:
+      operationId: funzionalita_documentazioneListGet
+      tags:
+        - documentazione
+      description: Ritorna la lista della documentazione da compilare per struttura
+      parameters:
+      - $ref: '#/components/parameters/session_id'    
+      - name: struttura_id
+        in: query
+        required: true
+        schema: 
+          type: integer
+          format: int32
+      - name: modulo_config_cod
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_documentazione_esteso'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /documentazione/compilata/lista:
+    get:
+      operationId: funzionalita_documentazioneCompilaListaGet
+      tags:
+        - documentazione
+      description: Ritorna la lista della documentazione compilata per struttura
+      parameters:
+      - $ref: '#/components/parameters/session_id'    
+      - name: struttura_id
+        in: query
+        required: true
+        schema: 
+          type: integer
+          format: int32
+      - name: modulo_config_cod
+        in: query
+        required: true
+        schema: 
+          type: string
+      - $ref: '#/components/parameters/page_number'
+      - $ref: '#/components/parameters/row_per_page'
+      - $ref: '#/components/parameters/descending'
+      - $ref: '#/components/parameters/order_by'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_documentazione_esteso'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /documentazione/modulo/lista:
+    get:
+      operationId: funzionalita_documentazioneModuliGet
+      tags:
+        - documentazione
+      description: Ritorna la lista dei moduli data la documentazione
+      parameters:
+      - $ref: '#/components/parameters/session_id'    
+      - $ref: '#/components/parameters/modulo_config_gruppo_cod'    
+      - name: struttura_id
+        in: query
+        required: true
+        schema: 
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_modulo_ridotto_get'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /rilevazione:
+    post:
+      operationId: funzionalita_rilevazionePost
+      tags:
+        - rilevazione
+      description: insert o update della rilevazione
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_rilevazione'
+      parameters: 
+      - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+      - $ref: '#/components/parameters/session_id'
+      responses:
+        "201":
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_rilevazione'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /rilevazione/compilabile/lista:
+    get:
+
+      operationId: funzionalita_rilevazione_list_get
+      tags:
+        - rilevazione
+      description: Ritorna la lista delle rilevazioni da compilare per struttura
+      parameters:
+      - $ref: '#/components/parameters/session_id'    
+      - name: struttura_id
+        in: query
+        required: true
+        schema: 
+          type: integer
+          format: int32
+      - name: modulo_config_cod
+        in: query
+        required: true
+        schema: 
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_rilevazione_esteso'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /rilevazione/compilata/lista:
+    get:
+      operationId: funzionalita_rilevazione_compilati_get
+      tags:
+        - rilevazione
+      description: Ritorna la lista delle rilevazioni compilate per struttura
+      parameters:
+      - $ref: '#/components/parameters/session_id'    
+      - name: struttura_id
+        in: query
+        required: true
+        schema: 
+          type: integer
+          format: int32
+      - name: modulo_config_cod
+        in: query
+        required: true
+        schema: 
+          type: string
+      - name: page_number
+        in: query
+        schema: 
+          type: integer
+          format: int64    
+      - name: row_per_page
+        in: query
+        schema: 
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_rilevazione_esteso'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /rilevazione/compilata/lista/csv:
+    get:
+      operationId: funzionalita_rilevazione_compilata_lista_csv_get
+      tags:
+        - rilevazione
+      description: Ritorna la lista delle rilevazioni compilate in formato csv
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/header_x_request_id'
+        - $ref: '#/components/parameters/header_x_codice_servizio'
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/struttura_id'
+        - $ref: '#/components/parameters/ente_id'
+        - $ref: '#/components/parameters/modulo_config_cod'
+        - $ref: '#/components/parameters/data_rilevazione_da'
+        - $ref: '#/components/parameters/data_rilevazione_a'
+        - $ref: '#/components/parameters/struttura_categoria_cod'
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Disposition:
+              description: Il nome del csv scaricato
+              schema:
+                type: string
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /rilevazione/modulo/lista:
+    get:
+      operationId: funzionalita_rilevazione_moduli_get
+      tags:
+        - rilevazione
+      description: Ritorna la lista dei moduli data la rilevazione
+      parameters:
+      - $ref: '#/components/parameters/session_id'
+      - $ref: '#/components/parameters/modulo_config_gruppo_cod'    
+      - name: struttura_id
+        in: query
+        required: true
+        schema: 
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_modulo_ridotto_get'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /batch/estrazione/rilevazioni:
+    post:
+      operationId: funzionalita_BatchEstrazioneRilevazioni
+      tags:
+        - batch
+      description: aggiorna le viste riguardanti le rilevazioni.
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '201':
+          description: OK
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+  parameters:
+    header_content_type:
+      description: MIME Type del file che viene caricato come allegato
+      name: Content-Type
+      in: header 
+      schema:
+        type: string
+        enum:
+          - document/pdf
+          - image/jpeg
+          - image/png 
+    header_shib_identita_codice_fiscale:
+      description: Contiene il codice fiscale dell utente loggato ottenuto tramite shibboleth
+      name: Shib-Identita-CodiceFiscale
+      in: header
+      schema:
+        type: string
+      required: true
+    header_x_request_id:
+      description: Contiene un id univoco (`uuid v4`) della chiamata HTTP che viene generato dal front-end, viene propagato agli strati successivi e viene restituito al front-end assieme alla response, permettendo così di tracciare l intero ciclo di vita della richiesta
+      in: header
+      name: X-Request-Id      
+      schema:
+        type: string
+      required: true
+    header_x_forwarded_for:
+      description: Contiene un elenco degli ip che hanno gestito la richiesta.Utile per log e audit.Il formato della stringa è <ip-front-end>, <ip-primo-server>, ..., <ip-ultimo-server> Es. `10.10.10.10, 10.38.45.68, 10.128.69.244`
+      in: header
+      name: X-Forwarded-For      
+      schema:
+        type: string
+      required: true
+    header_x_codice_servizio:
+      in: header
+      name: X-Codice-Servizio    
+      description: Contiene una stringa identificativa del servizio chiamante (es.COD)
+      schema:
+        type: string
+      required: true
+    session_id:
+      description: Contiene l'id della sessione corrente su log session
+      in: query
+      name: s_id      
+      schema:
+          type: integer
+          format: int32
+    struttura_id:
+      description: Contiene l'id della struttura corrente 
+      in: query
+      name: struttura_id
+      schema:
+        type: integer
+        format: int32
+    ente_id:
+      description: Contiene l'id dell'ente corrente 
+      in: query
+      name: ente_id
+      schema:
+        type: integer
+        format: int32
+    modulo_config_cod:
+      description: Contiene il modulo config cod 
+      in: query
+      name: modulo_config_cod
+      required: true
+      schema:
+        type: string
+    modulo_config_gruppo_cod:
+      description: Contiene il modulo config gruppo cod 
+      in: query
+      name: modulo_config_gruppo_cod
+      required: true
+      schema:
+        type: string
+    data_rilevazione_da:
+      description: data in formato yyyy-MM-dd 
+      in: query
+      name: data_rilevazione_da
+      schema:
+        type: string
+    data_rilevazione_a:
+      description: data in formato yyyy-MM-dd 
+      in: query
+      name: data_rilevazione_a
+      schema:
+        type: string
+    struttura_categoria_cod:
+      description: Contiene il cod della struttura categoria 
+      in: query
+      name: struttura_categoria_cod
+      schema:
+        type: string
+    page_number:
+      description: numero di pagine per paginazione
+      in: query
+      name: page_number
+      schema:
+        type: integer
+        default: 1
+        format: int64
+    row_per_page:
+      description: righe per pagina per paginazione
+      in: query
+      name: row_per_page
+      schema:
+        type: integer
+        default: 10
+        format: int64
+    descending:
+      description: ordinamento direzione per paginazione
+      in: query
+      name: descending
+      schema: 
+        default: true
+        type: boolean
+    order_by:
+      description: chiave ordinamento per paginazione
+      in: query
+      name: order_by
+      schema: 
+        default: 1
+        type: string
+  responses:
+    BadRequest:
+      description: La richiesta fatta dal client è errata.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errore'
+      headers:
+        X-Request-ID:
+          description: Ritorno del parametro ricevuto nella request.
+          schema:
+            type: string  
+    Forbidden:
+      description: La richiesta fatta dal client è errata.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errore'
+      headers:
+        X-Request-ID:
+          description: Ritorno del parametro ricevuto nella request.
+          schema:
+            type: string              
+    NotFound:
+      description: La richiesta fatta dal client errata.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errore'
+      headers:
+        X-Request-ID:
+          description: Ritorno del parametro ricevuto nella request.
+          schema:
+            type: string
+    InternalServerError:
+      description: La richiesta fatta dal client errata.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errore'
+      headers:
+        X-Request-ID:
+          description: Ritorno del parametro ricevuto nella request.
+          schema:
+            type: string
+            
+  schemas:
+    model_parametro:
+      type: object
+      properties:
+        chiave:
+            type: string
+        valore:
+            type: string
+    model_chiave_valore:
+      type: object
+      properties:
+        chiave:
+            type: string
+        valore:
+            type: string
+    model_chiave_valore_list:
+      type: object
+      properties:
+        chiaveValore:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_chiave_valore'
+    model_documentazione_esteso:
+      allOf:     # Combines the BasicErrorModel and the inline model
+        - $ref: '#/components/schemas/model_documentazione'
+        - type: object
+          title: 'Model documentazione estesa'
+          properties:
+            modulo:
+              $ref: '#/components/schemas/model_modulo_ridotto'
+            verificaDocumentazione:
+              $ref: '#/components/schemas/model_verifica_documentazione'
+            moduloConfigCod:
+              type: string
+            moduloConfigDesc:
+              type: string
+            docFlgObbligatorio:
+              type: boolean
+    model_rilevazione_esteso:
+      allOf:     # Combines the BasicErrorModel and the inline model
+        - $ref: '#/components/schemas/model_rilevazione'
+        - type: object
+          title: 'Model rilevazione estesa'
+          properties:
+            modulo:
+              $ref: '#/components/schemas/model_modulo_ridotto'
+    model_rilevazione:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: Model rilevazione
+        properties:
+          rilevazioneId:
+            type: integer
+            format: int32
+          strutturaId:
+            type: integer
+            format: int32
+          strCatId:
+            type: integer
+            format: int32
+          moduloCompilatoId:
+            type: integer
+            format: int32
+          moduloConfigId:
+            type: integer
+            format: int32
+          dataoraRilevazione:
+            type: string
+            format: date
+    model_modulo_ridotto_get:
+      allOf:     # Combines the BasicErrorModel and the inline model
+        - $ref: '#/components/schemas/model_modulo_ridotto'
+        - type: object
+          title: 'Model modulo ridotto get'
+          properties:
+              reccount:
+                type: integer
+                format: int32
+    model_modulo_ridotto:
+      type: object
+      properties:
+        moduloId:
+          type: integer
+          format: int32
+        moduloCod:
+          type: string
+        moduloDesc:
+          type: string
+        moduloOrd:
+          type: string
+    model_documentazione:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: Model documentazione
+        properties:
+          documentazioneId:
+            type: integer
+            format: int32
+          strutturaId:
+            type: integer
+            format: int32
+          strCatId:
+            type: integer
+            format: int32
+          moduloCompilatoId:
+            type: integer
+            format: int32
+          moduloConfigId:
+            type: integer
+            format: int32
+          dataoraDocumentazione:
+            type: string
+            format: date
+          dataoraScadenza:
+            type: string
+            format: date
+          occorrenza:
+            type: integer
+            format: int32
+    model_modulo_config_ridotto:
+      type: object
+      title: Model modulo config ridotto
+      properties:
+        moduloConfigCod:
+          type: string
+        moduloConfigOrd:
+          type: string
+        moduloConfigDesc:
+          type: string
+        moduloConfigId:
+            type: integer
+            format: int32
+        reccount:
+            type: integer
+            format: int32
+        docFlgObbligatorio:
+          type: boolean
+    model_verifica_documentazione:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model verifica documentazione
+          properties:
+            verificaDocumentazioneId:
+              type: integer
+              format: int32
+            documentazioneId:
+              type: integer
+              format: int32
+            dataoraVerifica:
+              type: string
+              format: date
+            esitoVerifica:
+              type: boolean
+            note:
+              type: string
+            notificaId:
+              type: integer
+              format: int32
+    model_generico:
+      type: object
+      title: Model generico
+      properties:
+        validitaInizio:
+          type: string
+          format: date
+        validitaFine:
+          type: string
+          format: date
+        dataCreazione:
+          type: string
+          format: date
+        dataModifica:
+          type: string
+          format: date
+        dataCancellazione:
+          type: string
+          format: date
+        utenteCreazione:
+          type: string
+        utenteModifica:
+          type: string
+        utenteCancellazione:
+          type: string
+    boolean_crit:
+      type: object
+      properties:
+        eq:
+          type: boolean
+    string_crit:
+      type: object
+      properties:
+        eq:
+          type: string
+        ne:
+          type: string
+        lt:
+          type: string
+        lte:
+          type: string
+        gt:
+          type: string
+        gte:
+          type: string
+        in:
+          type: array
+          items:
+            type: string
+        nin:
+          type: array
+          items:
+            type: string
+        c:
+          type: string
+        ci:
+          type: string
+        s:
+          type: string
+        si:
+          type: string
+        e:
+          type: string
+        ei:
+          type: string
+      description: criterio su singola property di tipo stringa
+    integer_crit:
+      type: object
+      properties:
+        eq:
+          type: integer
+          format: int32
+        ne:
+          type: integer
+          format: int32
+        lt:
+          type: integer
+          format: int32
+        lte:
+          type: integer
+          format: int32
+        gt:
+          type: integer
+          format: int32
+        gte:
+          type: integer
+          format: int32
+        in:
+          type: array
+          items:
+            type: integer
+            format: int32
+        nin:
+          type: array
+          items:
+            type: integer
+            format: int32
+      description: criterio su singola property di tipo integer
+    date_crit:
+      type: object
+      properties:
+        eq:
+          type: string
+          format: date
+        ne:
+          type: string
+          format: date
+        lt:
+          type: string
+          format: date
+        lte:
+          type: string
+          format: date
+        gt:
+          type: string
+          format: date
+        gte:
+          type: string
+          format: date
+        in:
+          type: array
+          items:
+            type: string
+            format: date
+        nin:
+          type: array
+          items:
+            type: string
+            format: date
+      description: criterio su singola property di tipo data
+    errore:
+      title: '[ERRORE] Generico'
+      type: object
+      properties:
+        status:
+          type: integer
+        code:
+          type: string
+        title:
+          type: string
+        detail:
+          type: array
+          items:
+            $ref: '#/components/schemas/errore_dettaglio'
+        links:
+          type: array
+          items:
+            type: string
+    errore_dettaglio:
+      title: '[ERRORE] Dettaglio'
+      type: object
+      properties:
+        chiave:
+          type: string
+        valore:
+          type: string  
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        messaggioCittadino:
+          type: string
+        errorMessage:
+          type: string
+        fields:
+          type: string
+          nullable: true

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.2.4</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>it.csi.vigilsan</groupId>
+	<artifactId>vigilsanrilevazioni</artifactId>
+	<version>1.1.0</version>
+	<name>vigilsanrilevazioni</name>
+	<description>Componente vigilsanrilevazioni del prodotto vigilsan</description>
+	<properties>
+		<java.version>17</java.version>
+		<swagger-codegen-maven-plugin.version>3.0.34</swagger-codegen-maven-plugin.version>
+	</properties>
+	<dependencies>
+		<dependency>
+		    <groupId>com.sun.mail</groupId>
+		    <artifactId>javax.mail</artifactId>
+		    <version>1.6.2</version> <!-- Puoi usare l'ultima versione disponibile -->
+		</dependency>
+		<dependency>
+			<groupId>it.csi.vigilsan</groupId>
+			<artifactId>vigilsanutil</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>1.9.0</version>
+		</dependency>
+
+        <dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+			    <exclusion>	              
+		            <groupId>org.springframework.boot</groupId>
+		            <artifactId>spring-boot-starter-logging</artifactId>	              
+		        </exclusion>	
+            </exclusions> 
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jdbc</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+		</dependency>
+		<!--		<dependency> ### SCOMMENTARE SE ACCESSO JPA -->
+		<!--			<groupId>org.springframework.boot</groupId>-->
+		<!--			<artifactId>spring-boot-starter-data-jpa</artifactId>-->
+		<!--		</dependency>-->
+		<!--		<dependency> -->
+		<!--			<groupId>com.h2database</groupId>-->
+		<!--			<artifactId>h2</artifactId>-->
+		<!--			<scope>runtime</scope>-->
+		<!--		</dependency>-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-servlet-spring-boot-starter</artifactId>
+			<version>6.0.4.Final</version>
+		</dependency>
+		
+		
+		<dependency>      
+		    <groupId>org.springframework.boot</groupId>      
+		    <artifactId>spring-boot-starter-log4j2</artifactId>  
+		</dependency>
+	</dependencies>
+
+	<build>
+		<finalName>vigilsanrilevazioni</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>io.swagger.codegen.v3</groupId>
+				<artifactId>swagger-codegen-maven-plugin</artifactId>
+				<version>${swagger-codegen-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>
+								${project.basedir}/src/main/resources/openapi.yaml</inputSpec>
+							<language>csi-jaxrs-resteasy</language>
+							<output>${project.basedir}</output>
+							<apiPackage>${default.package}.handler</apiPackage>
+							<modelPackage>${default.package}.model</modelPackage>
+							<invokerPackage>${default.package}.handler</invokerPackage>
+							<configOptions>
+								<java8>false</java8>
+								<useBeanValidation>true</useBeanValidation>
+								<hideGenerationTimestamp>true</hideGenerationTimestamp>
+								<apiPackage>
+									it.csi.vigilsan.vigilsanrilevazioni.api.generated</apiPackage>
+								<modelPackage>
+									it.csi.vigilsan.vigilsanrilevazioni.api.generated.dto</modelPackage>
+								<invokerPackage>
+									it.csi.vigilsan.vigilsanrilevazioni.api.generated.be</invokerPackage>
+								<implFolder>implfolder</implFolder>
+								<sourceFolder>src/main/java</sourceFolder>
+								<!--
+								<useSwaggerFeature>false</useSwaggerFeature> -->
+								<generateJbossDeploymentDescriptor>false</generateJbossDeploymentDescriptor>
+								<generateImplArtifacts>false</generateImplArtifacts>
+								<generateSwaggerMetadata>false</generateSwaggerMetadata>
+								<attributeSerializationStrategy>
+									explicit-as-modeled</attributeSerializationStrategy>
+								<accessHttpHeaders>true</accessHttpHeaders>
+								<accessHttpRequest>true</accessHttpRequest>
+								<jeeLibrary>jakarta</jeeLibrary>
+							</configOptions>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>it.csi.apitools</groupId>
+						<artifactId>csi-java-swagger3-codegen</artifactId>
+						<version>1.1.0.001</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+						<descriptor>src/assembly/bin.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id> <!-- this is used for inheritance
+						merges -->
+						<phase>install</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
