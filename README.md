@@ -5,7 +5,19 @@
 
 ## Descrizione del prodotto
 
-TO DO
+La piattaforma VIGILSAN (Piattaforma Regionale della Residenzialità) è uno strumento web che consente agli operatori del settore di avere accesso a uno strumento innovativo e completo per condividere con le strutture regionali le rilevazioni dei posti letto disponibili. 
+Questo permette una rapida collocazione dei pazienti che, dopo un ricovero ospedaliero, necessitano di cure in strutture specializzate come quelle per anziani, disabili, minori, disabili psichiatrici e persone con dipendenze 
+La possibilità di avere una visione aggiornata e precisa dei posti letto disponibili consente di ottimizzare la gestione delle risorse e di garantire un'assistenza tempestiva e adeguata ai pazienti. 
+Elenco macro-funzionalità:
+•	Gestione del Profilo: sezione che visualizza i dati anagrafici e il profilo applicativo dell’utente che ha effettuato l’accesso; consente inoltre di accedere ai dati anagrafici censiti in ARPE – Archivio regionale dei punti di erogazione, della struttura per la quale l’utente intende operare.
+•	Gestione documentale: sezione che consente ai referenti delle strutture residenziali e semi-residenziali di raccogliere la documentazione relativa alle strutture di competenza per consentire alla Commissione di Vigilanza di effettuare le verifiche durante le visite ispettive.
+•	Rilevazioni: sezione che consente agli operatori delle strutture residenziali e semi-residenziali di procedere alla registrazione delle informazioni di base e delle rilevazioni giornaliere e/o settimanali dei posti occupati e a disposizione per i propri ospiti.
+•	Questionari: sezione che consente al settore regionale competente di procedere periodicamente alla raccolta di informazioni dalle strutture residenziali e semi-residenziali, per meglio indirizzare le attività di programmazione degli interventi nell’area socio-sanitaria.
+•	Ospiti: sezione che consente alle strutture residenziali di registrare i dati anagrafici e i movimenti dei propri ospiti.
+•	Adesione: sezione che consente a strutture residenziali a carattere socio-sanitario e socio-assistenziale di persone non autosufficienti di registrare la propria adesione al bando relativo il buono residenzialità per la copertura di parte delle spese sostenute dalle famiglie per l'ospitalità in regime privatistico.
+•	Rendicontazione: sezione che consente ad una struttura residenziale a carattere socio-sanitario e socio-assistenziale di procedere al caricamento delle rendicontazioni attestanti l’effettivo utilizzo del buono residenzialità per i propri ospiti destinatari della misura.
+•	Pratiche di vigilanza: sezione rivolta ai referenti delle commissioni di vigilanza delle ASL per pianificare i sopralluoghi presso le strutture e gestirne gli esiti condividendo i verbali con i referenti delle strutture e gestendo eventuali feedback.
+
 
 Elenco componenti:
 
