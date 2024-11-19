@@ -5,11 +5,14 @@
 
 ## Descrizione del prodotto
 
-La piattaforma VIGILSAN (Piattaforma Regionale della Residenzialità) è uno strumento web che consente agli operatori del settore di avere accesso a uno strumento innovativo e completo per condividere con le strutture regionali le rilevazioni dei posti letto disponibili. 
-Questo permette una rapida collocazione dei pazienti che, dopo un ricovero ospedaliero, necessitano di cure in strutture specializzate come quelle per anziani, disabili, minori, disabili psichiatrici e persone con dipendenze 
+La piattaforma VIGILSAN (Piattaforma Regionale della Residenzialità) è uno strumento web che consente agli operatori del settore di avere accesso a uno strumento innovativo e completo per condividere con le strutture regionali le rilevazioni dei posti letto disponibili.
+ 
+Questo permette una rapida collocazione dei pazienti che, dopo un ricovero ospedaliero, necessitano di cure in strutture specializzate come quelle per anziani, disabili, minori, disabili psichiatrici e persone con dipendenze.
+
 La possibilità di avere una visione aggiornata e precisa dei posti letto disponibili consente di ottimizzare la gestione delle risorse e di garantire un'assistenza tempestiva e adeguata ai pazienti. 
+
 Elenco macro-funzionalità:
-*	Gestione del Profilo: sezione che visualizza i dati anagrafici e il profilo applicativo dell’utente che ha effettuato l’accesso; consente inoltre di accedere ai dati anagrafici censiti in ARPE – Archivio regionale dei punti di erogazione, della struttura per la quale l’utente intende operare.
+*	**Gestione del Profilo**: sezione che visualizza i dati anagrafici e il profilo applicativo dell’utente che ha effettuato l’accesso; consente inoltre di accedere ai dati anagrafici censiti in ARPE – Archivio regionale dei punti di erogazione, della struttura per la quale l’utente intende operare.
 
 *	Gestione documentale: sezione che consente ai referenti delle strutture residenziali e semi-residenziali di raccogliere la documentazione relativa alle strutture di competenza per consentire alla Commissione di Vigilanza di effettuare le verifiche durante le visite ispettive.
 
