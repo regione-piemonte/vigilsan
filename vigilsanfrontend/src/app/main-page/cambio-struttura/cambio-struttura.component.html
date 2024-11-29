@@ -1,0 +1,65 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<h1 mat-dialog-title>Seleziona Struttura</h1>
+<div mat-dialog-content>
+  <div class="d-flex justify-content-center" *ngIf="isSpinEmitter">
+    <div class="spinner-border text-primary spin-emitter-style" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+  <ng-container *ngIf="!isSpinEmitter">
+    <div class="row mt-3 ml-2 mb-3">
+      <div class="col-md-2 d-flex align-items-center">
+        <p class="text-nowrap m-0 p-0" style="font-size: 16px;"><strong>Struttura:</strong></p>
+      </div>
+      <div class="col-md-6 d-flex align-items-center">
+        <input type="text" class="form-control w-100" id="strutturaEnteId" aria-describedby="Struttura"
+          [(ngModel)]="struttura" (keydown.enter)="cercaButton()">
+      </div>
+      <div class="col-md-1"></div>
+      <div class="col-md-3 d-flex align-items-center flex-row-reverse">
+        <button type="button" class="btn btn-primary button-basic px-4" (click)="cercaButton()">CERCA</button>
+      </div>
+    </div>
+    <ng-container *ngIf="listaSceltaStrutture && listaSceltaStrutture.length > 0">
+      <table class="table table-hover">
+        <caption>Tabella strutture</caption>
+        <thead>
+          <tr style="background-color: #0381d6;">
+            <td *ngFor="let column of columns" scope="col" class="text-left text-white" style="font-size: 18px;">
+              {{column}}
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let st of listaSceltaStrutture; index as i" style="font-size: 15px;"
+            (click)="cambiaStruttura(st)">
+            <td><span class="text-nowrap">{{ st.strutturaCodArpe ? st.strutturaCodArpe : '' }}</span></td>
+            <td><span class="text-nowrap">{{ st.strutturaDesc ? st.strutturaDesc : '' }}</span></td>
+            <td><span class="text-nowrap">{{ st.cap ? st.cap : '' }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="d-flex justify-content-between">
+        <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize" (pageChange)="cerca()"
+          [boundaryLinks]="true" [maxSize]="5">
+        </ngb-pagination>
+
+        <select class="custom-select" style="width: auto" [(ngModel)]="pageSize" (ngModelChange)="cerca()">
+          <option [ngValue]="5">5</option>
+          <option [ngValue]="10">10</option>
+          <option [ngValue]="15">15</option>
+        </select>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="listaSceltaStrutture && listaSceltaStrutture.length <= 0">
+      <span style="font-size: 16px;">Nessuna struttura ...</span>
+    </ng-container>
+  </ng-container>
+</div>
+<div mat-dialog-actions>
+  <button mat-button mat-dialog-close>CHIUDI</button>
+</div>

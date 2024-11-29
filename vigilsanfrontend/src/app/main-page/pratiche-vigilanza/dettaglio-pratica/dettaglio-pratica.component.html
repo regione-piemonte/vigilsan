@@ -1,0 +1,380 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<div class="d-flex justify-content-center" *ngIf="isSpinEmitter">
+  <div class="spinner-border text-primary spin-emitter-style" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+<ng-container *ngIf="!isSpinEmitter">
+  <div class="container-fluid">
+    <button type="button" class="btn btn-light mb-2" (click)="goBack()">
+      <em class="bi bi-arrow-left-short vigilsan-icon-style"></em>
+    </button>
+
+    <mat-progress-bar mode="buffer" *ngIf="isLoadingDownloadZip"></mat-progress-bar>
+
+    <ng-container *ngIf="client.praticaDettaglio && client.praticaDettaglio.struttura">
+      <mat-card class="mt-3">
+        <mat-card-header>
+          <mat-card-title>STRUTTURA</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="row flex-row-reverse">
+            <div class="col-12 col-lg-4">
+              <button type="button" class="btn btn-primary button-basic mr-2" (click)="showArchivioDocumentale()"
+                *ngIf="client.checkAzioni('vigil_doc') !== 'null'" [disabled]="isLoadingDownloadZip">GESTIONE
+                DOCUMENTALE</button>
+            </div>
+            <div class="col-12 col-lg-4 mt-lg-0 mt-2 mr-2"
+              *ngIf="client.loggedUser.struttura !== null && client.checkAzioni('vigil_hom-arpe') === 'R'">
+              <button type="button" class="btn btn-primary button-basic" (click)="visualizzaDettaglioArpe()"
+                [disabled]="isLoadingDownloadZip">
+                <span *ngIf="!loadDettaglioArpe">VISUALIZZA DETTAGLIO ARPE</span>
+                <span *ngIf="loadDettaglioArpe">IN CARICAMENTO ...</span>
+              </button>
+            </div>
+          </div>
+          <div class="row p-3">
+            <div class="col-12 col-sm-6 col-lg-2">
+              <h3 class="font-weight-bold display-4">Codice:</h3>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-4">
+              <h3 class="lead display-4">{{client.praticaDettaglio.struttura.strutturaCod}}</h3>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-2" *ngIf="client.praticaDettaglio.struttura.strutturaTipo">
+              <h3 class="font-weight-bold display-4">Tipo:</h3>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-4" *ngIf="client.praticaDettaglio.struttura.strutturaTipo">
+              <h3 class="lead display-4">{{client.praticaDettaglio.struttura.strutturaTipo.strutturaTipoDesc}}</h3>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-2">
+              <h3 class="font-weight-bold display-4">Denominazione:</h3>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-4">
+              <h3 class="lead display-4">{{client.praticaDettaglio.struttura.strutturaDesc}}</h3>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-2" *ngIf="client.praticaDettaglio.struttura.natura">
+              <h3 class="font-weight-bold display-4">Natura:</h3>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-4" *ngIf="client.praticaDettaglio.struttura.natura">
+              <h3 class="lead display-4">{{client.praticaDettaglio.struttura.natura.strutturaNaturaDesc}}</h3>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-2">
+              <h3 class="font-weight-bold display-4">Indirizzo:</h3>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-4">
+              <h3 class="lead display-4">{{client.praticaDettaglio.struttura.indirizzo}}</h3>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-2" *ngIf="client.praticaDettaglio.struttura.strutturaAccreditamento">
+              <h3 class="font-weight-bold display-4">Accreditamento:</h3>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-4" *ngIf="client.praticaDettaglio.struttura.strutturaAccreditamento">
+              <h3 class="lead display-4">
+                {{client.praticaDettaglio.struttura.strutturaAccreditamento.strutturaAccreditamentoDesc}}</h3>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-2">
+              <h3 class="font-weight-bold display-4">Categorie:</h3>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-4">
+              <h3 *ngFor="let categoria of client.praticaDettaglio.struttura.categorie" class="lead display-4">
+                {{categoria.strutturaCategoriaDesc}} (dal: {{categoria.validitaInizio | date : 'dd/MM/yyyy'}})
+              </h3>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </ng-container>
+    <ng-container *ngIf="client.loggedUser.ente === null">
+      <br>
+      <ng-container *ngIf="client.praticaDettaglio && client.praticaDettaglio.ente">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>ENTE</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="row p-3">
+              <div class="col-md-2">
+                <h3 class="font-weight-bold display-4">Codice:</h3>
+              </div>
+              <div class="col-md-4">
+                <h3 class="lead display-4">{{client.praticaDettaglio.ente.enteCod}}</h3>
+              </div>
+              <div class="col-md-2">
+                <h3 class="font-weight-bold display-4">Tipo:</h3>
+              </div>
+              <div class="col-md-4">
+                <h3 class="lead display-4">{{client.praticaDettaglio.ente.enteTipo?.enteTipoDesc ?
+                  client.praticaDettaglio.ente.enteTipo?.enteTipoDesc :
+                  ''}}</h3>
+              </div>
+            </div>
+            <div class="row px-3">
+              <div class="col-md-2">
+                <h3 class="font-weight-bold display-4">Denominazione:</h3>
+              </div>
+              <div class="col-md-4">
+                <h3 class="lead display-4">{{client.praticaDettaglio.ente.enteDesc}}</h3>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </ng-container>
+    </ng-container>
+    <br>
+    <div class="row flex-row-reverse">
+      <div class="col-auto">
+        <button type="button" class="btn btn-primary button-basic px-4" (click)="downloadZipPratiche()">
+          <span *ngIf="!isLoadingDownloadZip">SCARICA PRATICA</span>
+          <span *ngIf="isLoadingDownloadZip">IN CARICAMENTO...</span>
+        </button>
+      </div>
+    </div>
+    <br>
+    <ng-container *ngIf="client.praticaDettaglio">
+      <table class="table table-hover">
+        <caption>Tabella pratica</caption>
+        <thead>
+          <tr style="background-color: #0381d6;">
+            <td *ngFor="let column of columns" scope="col" class="text-white" [class.text-left]="column !== 'Filtro'"
+              [class.text-center]="column === 'Filtro'" [class.px-0]="column === 'Filtro'" style="font-size: 18px;">
+              {{column}}
+            </td>
+            <td class="text-center px-0"></td>
+            <td class="text-center px-0"></td>
+            <td class="text-center px-0"></td>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Pratica -->
+          <tr style="font-size: 15px;">
+            <td class="text-center align-center">
+              <input class="custom-checkbox" type="checkbox" aria-label="Checkbox for following text input"
+                [(ngModel)]="client.praticaDettaglio.checked"
+                (ngModelChange)="toggle('PRA', null, client.praticaDettaglio.checked)">
+            </td>
+            <td class="align-center">{{ client.praticaDettaglio.tipo && client.praticaDettaglio.tipo.praticaTipoDesc ?
+              client.praticaDettaglio.tipo.praticaTipoDesc : ''}}</td>
+            <td class="align-center">{{ client.praticaDettaglio.praticaNumero ?
+              client.praticaDettaglio.praticaNumero : ''}}</td>
+            <td class="align-center">
+              {{ praticaPraticaDettaglio && praticaPraticaDettaglio.praticaStato &&
+              praticaPraticaDettaglio.praticaStato.praticaStatoDesc
+              ?
+              praticaPraticaDettaglio.praticaStato.praticaStatoDesc
+              :
+              '-'}}
+            </td>
+            <td class="align-center">
+              <span class="text-nowrap">
+                {{ client.praticaDettaglio.dataoraApertura ? (client.praticaDettaglio.dataoraApertura | date:
+                'dd/MM/yyyy')
+                : ' '}}
+              </span>
+              -
+              <span class="text-nowrap">
+                {{ client.praticaDettaglio.dataoraChiusura ? (client.praticaDettaglio.dataoraChiusura | date:
+                'dd/MM/yyyy')
+                : ' '}}
+              </span>
+            </td>
+            <td class="align-center">
+              -
+            </td>
+            <td class="text-center px-0">
+              <button mat-button class="bi bi-file-earmark-text vigilsan-icon-style"
+                *ngIf="client.praticaDettaglio.moduloId || client.praticaDettaglio.moduloCompilatoId"
+                title="modifica documento" [disabled]="isLoadingDownloadZip"
+                (click)="changeModulo(client.praticaDettaglio.moduloId, client.praticaDettaglio.moduloCompilatoId, (client.praticaDettaglio.praticaDetIdCheck ? client.praticaDettaglio.praticaDetIdCheck : null), null)">
+              </button>
+            </td>
+            <td class="text-center px-0">
+              <div
+                *ngIf="isSpinEmitterLoadingPdf && client.praticaDettaglio.moduloCompilatoId && !indexTableLoadingPdf && !isTableLoadingScadenza">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
+              </div>
+              <ng-container *ngIf="!isSpinEmitterLoadingPdf">
+                <button mat-button class="bi bi-filetype-pdf vigilsan-icon-style"
+                  *ngIf="client.praticaDettaglio.moduloCompilatoId" title="scarica pdf"
+                  (click)="getPdf(client.praticaDettaglio.moduloCompilatoId, null, false)"
+                  [disabled]="isLoadingDownloadZip">
+                </button>
+              </ng-container>
+            </td>
+            <td class="text-center px-0"></td>
+            <td class="text-center px-0">
+              <button mat-button class="bi bi-list-task vigilsan-icon-style" title="requisiti"
+                [disabled]="isLoadingDownloadZip" (click)="showRequisiti(null, null)">
+              </button>
+            </td>
+          </tr>
+          <!-- listAppPre -->
+          <tr *ngFor="let e of listAppPre;index as i" style="font-size: 15px;">
+            <td class="text-center align-center">
+              <ng-container *ngIf="e.isPrescrizione && !e.isSopralluogo; else elseTemplate">
+                <input class="custom-checkbox" type="checkbox" aria-label="Checkbox for following text input"
+                  [(ngModel)]="e.checked" (ngModelChange)="toggle('PRE', e, e.checked)">
+              </ng-container>
+              <ng-template #elseTemplate>
+                <input class="custom-checkbox" type="checkbox" aria-label="Checkbox for following text input"
+                  [(ngModel)]="e.checked" (ngModelChange)="toggle('APP', e, e.checked)">
+              </ng-template>
+            </td>
+            <td class="align-center">--- {{ e.tipo && e.tipo.tipoDesc ?
+              e.tipo.tipoDesc : ''}}</td>
+            <td class="align-center" *ngIf="e.isSopralluogo">{{ e.appuntamentoNumero ?
+              e.appuntamentoNumero : ''}}</td>
+            <td class="align-center" *ngIf="e.isPrescrizione">{{ e.prescrizioneNumero ?
+              e.prescrizioneNumero : ''}}</td>
+            <td class="align-center">{{ e.stato && e.stato.statoDesc ?
+              e.stato.statoDesc : ''}}</td>
+            <td class="align-center">
+              <span class="text-nowrap">{{ e.dataoraApertura ? (e.dataoraApertura | date: 'dd/MM/yyyy') : ' '}}</span>
+              -
+              <span class="text-nowrap">{{ e.dataoraChiusura ? (e.dataoraChiusura | date: 'dd/MM/yyyy') : ' '}}</span>
+            </td>
+            <td class="align-center">
+              <span class="text-nowrap">{{ e.dataoraInizio ? (e.dataoraInizio | date: 'dd/MM/yyyy HH:mm') : ' '}}</span>
+              -
+              <span class="text-nowrap">{{ e.dataoraFine ? (e.dataoraFine | date: 'dd/MM/yyyy HH:mm') : ' '}}</span>
+            </td>
+            <td class="text-center px-0">
+              <button mat-button class="bi bi-file-earmark-text vigilsan-icon-style" title="modifica documento"
+                (click)="changeModulo(e.moduloId, e.moduloCompilatoId, (e.praticaDetIdCheck ? e.praticaDetIdCheck : null), null)"
+                *ngIf="e.moduloId || e.moduloCompilatoId" class="mr-1" [disabled]="isLoadingDownloadZip">
+              </button>
+            </td>
+            <td class="text-center px-0">
+              <div
+                *ngIf="isSpinEmitterLoadingPdf && e.moduloCompilatoId && indexTableLoadingPdf === i && !isTableLoadingScadenza">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
+              </div>
+              <ng-container *ngIf="!isSpinEmitterLoadingPdf">
+                <button mat-button class="bi bi-filetype-pdf vigilsan-icon-style" title="scarica pdf"
+                  (click)="getPdf(e.moduloCompilatoId, i, false)" *ngIf="e.moduloCompilatoId"
+                  [disabled]="isLoadingDownloadZip">
+                </button>
+              </ng-container>
+            </td>
+            <td class="text-center px-0">
+              <button mat-button class="bi bi-people vigilsan-icon-style" *ngIf="e.isSopralluogo"
+                title="mostra partecipanti" [disabled]="isLoadingDownloadZip" (click)="showPartecipanti(e)">
+              </button>
+            </td>
+            <td class="text-center px-0">
+              <button mat-button class="bi bi-list-task vigilsan-icon-style" title="requisiti" *ngIf="e.isPrescrizione"
+                [disabled]="isLoadingDownloadZip" (click)="showRequisiti(e, null)">
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      <div class="row justify-content-between">
+        <div class="col-12 col-lg-4 text-left mt-lg-0 mt-2">
+          <button type="button" class="btn btn-primary button-basic" (click)="showAddAzione()"
+            [disabled]="isLoadingDownloadZip">NUOVA
+            ATTIVIT&Agrave;</button>
+        </div>
+        <div class="col-12 col-lg-4 text-lg-center text-left mt-lg-0 mt-2">
+          <button type="button" class="btn btn-primary button-basic" (click)="showAddSopralluogo()"
+            [disabled]="isLoadingDownloadZip">NUOVO
+            SOPRALLUOGO</button>
+        </div>
+        <div class="col-12 col-lg-4 text-lg-right text-left mt-lg-0 mt-2">
+          <button type="button" class="btn btn-primary button-basic" (click)="showAddPrescrizione()"
+            [disabled]="isLoadingDownloadZip">NUOVA
+            PRESCRIZIONE</button>
+        </div>
+      </div>
+      <br>
+      <div class="d-flex justify-content-center" *ngIf="isSpinEmitterTableAttivita">
+        <div class="spinner-border text-primary spin-emitter-style" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+      <ng-container *ngIf="!isSpinEmitterTableAttivita">
+        <ng-container *ngIf="listAttivitaSwap; else elseTemplate">
+          <table class="table table-hover">
+            <caption>Tabella attivit&agrave;</caption>
+            <thead>
+              <tr style="background-color: #0381d6;">
+                <td *ngFor="let column of columnsAzioni" scope="col" class="text-left text-white"
+                  style="font-size: 18px;" [class.text-left]="column !== 'Modulo'"
+                  [class.text-center]="column === 'Modulo'" [class.px-0]="column === 'Modulo'">
+                  {{column}}
+                </td>
+                <td class="px-0"></td>
+                <td class="px-0"></td>
+                <td class="px-0"></td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let at of listAttivitaSwap; index as i" style="font-size: 15px;"
+                [class.border-valida]="checkDataScadenza(at) === 'V'"
+                [class.border-scaduta]="checkDataScadenza(at) === 'S'">
+                <td><em [class]="at.iconToUse"></em></td>
+                <td>{{ at.dataoraAzione ? (at.dataoraAzione | date: 'dd/MM/yyyy HH:mm') : '' }}</td>
+                <td>{{ getNumeroAttivita(at) ? getNumeroAttivita(at) : '' }}</td>
+                <td>{{ at.azioneDesc }}</td>
+                <td class="text-center px-0">
+                  <button mat-button class="bi bi-file-earmark-text vigilsan-icon-style" title="modifica documento"
+                    (click)="changeModulo(at.moduloId, at.moduloCompilatoId, (at.praticaDetId ? at.praticaDetId : null), at)"
+                    *ngIf="(at.moduloId || at.moduloCompilatoId) && at.flgScadenza === null"
+                    [disabled]="isLoadingDownloadZip">
+                  </button>
+                  <div
+                    *ngIf="isSpinEmitterLoadingPdf && (at.moduloCompilatoId) && at.flgScadenza === null && indexTableLoadingPdf === i && isTableLoadingScadenza">
+                    <div class="spinner-border text-primary" role="status">
+                      <span class="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                  <ng-container *ngIf="!isSpinEmitterLoadingPdf">
+                    <button mat-button class="bi bi-filetype-pdf vigilsan-icon-style" title="scarica pdf"
+                      (click)="getPdf(at.moduloCompilatoId, i, true)"
+                      *ngIf="(at.moduloCompilatoId) && at.flgScadenza === null" [disabled]="isLoadingDownloadZip">
+                    </button>
+                    <button mat-button disabled *ngIf="!at.moduloCompilatoId"></button>
+                  </ng-container>
+                </td>
+                <td class="text-center px-0">
+                  <ng-container *ngIf="client.selectedProfilo && client.selectedProfilo.profiloId">
+                    <button mat-button (click)="showChangeAttivita(at)" class="bi bi-pencil-square vigilsan-icon-style"
+                      title="modifica attivitÃ "
+                      *ngIf="!at.flgScadenza && at.profiloId === client.selectedProfilo.profiloId"
+                      [disabled]="isLoadingDownloadZip">
+                    </button>
+                  </ng-container>
+                </td>
+                <td class="text-center px-0">
+                  <ng-container *ngIf="client.selectedProfilo && client.selectedProfilo.profiloId">
+                    <button mat-button (click)="showDeleteAttivita(at)" class="bi bi-trash vigilsan-icon-style"
+                      title="elimina attitivitÃ "
+                      *ngIf="!at.flgScadenza && at.profiloId === client.selectedProfilo.profiloId"
+                      [disabled]="isLoadingDownloadZip" style="color: red;">
+                    </button>
+                  </ng-container>
+                </td>
+                <td class="text-center px-0">
+                  <button mat-button class="bi bi-check2-circle vigilsan-icon-style" title="conformitÃ "
+                    [disabled]="isLoadingDownloadZip" (click)="showRequisiti(null, at)" *ngIf="at.flgClreqEsito">
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </ng-container>
+        <ng-template #elseTemplate>
+          <p class="ml-2 mt-2">Nessuna attivit&agrave; per la selezione corrente.</p>
+        </ng-template>
+      </ng-container>
+    </ng-container>
+
+  </div>
+</ng-container>

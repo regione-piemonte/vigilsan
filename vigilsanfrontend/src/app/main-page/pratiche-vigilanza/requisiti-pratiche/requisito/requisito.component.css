@@ -1,0 +1,22 @@
+/*
+ Copyright Regione Piemonte - 2024
+ SPDX-License-Identifier: EUPL-1.2
+*/
+
+.requisito-text {
+  transition: color 0.2s, border-color 0.2s; /* Aggiunge una transizione per un effetto morbido */
+}
+
+.requisito-text:hover {
+  color: #026cb3; /* Cambia il colore del testo in blu */
+  border: 1px solid #026cb3; /* Aggiunge un bordo sottile blu */
+  padding: 2px; /* Aggiunge un po' di spazio interno per il bordo */
+  border-radius: 2px; /* Arrotonda leggermente gli angoli del bordo */
+}
+
+.requisito-text-selected {
+  color: #026cb3; /* Cambia il colore del testo in blu */
+  border: 1px solid #026cb3; /* Aggiunge un bordo sottile blu */
+  padding: 2px; /* Aggiunge un po' di spazio interno per il bordo */
+  border-radius: 2px; /* Arrotonda leggermente gli angoli del bordo */
+}

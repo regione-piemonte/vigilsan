@@ -1,0 +1,34 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<h1 mat-dialog-title>
+  Conferma eliminazione attivit&agrave;
+</h1>
+<div mat-dialog-content class="my-2">
+  <div class="container-fluid mb-2 my-2">
+    <div class="row align-items-center justify-content-center">
+      <div class="col-12">
+        <h3 class="lead display-4" *ngIf="at">
+          <span class="font-weight-bold">Data/ora: </span>
+          {{ at.dataoraAzione ? (at.dataoraAzione | date: 'dd/MM/yyyy HH:mm') : '' }}
+        </h3>
+        <h3 class="lead display-4" *ngIf="at">
+          <span class="font-weight-bold">Azione: </span>
+          {{ at.azioneDesc }}
+        </h3>
+        <br>
+        <h3 class="font-weight-bold display-4">Confermi l'eliminazione?</h3>
+      </div>
+    </div>
+  </div>
+</div>
+<div mat-dialog-actions>
+  <button mat-button mat-dialog-close>CHIUDI</button>
+  <button type="button" class="btn btn-primary px-4 ml-auto button-basic" (click)="closeModal()"
+    [disabled]="isLoadingDeleteAttivita">
+    <span *ngIf="!isLoadingDeleteAttivita">ELIMINA</span>
+    <span *ngIf="isLoadingDeleteAttivita">IN CARICAMENTO...</span>
+  </button>
+</div>

@@ -1,0 +1,45 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<p *ngFor="let req of listaRequisitiPraticaTo" class="m-0">
+  <span *ngFor="let _ of [].constructor(3); index as i">
+    <span *ngFor="let _ of [].constructor(req.clreqOrd.length-2)"><ng-container
+        *ngIf="i === 0">&nbsp;&nbsp;</ng-container></span>
+    <ng-container *ngIf="i === 0; else elseTemplate">|</ng-container>
+    <ng-template #elseTemplate>-</ng-template>
+  </span>
+  <input class="mx-1" type="checkbox" aria-label="Checkbox for following text input" [(ngModel)]="req.checked"
+    (ngModelChange)="toggle(req)" *ngIf="req.flgSelezionabile" [disabled]="client.atRequisiti !== null || client.isLoadingDataRequisito">
+  <span (mouseenter)="$event.stopPropagation()" (mouseleave)="$event.stopPropagation()"
+    [class.requisito-text]="req.mouseHover" (mouseenter)="req.mouseHover = true"
+    (mouseleave)="req.mouseHover = false" (click)="onSelected(req)" [class.requisito-text-selected]="req.isSelected">
+    <!-- {{ req.clreqDesc }} -->
+    <span *ngIf="splitString(req.clreqDesc, 56) as splitText">
+      <span>{{ splitText.firstPart }}</span><br *ngIf="splitText.secondPart">
+      <span>
+        <span *ngFor="let _ of [].constructor(req.clreqOrd.length-2)">&nbsp;&nbsp;</span>
+        {{ splitText.secondPart }}
+      </span>
+    </span>
+  </span>
+  <app-requisito *ngIf="req.list.length > 0 && listaRequisitiPraticaTo" [listaRequisitiPraticaTo]="req.list">
+  </app-requisito>
+</p>
+<!-- <mat-accordion multi>
+  <mat-expansion-panel hideToggle *ngFor="let req of listaRequisitiPraticaTo" [expanded]="req.list.length > 0"
+    [disabled]="req.list.length <= 0">
+    <mat-expansion-panel-header class="p-1" style="color: black;">
+      <mat-panel-title>
+        <mat-icon class="arrow-icon" *ngIf="req.list.length > 0">
+          expand_more
+        </mat-icon>
+        <mat-icon *ngIf="req.list.length <= 0"></mat-icon>
+        <span>{{ req.clreqDesc }}</span>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <app-requisito *ngIf="req.list.length > 0 && listaRequisitiPraticaTo" [listaRequisitiPraticaTo]="req.list">
+    </app-requisito>
+  </mat-expansion-panel>
+</mat-accordion> -->

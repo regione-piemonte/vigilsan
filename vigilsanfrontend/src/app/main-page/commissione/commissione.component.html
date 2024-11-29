@@ -1,0 +1,53 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<div class="d-flex justify-content-center" *ngIf="isSpinEmitter">
+  <div class="spinner-border text-primary spin-emitter-style" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+<ng-container *ngIf="!isSpinEmitter">
+  <div class="d-flex justify-content-end">
+    <button type="button" class="btn btn-primary button-basic" (click)="showNuovoMebroCommissione()">NUOVO MEMBRO
+      COMMISSIONE</button>
+  </div>
+  <br>
+  <ng-container
+    *ngIf="client.listaSoggettiCommissione && client.listaSoggettiCommissione.length > 0; else elseTemplate">
+    <table class="table table-hover">
+      <caption>Tabella membri commissione</caption>
+      <thead>
+        <tr style="background-color: #0381d6;">
+          <td *ngFor="let column of columnsCommissione" scope="col" class="text-left text-white"
+            style="font-size: 18px;">
+            {{column}}
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let s of client.listaSoggettiCommissione; index as i" style="font-size: 15px;">
+          <td>{{ s.soggetto && s.soggetto.codiceFiscale ? s.soggetto.codiceFiscale : '-' }}</td>
+          <td>{{ s.soggetto && s.soggetto.cognome ? s.soggetto.cognome : '-' }}</td>
+          <td>{{ s.soggetto && s.soggetto.nome ? s.soggetto.nome : '-' }}</td>
+          <td>{{ s.ruoloEnteSoggetto && s.ruoloEnteSoggetto.ruoloEnteSoggettoDesc ?
+            s.ruoloEnteSoggetto.ruoloEnteSoggettoDesc : '-' }}</td>
+          <td>{{ s.validitaInizio ? (s.validitaInizio | date : 'dd/MM/yyyy') : '-' }}</td>
+          <td>{{ s.validitaFine ? (s.validitaFine | date : 'dd/MM/yyyy') : '-' }}</td>
+          <td class="text-center">
+            <button mat-button (click)="modificaMembro(s)">
+              <em class="bi bi-pencil-square vigilsan-icon-style"></em>
+            </button>
+            <button mat-button (click)="showEliminaMembro(s)">
+              <em class="bi bi-trash vigilsan-icon-style" style="color: red;"></em>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-container>
+  <ng-template #elseTemplate>
+    <p class="mt-2 ml-3 lead">Nessung soggetto trovato.</p>
+  </ng-template>
+</ng-container>

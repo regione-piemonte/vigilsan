@@ -1,0 +1,22 @@
+/*
+ Copyright Regione Piemonte - 2024
+ SPDX-License-Identifier: EUPL-1.2
+*/
+
+.custom-modal {
+  overflow-y: auto;
+  /* Aggiungi uno scroll verticale quando necessario */
+}
+
+.biExcel {
+  font-size: 2rem;
+  color: green;
+}
+
+a {
+  color: #0381d6;
+}
+
+.nav-pills .nav-link.active {
+  background-color: #0381d6;
+}

@@ -1,0 +1,7 @@
+{
+  "/api": {
+    "target": "https://<url servizi>/vigilsanfrontendsrv/bff",
+    "secure": false,
+    "changeOrigin": true
+  }
+}

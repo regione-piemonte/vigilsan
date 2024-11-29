@@ -1,0 +1,81 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<h1 mat-dialog-title>
+  PARTECIPANTI SOPRALLUOGO
+</h1>
+<div mat-dialog-content class="my-2">
+  <div class="d-flex justify-content-center" *ngIf="isSpinEmitter">
+    <div class="spinner-border text-primary spin-emitter-style" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+  <ng-container *ngIf="!isSpinEmitter">
+    <div class="container-fluid mb-2 my-2">
+      <div class="row align-items-center justify-content-center">
+        <div class="col-12">
+          <h3 class="lead display-4" *ngIf="sopralluogo">
+            <span class="font-weight-bold">Tipo: </span>
+            {{ sopralluogo.tipo && sopralluogo.tipo.tipoDesc ? sopralluogo.tipo.tipoDesc : ''}}
+          </h3>
+          <h3 class="lead display-4" *ngIf="sopralluogo">
+            <span class="font-weight-bold">Inizio/Fine: </span>
+            <span class="text-nowrap">
+              {{ sopralluogo.dataoraInizio ? (sopralluogo.dataoraInizio | date: 'dd/MM/yyyy HH:mm') : ''}}
+            </span>
+            -
+            <span class="text-nowrap">
+              {{ sopralluogo.dataoraFine ? (sopralluogo.dataoraFine | date: 'dd/MM/yyyy HH:mm') : ''}}
+            </span>
+          </h3>
+          <br>
+          <ng-container *ngIf="objListMembroSopralluogo && objListMembroSopralluogo.length > 0">
+            <table class="table table-hover">
+              <caption>Tabella partecipanti sopralluogo</caption>
+              <thead>
+                <tr style="background-color: #0381d6;">
+                  <td *ngFor="let column of columnsMembriRuolo" scope="col" class="text-left text-white"
+                    style="font-size: 18px;">
+                    {{column}}
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let membro of objListMembroSopralluogo; index as i" style="font-size: 15px;">
+                  <td class="text-nowrap">
+                    {{ membro.descrizione ? membro.descrizione : '' }}
+                  </td>
+                  <td class="text-nowrap">
+                    {{ membro.cognome ? membro.cognome : '' }}
+                  </td>
+                  <td class="text-nowrap">
+                    {{ membro.nome ? membro.nome : '' }}
+                  </td>
+                  <td class="text-center">
+                    <button mat-button (click)="showAddPartecipante(membro)" class="bi bi-plus-lg vigilsan-icon-style"
+                      title="aggiungi partecipante" [disabled]="membro.soggettoId"
+                      [ngClass]="{'disabled-button-add': membro.soggettoId}">
+                    </button>
+                    <button mat-button (click)="showEliminaPartecipante(membro)" class="bi bi-trash vigilsan-icon-style"
+                      title="elimina partecipante" [disabled]="!membro.soggettoId"
+                      [ngClass]="{'disabled-button-delete': !membro.soggettoId, 'active-button-delete': membro.soggettoId}">
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </ng-container>
+          <ng-container *ngIf="objListMembroSopralluogo && objListMembroSopralluogo.length <= 0">
+            <span style="font-size: 16px;">Nessuna partecipante da aggiungere ...</span>
+          </ng-container>
+          <br>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+<div mat-dialog-actions>
+  <button mat-button mat-dialog-close>CHIUDI</button>
+</div>

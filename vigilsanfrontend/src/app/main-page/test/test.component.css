@@ -1,0 +1,8 @@
+/*
+ Copyright Regione Piemonte - 2024
+ SPDX-License-Identifier: EUPL-1.2
+*/
+
+::ng-deep .mat-form-field-wrapper {
+  padding-bottom: 0px;
+}

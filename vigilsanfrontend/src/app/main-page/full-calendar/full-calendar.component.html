@@ -1,0 +1,275 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<div class="container-fluid">
+  <div class="row mb-3 w-100 justify-content-between align-items-center">
+    <div class="col-12 col-lg-1 mt-2 mt-lg-0">
+      <em class="bi bi-calendar-check mr-2 vigilsan-icon-style"></em>
+      <!-- <span>Calendario</span> -->
+    </div>
+    <div class="col-12 col-lg-4 mt-2 mt-lg-0">
+      <button class="btn btn-light btn-lg" type="button" (click)="previusMonth()" [disabled]="client.currentMonth <= 1">
+        &lt;
+      </button>
+      <button class="btn btn-light btn-lg" (click)="goToToday()">Oggi</button>
+      <button class="btn btn-light btn-lg" type="button" (click)="nextMonth()" [disabled]="client.currentMonth >= 12">
+        &gt;
+      </button>
+    </div>
+    <div class="col-12 col-lg-7 text-lg-right text-left mt-2 mt-lg-0">
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-light btn-lg dropdown-toggle mr-1" data-toggle="dropdown"
+          aria-expanded="false">
+          {{ client.currentMonth >= 1 && client.currentMonth <=12 ? mesi[client.currentMonth-1] : '' }}</button>
+            <div class="dropdown-menu">
+              <button class="dropdown-item" *ngFor="let mese of mesi" (click)="onSelectedMonth(mese)">{{ mese
+                }}</button>
+            </div>
+      </div>
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-light btn-lg dropdown-toggle mr-1" data-toggle="dropdown"
+          aria-expanded="false">
+          {{ client.selectedYear }}</button>
+        <div class="dropdown-menu">
+          <button class="dropdown-item" *ngFor="let year of client.years" (click)="onSelectedYear(year)">{{ year
+            }}</button>
+        </div>
+      </div>
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-light btn-lg dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+          {{ client.selectedMode }}</button>
+        <div class="dropdown-menu">
+          <button class="dropdown-item" *ngFor="let mode of modes" (click)="onSelectedMode(mode)">{{ mode }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="d-flex justify-content-center" *ngIf="isSpinEmitter">
+  <div class="spinner-border text-primary spin-emitter-style" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+<ng-container *ngIf="!isSpinEmitter">
+  <table class="table table-hover">
+    <caption>Calendario</caption>
+    <thead>
+      <tr style="background-color: #0381d6;">
+        <td *ngFor="let column of columns;  index as x" scope="col" class="text-center text-white"
+          style="font-size: 18px;">
+          <ng-container *ngIf="client.selectedMode === 'Mese'">
+            {{ column }}
+          </ng-container>
+          <ng-container *ngIf="client.selectedMode === 'Settimana'">
+            <ng-container *ngIf="client.currentMonth >= 1 && client.currentMonth <=12 && x === 0; else elseTemplate">
+              {{ mesi[client.currentMonth-1] }}
+            </ng-container>
+            <ng-template #elseTemplate>
+              <span style="color: #0381d6;">---------------</span>
+            </ng-template>
+          </ng-container>
+        </td>
+      </tr>
+    </thead>
+    <br>
+    <tbody>
+      <ng-container *ngIf="client.selectedMode === 'Mese'">
+        <tr *ngFor="let dateLine of client.dates; index as i" style="font-size: 15px;">
+          <td *ngFor="let data of dateLine; index as j" (mouseenter)="onMouseEnter(i, j)"
+            (mouseleave)="onMouseLeave(i, j)" [ngClass]="{'highlight-border': isHighlighted(i, j)}" class="p-0">
+            <div class="card p-0">
+              <div class="card-body p-3" style="min-height: 230px;">
+                <h4 class="text-nowrap text-center">
+                  <strong>{{ data | date : 'dd' }}
+                    <span *ngIf="isToday(data)" class="badge badge-primary" style="color: #0381d6;"><span
+                        class="text-white">Oggi</span></span>
+                    <div #goToToday *ngIf="isToday(data)"></div>
+                    <span *ngIf="!isToday(data)">{{ lastFirstDay(data) }}</span>
+                  </strong>
+                </h4>
+                <hr class="my-1">
+                <ng-container *ngFor="let scadenza of getScadentePerData(data)">
+                  <div class="mt-3">
+                    <em class="bi bi-geo-alt-fill mr-1" *ngIf="scadenza.flgScadenza === 'S'"
+                      [placement]="j === dateLine.length - 1 ? 'auto' : (j < 2 ? 'auto' : 'top')"
+                      [ngbPopover]="popoverContent" popoverTitle="Informazioni" style="color: #0381d6;"></em>
+                    <em class="bi bi-bell-fill badge-success mr-1" *ngIf="scadenza.flgScadenza === 'M'"
+                      [placement]="j === dateLine.length - 1 ? 'auto' : (j < 2 ? 'auto' : 'top')"
+                      [ngbPopover]="popoverContent" popoverTitle="Informazioni" style="color: #0381d6;"></em>
+                    <em class="bi bi-bell mr-1" *ngIf="scadenza.flgScadenza === 'A'"
+                      [placement]="j === dateLine.length - 1 ? 'auto' : (j < 2 ? 'auto' : 'top')"
+                      [ngbPopover]="popoverContent" popoverTitle="Informazioni" style="color: #0381d6;"></em>
+                    <!-- <span class="badge badge-pill badge-primary mr-1" *ngIf="scadenza.flgScadenza === 'S'"
+                      [placement]="j === dateLine.length - 1 ? 'auto' : (j < 2 ? 'auto' : 'top')"
+                      [ngbPopover]="popoverContent" popoverTitle="Informazioni" style="font-size: 13px;">i</span>
+                    <span class="badge badge-pill badge-success mr-1" *ngIf="scadenza.flgScadenza === 'M'"
+                      [placement]="j === dateLine.length - 1 ? 'auto' : (j < 2 ? 'auto' : 'top')"
+                      [ngbPopover]="popoverContent" popoverTitle="Informazioni" style="font-size: 13px;">i</span>
+                    <span class="badge badge-pill badge-warning mr-1" *ngIf="scadenza.flgScadenza === 'A'"
+                      [placement]="j === dateLine.length - 1 ? 'auto' : (j < 2 ? 'auto' : 'top')"
+                      [ngbPopover]="popoverContent" popoverTitle="Informazioni" style="font-size: 13px;">i</span> -->
+                    <span *ngIf="client.opened && scadenza.praticaId && scadenza.praticaTipoId"
+                      class="underline-on-hover"
+                      (click)="goToPraticaDettaglio(scadenza.praticaId, scadenza.praticaTipoId)">{{
+                      scadenza.oraDaMostrare}} {{
+                      scadenza.scadenzaDesc | slice:0:11}}</span>
+                    <span *ngIf="!client.opened && scadenza.praticaId && scadenza.praticaTipoId"
+                      class="underline-on-hover"
+                      (click)="goToPraticaDettaglio(scadenza.praticaId, scadenza.praticaTipoId)">{{
+                      scadenza.oraDaMostrare}} {{
+                      scadenza.scadenzaDesc | slice:0:18}}</span>
+                  </div>
+                  <ng-template #popoverContent>
+                    <div class="row align-items-center">
+                      <div class="col-12 text-nowrap" *ngIf="scadenza.scadenzaDesc">
+                        <span class="font-weight-bold text-nowrap">Descrizione: </span>
+                        <span class="text-nowrap">{{ scadenza.scadenzaDesc }}</span>
+                      </div>
+                      <div class="col-12 text-nowrap" *ngIf="scadenza.flgScadenza">
+                        <span class="font-weight-bold text-nowrap">Tipo: </span>
+                        <span [ngSwitch]="scadenza.flgScadenza">
+                          <span *ngSwitchCase="'A'">
+                            Automatica
+                          </span>
+                          <span *ngSwitchCase="'M'">
+                            Manuale
+                          </span>
+                          <span *ngSwitchCase="'S'">
+                            Sopralluogo
+                          </span>
+                        </span>
+                      </div>
+                      <div class="col-12" *ngIf="scadenza.dataoraScadenza">
+                        <span class="font-weight-bold text-nowrap">Dat/ora scadenza: </span>
+                        <span class="text-nowrap">{{ scadenza.dataoraScadenza | date : 'dd/MM/yyyy HH:mm' }}</span>
+                      </div>
+                      <div class="col-12" *ngIf="scadenza.enteCod">
+                        <span class="font-weight-bold text-nowrap">Ente: </span>
+                        <span class="text-nowrap">{{ scadenza.enteCod }} {{ scadenza.enteDesc }}</span>
+                      </div>
+                      <div class="col-12" *ngIf="scadenza.strutturaCodArpe">
+                        <span class="font-weight-bold text-nowrap">Struttura: </span>
+                        <span class="text-nowrap">{{ scadenza.strutturaCodArpe }} {{ scadenza.strutturaDesc }}</span>
+                      </div>
+                      <div class="col-12" *ngIf="scadenza.praticaTipoDesc">
+                        <span class="font-weight-bold text-nowrap">Pratica: </span>
+                        <span class="text-nowrap">{{ scadenza.praticaTipoDesc }}</span>
+                      </div>
+                      <div class="col-12" *ngIf="scadenza.prescrizioneTipoDesc">
+                        <span class="font-weight-bold text-nowrap">Prescrizione: </span>
+                        <span class="text-nowrap">{{ scadenza.prescrizioneTipoDesc }}</span>
+                      </div>
+                      <div class="col-12" *ngIf="scadenza.appuntamentoTipoDesc">
+                        <span class="font-weight-bold text-nowrap">Appuntamento: </span>
+                        <span class="text-nowrap">{{ scadenza.appuntamentoTipoDesc }}</span>
+                      </div>
+                    </div>
+                  </ng-template>
+                </ng-container>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+      <ng-container *ngIf="client.selectedMode === 'Settimana'">
+        <tr style="font-size: 15px;" *ngFor="let data of client.dates[client.monthIndex]; index as j"
+          (mouseenter)="onMouseEnter(client.monthIndex, j)" (mouseleave)="onMouseLeave(client.monthIndex, j)"
+          [ngClass]="{'highlight-border': isHighlighted(client.monthIndex, j)}">
+          <td colspan="1" style="height: 4rem;">
+            <div class="card w-100">
+              <div class="card-body">
+                <h4 class="text-nowrap text-center">
+                  <strong>{{ columns[j] }}</strong>
+                </h4>
+                <hr class="my-1">
+                <h4 class="text-nowrap text-center mt-3 mb-0">
+                  <strong>{{ data | date : 'dd' }}
+                    <span *ngIf="isToday(data)" class="badge badge-primary" style="color: #0381d6;"><span
+                        class="text-white">Oggi</span></span>
+                    <span *ngIf="!isToday(data)">{{ lastFirstDay(data) }}</span>
+                  </strong>
+                </h4>
+              </div>
+            </div>
+          </td>
+          <td colspan="6" style="height: 4rem;">
+            <div class="card w-100" style="height: 100%;">
+              <div class="card-body">
+                <ng-container *ngFor="let scadenza of getScadentePerData(data);index as i">
+                  <div [ngClass]="{'mt-3': i!==0}">
+                    <span *ngIf="scadenza.praticaId && scadenza.praticaTipoId" class="underline-on-hover mr-2"
+                      (click)="goToPraticaDettaglio(scadenza.praticaId, scadenza.praticaTipoId)">{{
+                      scadenza.oraDaMostrare}} {{
+                      scadenza.scadenzaDesc }}</span>
+                    <em class="bi bi-geo-alt-fill mr-1" *ngIf="scadenza.flgScadenza === 'S'"
+                      [ngbPopover]="popoverContent" popoverTitle="Informazioni" style="color: #0381d6;"></em>
+                    <em class="bi bi-bell-fill badge-success mr-1" *ngIf="scadenza.flgScadenza === 'M'"
+                      [ngbPopover]="popoverContent" popoverTitle="Informazioni" style="color: #0381d6;"></em>
+                    <em class="bi bi-bell mr-1" *ngIf="scadenza.flgScadenza === 'A'" [ngbPopover]="popoverContent"
+                      popoverTitle="Informazioni" style="color: #0381d6;"></em>
+                    <span class="badge badge-pill badge-primary" *ngIf="scadenza.flgScadenza === 'S'" placement="top"
+                      [ngbPopover]="popoverContent" popoverTitle="Informazioni"
+                      style="font-size: 13px;">Sopralluogo</span>
+                    <span class="badge badge-pill badge-success" *ngIf="scadenza.flgScadenza === 'M'" placement="top"
+                      [ngbPopover]="popoverContent" popoverTitle="Informazioni" style="font-size: 13px;">Manuale</span>
+                    <span class="badge badge-pill badge-warning" *ngIf="scadenza.flgScadenza === 'A'" placement="top"
+                      [ngbPopover]="popoverContent" popoverTitle="Informazioni"
+                      style="font-size: 13px;">Automatica</span>
+                  </div>
+                  <ng-template #popoverContent>
+                    <div class="row align-items-center">
+                      <div class="col-12 text-nowrap" *ngIf="scadenza.scadenzaDesc">
+                        <span class="font-weight-bold text-nowrap">Descrizione: </span>
+                        <span class="text-nowrap">{{ scadenza.scadenzaDesc }}</span>
+                      </div>
+                      <div class="col-12 text-nowrap" *ngIf="scadenza.flgScadenza">
+                        <span class="font-weight-bold text-nowrap">Tipo: </span>
+                        <span [ngSwitch]="scadenza.flgScadenza">
+                          <span *ngSwitchCase="'A'">
+                            Automatica
+                          </span>
+                          <span *ngSwitchCase="'M'">
+                            Manuale
+                          </span>
+                          <span *ngSwitchCase="'S'">
+                            Sopralluogo
+                          </span>
+                        </span>
+                      </div>
+                      <div class="col-12" *ngIf="scadenza.dataoraScadenza">
+                        <span class="font-weight-bold text-nowrap">Dat/ora scadenza: </span>
+                        <span class="text-nowrap">{{ scadenza.dataoraScadenza | date : 'dd/MM/yyyy HH:mm' }}</span>
+                      </div>
+                      <div class="col-12" *ngIf="scadenza.enteCod">
+                        <span class="font-weight-bold text-nowrap">Ente: </span>
+                        <span class="text-nowrap">{{ scadenza.enteCod }} {{ scadenza.enteDesc }}</span>
+                      </div>
+                      <div class="col-12" *ngIf="scadenza.strutturaCodArpe">
+                        <span class="font-weight-bold text-nowrap">Struttura: </span>
+                        <span class="text-nowrap">{{ scadenza.strutturaCodArpe }} {{ scadenza.strutturaDesc }}</span>
+                      </div>
+                      <div class="col-12" *ngIf="scadenza.praticaTipoDesc">
+                        <span class="font-weight-bold text-nowrap">Pratica: </span>
+                        <span class="text-nowrap">{{ scadenza.praticaTipoDesc }}</span>
+                      </div>
+                      <div class="col-12" *ngIf="scadenza.prescrizioneTipoDesc">
+                        <span class="font-weight-bold text-nowrap">Prescrizione: </span>
+                        <span class="text-nowrap">{{ scadenza.prescrizioneTipoDesc }}</span>
+                      </div>
+                      <div class="col-12" *ngIf="scadenza.appuntamentoTipoDesc">
+                        <span class="font-weight-bold text-nowrap">Appuntamento: </span>
+                        <span class="text-nowrap">{{ scadenza.appuntamentoTipoDesc }}</span>
+                      </div>
+                    </div>
+                  </ng-template>
+                </ng-container>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</ng-container>

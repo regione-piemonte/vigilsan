@@ -1,0 +1,12 @@
+## Esposizioni metriche con Spring Actuator: prova URL /actuator/prometheus
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - prometheus
+          - info
+          - health
+      base-path: /actuator
+  server:
+    port: 9000

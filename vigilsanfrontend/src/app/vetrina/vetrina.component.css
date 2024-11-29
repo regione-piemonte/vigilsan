@@ -1,0 +1,36 @@
+/*
+ Copyright Regione Piemonte - 2024
+ SPDX-License-Identifier: EUPL-1.2
+*/
+
+body {
+  background-color: white;
+}
+
+.button-basic {
+  background-color: #0381d6;
+}
+
+.card-hover:hover {
+  background-color: #f8f9fa;
+  /* Grigio chiaro, modifica il colore secondo le tue preferenze */
+  transition: background-color 0.3s ease;
+  /* Animazione per un effetto piÃ¹ fluido */
+}
+
+.gestisci-profilo-style {
+  cursor: pointer;
+  color: #0381d6
+}
+
+.gestisci-profilo-style:hover {
+  background-color: #f8f9fa;
+  /* Grigio chiaro, modifica il colore secondo le tue preferenze */
+  transition: background-color 0.3s ease;
+  /* Animazione per un effetto piÃ¹ fluido */
+}
+
+.item-label-style {
+  cursor: pointer;
+  color: black;
+}

@@ -1,0 +1,485 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<div class="d-flex justify-content-center" *ngIf="isSpinEmitter">
+  <div class="spinner-border text-primary spin-emitter-style" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+<ng-container *ngIf="!isSpinEmitter">
+  <ul ngbNav #nav="ngbNav" [(activeId)]="client.active" class="nav-pills w-100 d-flex justify-content-between"
+    orientation="orizontal">
+    <li [ngbNavItem]="0" *ngIf="client.checkAzioni('vigil_pra-scad') === 'R'">
+      <a ngbNavLink class="d-flex justify-content-center" (click)="onChangeTab()">
+        <h2 class="m-0">SCADENZARIO</h2>
+      </a>
+      <ng-template ngbNavContent>
+        <br>
+        <app-full-calendar></app-full-calendar>
+      </ng-template>
+    </li>
+    <li [ngbNavItem]="1">
+      <a ngbNavLink class="d-flex justify-content-center" (click)="onChangeTab()">
+        <h2 class="m-0">RICERCA PRATICHE</h2>
+      </a>
+      <ng-template ngbNavContent *ngIf="client.selectedProfilo">
+        <br>
+        <div class="row">
+          <div class="col-1 col-lg-1 text-left">
+            <em class="bi bi-people vigilsan-icon-style"
+              *ngIf="client.checkAzioni('vigil_pra-filter') === 'R' && client.selectedProfilo.profiloCod === 'VIGIL_ENTE'"></em>
+            <em class="bi bi-building vigilsan-icon-style"
+              *ngIf="client.checkAzioni('vigil_pra-filter') === 'R' && client.selectedProfilo.profiloCod === 'VIGIL_RES'"></em>
+          </div>
+          <div class="col-11 col-lg-3 text-left">
+            <input type="text" class="form-control w-100" id="strutturaEnteId" aria-describedby="struttura/ente"
+              [(ngModel)]="client.strutturaEnte" *ngIf="client.checkAzioni('vigil_pra-filter') === 'R'">
+          </div>
+          <div class="col-12 col-lg-8 text-lg-right text-left mt-2 mt-lg-0">
+            <button type="button" class="btn btn-primary button-basic px-4 mr-2" (click)="showAddPratica()"
+              *ngIf="client.checkAzioni('vigil_pra-new') === 'W'"><span class="text-nowrap">NUOVA
+                PRATICA</span></button>
+            <button type="button" class="btn btn-primary button-basic px-4" (click)="cercaButton()"
+              *ngIf="client.checkAzioni('vigil_pra-filter') === 'R'"
+              [disabled]="isSpinEmitterPraticheAggiunte">CERCA</button>
+          </div>
+        </div>
+        <br>
+        <mat-card *ngIf="client.checkAzioni('vigil_pra-filter') === 'R'">
+          <mat-card-header>
+            <mat-card-title>Pratica</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <!-- Pratica - tipo -->
+            <div class="row ml-2">
+              <div [class]="classColumnFilter">
+                <h3 [class]="styleLabelFilter">Tipo:</h3>
+                <div class="w-100 m-0 p-0">
+                  <select class="form-control" id="tipoPId" [(ngModel)]="client.selectedTipoP">
+                    <option [ngValue]="TipoPVuoto" selected></option>
+                    <option *ngFor="let tipo of client.tipoP" [ngValue]="tipo">{{tipo.praticaTipoDesc}}</option>
+                  </select>
+                </div>
+              </div>
+              <div [class]="classColumnFilter">
+                <h3 [class]="styleLabelFilter">Data/ora apertura dal:</h3>
+                <div class="form-group w-100 m-0 p-0">
+                  <div class="input-group m-0 p-0">
+                    <input class="form-control" [placeholder]="placeholderDateTime" [(ngModel)]="client.textDateTimeP"
+                      type="text" id="textDateTimeIdP" readonly>
+                    <div class="input-group-append">
+                      <input placeholder="dd/mm/yyyy" name="dp" [(ngModel)]="client.dateTimeP" ngbDatepicker hidden
+                        #dateTimeToggleP="ngbDatepicker" id="dateTimeIdP" [footerTemplate]="footerTemplatedateTimeP"
+                        (ngModelChange)="onDateTimeChangeP()">
+                      <button class="btn btn-outline-primary" (click)="dateTimeToggleP.toggle()" type="button">
+                        <em class="bi bi-calendar3 vigilsan-icon-style" style="font-size:  1rem;"></em>
+                      </button>
+                    </div>
+                  </div>
+                  <ng-template #footerTemplatedateTimeP>
+                    <hr class="my-0">
+                    <button class="btn btn-secondary btn-sm m-2 float-left"
+                      (click)="eraseData('dateTimeP'); dateTimeToggleP.close()">CANCELLA</button>
+                  </ng-template>
+                </div>
+              </div>
+              <div [class]="classColumnFilter">
+                <h3 [class]="styleLabelFilter">al:</h3>
+                <div class="form-group w-100 m-0 p-0">
+                  <div class="input-group m-0 p-0">
+                    <input class="form-control" [placeholder]="placeholderDateTime" [(ngModel)]="client.textDateTimeAlP"
+                      type="text" id="textDateTimeAlIdP" readonly>
+                    <div class="input-group-append">
+                      <input placeholder="dd/mm/yyyy" name="dp" [(ngModel)]="client.dateTimeAlP" ngbDatepicker hidden
+                        #dateTimeAlToggleP="ngbDatepicker" id="dateTimeId" [footerTemplate]="footerTemplatedateTimeAlP"
+                        (ngModelChange)="onDateTimeChangeAlP()">
+                      <button class="btn btn-outline-primary" (click)="dateTimeAlToggleP.toggle()" type="button">
+                        <em class="bi bi-calendar3 vigilsan-icon-style" style="font-size:  1rem;"></em>
+                      </button>
+                    </div>
+                  </div>
+                  <ng-template #footerTemplatedateTimeAlP>
+                    <hr class="my-0">
+                    <button class="btn btn-secondary btn-sm m-2 float-left"
+                      (click)="eraseData('dateTimeAlP'); dateTimeAlToggleP.close()">CANCELLA</button>
+                  </ng-template>
+                </div>
+              </div>
+            </div>
+            <!-- Pratica - stato -->
+            <div class="row mt-2 ml-2">
+              <div [class]="classColumnFilter">
+                <h3 [class]="styleLabelFilter">Stato:</h3>
+                <div class="w-100 m-0 p-0">
+                  <select class="form-control" id="statoPId" [(ngModel)]="client.selectedStatoP">
+                    <option [ngValue]="StatoPVuoto" selected></option>
+                    <option *ngFor="let tipo of client.statoP" [ngValue]="tipo">{{tipo.praticaStatoDesc}}</option>
+                  </select>
+                </div>
+              </div>
+              <div [class]="classColumnFilter">
+                <h3 [class]="styleLabelFilter">Data/ora chiusura dal:</h3>
+                <div class="form-group w-100 m-0 p-0">
+                  <div class="input-group m-0 p-0">
+                    <input class="form-control" [placeholder]="placeholderDateTime"
+                      [(ngModel)]="client.textDateTimeTwoP" type="text" id="textDateTimeTwoIdP" readonly>
+                    <div class="input-group-append">
+                      <input placeholder="dd/mm/yyyy" name="dp" [(ngModel)]="client.dateTimeTwoP" ngbDatepicker hidden
+                        #dateTimeTwoToggleP="ngbDatepicker" id="dateTimeTwoIdP"
+                        [footerTemplate]="footerTemplatedateTimeTwoP" (ngModelChange)="onDateTimeChangeTwoP()">
+                      <button class="btn btn-outline-primary" (click)="dateTimeTwoToggleP.toggle()" type="button">
+                        <em class="bi bi-calendar3 vigilsan-icon-style" style="font-size:  1rem;"></em>
+                      </button>
+                    </div>
+                  </div>
+                  <ng-template #footerTemplatedateTimeTwoP>
+                    <hr class="my-0">
+                    <button class="btn btn-secondary btn-sm m-2 float-left"
+                      (click)="eraseData('dateTimeTwoP'); dateTimeTwoToggleP.close()">CANCELLA</button>
+                  </ng-template>
+                </div>
+              </div>
+              <div [class]="classColumnFilter">
+                <h3 [class]="styleLabelFilter">al:</h3>
+                <div class="form-group w-100 m-0 p-0">
+                  <div class="input-group m-0 p-0">
+                    <input class="form-control" [placeholder]="placeholderDateTime"
+                      [(ngModel)]="client.textDateTimeAlTwoP" type="text" id="textDateTimeAlTwoIdP" readonly>
+                    <div class="input-group-append">
+                      <input placeholder="dd/mm/yyyy" name="dp" [(ngModel)]="client.dateTimeAlTwoP" ngbDatepicker hidden
+                        #dateTimeAlTwoToggleP="ngbDatepicker" id="dateTimeAlTwoIdP"
+                        [footerTemplate]="footerTemplatedateTimeAlTwoP" (ngModelChange)="onDateTimeChangeAlTwoP()">
+                      <button class="btn btn-outline-primary" (click)="dateTimeAlTwoToggleP.toggle()" type="button">
+                        <em class="bi bi-calendar3 vigilsan-icon-style" style="font-size:  1rem;"></em>
+                      </button>
+                    </div>
+                  </div>
+                  <ng-template #footerTemplatedateTimeAlTwoP>
+                    <hr class="my-0">
+                    <button class="btn btn-secondary btn-sm m-2 float-left"
+                      (click)="eraseData('dateTimeAlTwoP'); dateTimeAlTwoToggleP.close()">CANCELLA</button>
+                  </ng-template>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        <br *ngIf="client.checkAzioni('vigil_pra-filter') === 'R'">
+        <mat-card *ngIf="client.checkAzioni('vigil_pra-filter') === 'R'">
+          <mat-card-header>
+            <mat-card-title>Prescrizione</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <!-- Ultima prescrizione - tipo -->
+            <div class="row ml-2">
+              <div [class]="classColumnFilter">
+                <h3 [class]="styleLabelFilter">Tipo:</h3>
+                <div class="w-100 m-0 p-0">
+                  <select class="form-control" id="tipoUlId" [(ngModel)]="client.selectedTipoUl">
+                    <option [ngValue]="TipoUlVuoto" selected></option>
+                    <option *ngFor="let tipo of client.tipoUl" [ngValue]="tipo">{{tipo.prescrizioneTipoDesc}}</option>
+                  </select>
+                </div>
+              </div>
+              <div [class]="classColumnFilter">
+                <h3 [class]="styleLabelFilter">Data/ora apertura dal:</h3>
+                <div class="form-group w-100 m-0 p-0">
+                  <div class="input-group m-0 p-0">
+                    <input class="form-control" [placeholder]="placeholderDateTime" [(ngModel)]="client.textDateTime"
+                      type="text" id="textDateTimeId" readonly>
+                    <div class="input-group-append">
+                      <input placeholder="dd/mm/yyyy" name="dp" [(ngModel)]="client.dateTime" ngbDatepicker hidden
+                        #dateTimeToggle="ngbDatepicker" id="dateTimeId" [footerTemplate]="footerTemplatedateTime"
+                        (ngModelChange)="onDateTimeChange()">
+                      <button class="btn btn-outline-primary" (click)="dateTimeToggle.toggle()" type="button">
+                        <em class="bi bi-calendar3 vigilsan-icon-style" style="font-size:  1rem;"></em>
+                      </button>
+                    </div>
+                  </div>
+                  <ng-template #footerTemplatedateTime>
+                    <hr class="my-0">
+                    <button class="btn btn-secondary btn-sm m-2 float-left"
+                      (click)="eraseData('dateTime'); dateTimeToggle.close()">CANCELLA</button>
+                  </ng-template>
+                </div>
+              </div>
+              <div [class]="classColumnFilter">
+                <h3 [class]="styleLabelFilter">al:</h3>
+                <div class="form-group w-100 m-0 p-0">
+                  <div class="input-group m-0 p-0">
+                    <input class="form-control" [placeholder]="placeholderDateTime" [(ngModel)]="client.textDateTimeAl"
+                      type="text" id="textDateTimeAlId" readonly>
+                    <div class="input-group-append">
+                      <input placeholder="dd/mm/yyyy" name="dp" [(ngModel)]="client.dateTimeAl" ngbDatepicker hidden
+                        #dateTimeAlToggle="ngbDatepicker" id="dateTimeId" [footerTemplate]="footerTemplatedateTimeAl"
+                        (ngModelChange)="onDateTimeChangeAl()">
+                      <button class="btn btn-outline-primary" (click)="dateTimeAlToggle.toggle()" type="button">
+                        <em class="bi bi-calendar3 vigilsan-icon-style" style="font-size:  1rem;"></em>
+                      </button>
+                    </div>
+                  </div>
+                  <ng-template #footerTemplatedateTimeAl>
+                    <hr class="my-0">
+                    <button class="btn btn-secondary btn-sm m-2 float-left"
+                      (click)="eraseData('dateTimeAl'); dateTimeAlToggle.close()">CANCELLA</button>
+                  </ng-template>
+                </div>
+              </div>
+            </div>
+            <!-- Ultima prescrizione - stato -->
+            <div class="row mt-2 ml-2">
+              <div [class]="classColumnFilter">
+                <h3 [class]="styleLabelFilter">Stato:</h3>
+                <div class="w-100 m-0 p-0">
+                  <!-- (change)="updateStatoOspite()" -->
+                  <select class="form-control" id="statoUlId" [(ngModel)]="client.selectedStatoUl">
+                    <option [ngValue]="StatoUlVuoto" selected></option>
+                    <option *ngFor="let stato of client.statoUl" [ngValue]="stato">{{stato.prescrizioneStatoDesc}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div [class]="classColumnFilter">
+                <h3 [class]="styleLabelFilter">Data/ora chiusura dal:</h3>
+                <div class="form-group w-100 m-0 p-0">
+                  <div class="input-group m-0 p-0">
+                    <input class="form-control" [placeholder]="placeholderDateTime" [(ngModel)]="client.textDateTimeTwo"
+                      type="text" id="textDateTimeTwoId" readonly>
+                    <div class="input-group-append">
+                      <input placeholder="dd/mm/yyyy" name="dp" [(ngModel)]="client.dateTimeTwo" ngbDatepicker hidden
+                        #dateTimeTwoToggle="ngbDatepicker" id="dateTimeTwoId"
+                        [footerTemplate]="footerTemplatedateTimeTwo" (ngModelChange)="onDateTimeChangeTwo()">
+                      <button class="btn btn-outline-primary" (click)="dateTimeTwoToggle.toggle()" type="button">
+                        <em class="bi bi-calendar3 vigilsan-icon-style" style="font-size:  1rem;"></em>
+                      </button>
+                    </div>
+                  </div>
+                  <ng-template #footerTemplatedateTimeTwo>
+                    <hr class="my-0">
+                    <button class="btn btn-secondary btn-sm m-2 float-left"
+                      (click)="eraseData('dateTimeTwo'); dateTimeTwoToggle.close()">CANCELLA</button>
+                  </ng-template>
+                </div>
+              </div>
+              <div [class]="classColumnFilter">
+                <h3 [class]="styleLabelFilter">al:</h3>
+                <div class="form-group w-100 m-0 p-0">
+                  <div class="input-group m-0 p-0">
+                    <input class="form-control" [placeholder]="placeholderDateTime"
+                      [(ngModel)]="client.textDateTimeAlTwo" type="text" id="textDateTimeAlTwoId" readonly>
+                    <div class="input-group-append">
+                      <input placeholder="dd/mm/yyyy" name="dp" [(ngModel)]="client.dateTimeAlTwo" ngbDatepicker hidden
+                        #dateTimeAlTwoToggle="ngbDatepicker" id="dateTimeAlTwoId"
+                        [footerTemplate]="footerTemplatedateTimeAlTwo" (ngModelChange)="onDateTimeChangeAlTwo()">
+                      <button class="btn btn-outline-primary" (click)="dateTimeAlTwoToggle.toggle()" type="button">
+                        <em class="bi bi-calendar3 vigilsan-icon-style" style="font-size:  1rem;"></em>
+                      </button>
+                    </div>
+                  </div>
+                  <ng-template #footerTemplatedateTimeAlTwo>
+                    <hr class="my-0">
+                    <button class="btn btn-secondary btn-sm m-2 float-left"
+                      (click)="eraseData('dateTimeAlTwo'); dateTimeAlTwoToggle.close()">CANCELLA</button>
+                  </ng-template>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        <br *ngIf="client.checkAzioni('vigil_pra-filter') === 'R'">
+        <mat-card *ngIf="client.checkAzioni('vigil_pra-filter') === 'R'">
+          <mat-card-header>
+            <mat-card-title>Sopralluogo</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <!-- Ultima appuntamento - tipo -->
+            <div class="row ml-2">
+              <div [class]="classColumnFilter">
+                <h3 [class]="styleLabelFilter">Tipo:</h3>
+                <div class="w-100 m-0 p-0">
+                  <select class="form-control" id="tipoUlUpId" [(ngModel)]="client.selectedTipoUp">
+                    <option [ngValue]="TipoUpVuoto" selected></option>
+                    <option *ngFor="let tipo of client.tipoUp" [ngValue]="tipo">{{tipo.appuntamentoTipoDesc}}</option>
+                  </select>
+                </div>
+              </div>
+              <div [class]="classColumnFilter">
+                <h3 [class]="styleLabelFilter">Data/ora inizio:</h3>
+                <div class="form-group w-100 m-0 p-0">
+                  <div class="input-group m-0 p-0">
+                    <input class="form-control" [placeholder]="placeholderDateTime" [(ngModel)]="client.textDateTimeUp"
+                      type="text" id="textDateTimeIdUp" readonly>
+                    <div class="input-group-append">
+                      <input placeholder="dd/mm/yyyy" name="dp" [(ngModel)]="client.dateTimeUp" ngbDatepicker hidden
+                        #dateTimeToggleUp="ngbDatepicker" id="dateTimeId" [footerTemplate]="footerTemplatedateTimeUp"
+                        (ngModelChange)="onDateTimeChangeUp()">
+                      <button class="btn btn-outline-primary" (click)="dateTimeToggleUp.toggle()" type="button">
+                        <em class="bi bi-calendar3 vigilsan-icon-style" style="font-size:  1rem;"></em>
+                      </button>
+                    </div>
+                  </div>
+                  <ng-template #footerTemplatedateTimeUp>
+                    <hr class="my-0">
+                    <button class="btn btn-secondary btn-sm m-2 float-left"
+                      (click)="eraseData('dateTimeUp'); dateTimeToggleUp.close()">CANCELLA</button>
+                  </ng-template>
+                </div>
+              </div>
+              <div [class]="classColumnFilter">
+                <h3 [class]="styleLabelFilter">al:</h3>
+                <div class="form-group w-100 m-0 p-0">
+                  <div class="input-group m-0 p-0">
+                    <input class="form-control" [placeholder]="placeholderDateTime"
+                      [(ngModel)]="client.textDateTimeAlUp" type="text" id="textDateTimeAlIdUp" readonly>
+                    <div class="input-group-append">
+                      <input placeholder="dd/mm/yyyy" name="dp" [(ngModel)]="client.dateTimeAlUp" ngbDatepicker hidden
+                        #dateTimeAlToggleUp="ngbDatepicker" id="dateTimeIdUp"
+                        [footerTemplate]="footerTemplatedateTimeAlUp" (ngModelChange)="onDateTimeChangeAlUp()">
+                      <button class="btn btn-outline-primary" (click)="dateTimeAlToggleUp.toggle()" type="button">
+                        <em class="bi bi-calendar3 vigilsan-icon-style" style="font-size:  1rem;"></em>
+                      </button>
+                    </div>
+                  </div>
+                  <ng-template #footerTemplatedateTimeAlUp>
+                    <hr class="my-0">
+                    <button class="btn btn-secondary btn-sm m-2 float-left"
+                      (click)="eraseData('dateTimeAlUp'); dateTimeAlToggleUp.close()">CANCELLA</button>
+                  </ng-template>
+                </div>
+              </div>
+            </div>
+            <!-- Ultima appuntamento - stato -->
+            <div class="row mt-2 ml-2">
+              <div [class]="classColumnFilter">
+                <h3 [class]="styleLabelFilter">Stato:</h3>
+                <div class="w-100 m-0 p-0">
+                  <select class="form-control" id="statoUlIdUp" [(ngModel)]="client.selectedStatoUp">
+                    <option [ngValue]="StatoUpVuoto" selected></option>
+                    <option *ngFor="let stato of client.statoUp" [ngValue]="stato">{{stato.appuntamentoStatoDesc}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div [class]="classColumnFilter">
+                <h3 [class]="styleLabelFilter">Data/ora inizio:</h3>
+                <div class="form-group w-100 m-0 p-0">
+                  <div class="input-group m-0 p-0">
+                    <input class="form-control" [placeholder]="placeholderDateTime"
+                      [(ngModel)]="client.textDateTimeTwoUp" type="text" id="textDateTimeTwoIdUp" readonly>
+                    <div class="input-group-append">
+                      <input placeholder="dd/mm/yyyy" name="dp" [(ngModel)]="client.dateTimeTwoUp" ngbDatepicker hidden
+                        #dateTimeTwoToggleUp="ngbDatepicker" id="dateTimeTwoIdUp"
+                        [footerTemplate]="footerTemplatedateTimeTwoUp" (ngModelChange)="onDateTimeChangeTwoUp()">
+                      <button class="btn btn-outline-primary" (click)="dateTimeTwoToggleUp.toggle()" type="button">
+                        <em class="bi bi-calendar3 vigilsan-icon-style" style="font-size:  1rem;"></em>
+                      </button>
+                    </div>
+                  </div>
+                  <ng-template #footerTemplatedateTimeTwoUp>
+                    <hr class="my-0">
+                    <button class="btn btn-secondary btn-sm m-2 float-left"
+                      (click)="eraseData('dateTimeTwoUp'); dateTimeTwoToggleUp.close()">CANCELLA</button>
+                  </ng-template>
+                </div>
+              </div>
+              <div [class]="classColumnFilter">
+                <h3 [class]="styleLabelFilter">al:</h3>
+                <div class="form-group w-100 m-0 p-0">
+                  <div class="input-group m-0 p-0">
+                    <input class="form-control" [placeholder]="placeholderDateTime"
+                      [(ngModel)]="client.textDateTimeAlTwoUp" type="text" id="textDateTimeAlTwoIdUp" readonly>
+                    <div class="input-group-append">
+                      <input placeholder="dd/mm/yyyy" name="dp" [(ngModel)]="client.dateTimeAlTwoUp" ngbDatepicker
+                        hidden #dateTimeAlTwoToggleUp="ngbDatepicker" id="dateTimeAlTwoIdUp"
+                        [footerTemplate]="footerTemplatedateTimeAlTwoUp" (ngModelChange)="onDateTimeChangeAlTwoUp()">
+                      <button class="btn btn-outline-primary" (click)="dateTimeAlTwoToggleUp.toggle()" type="button">
+                        <em class="bi bi-calendar3 vigilsan-icon-style" style="font-size:  1rem;"></em>
+                      </button>
+                    </div>
+                  </div>
+                  <ng-template #footerTemplatedateTimeAlTwoUp>
+                    <hr class="my-0">
+                    <button class="btn btn-secondary btn-sm m-2 float-left"
+                      (click)="eraseData('dateTimeAlTwoUp'); dateTimeAlTwoToggleUp.close()">CANCELLA</button>
+                  </ng-template>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        <br *ngIf="client.checkAzioni('vigil_pra-filter') === 'R'">
+        <div class="d-flex justify-content-center" *ngIf="isSpinEmitterPraticheAggiunte">
+          <div class="spinner-border text-primary spin-emitter-style" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
+        <ng-container *ngIf="!isSpinEmitterPraticheAggiunte">
+          <ng-container *ngIf="client.listaPraticheAggiunte && client.listaPraticheAggiunte.length > 0">
+            <table class="table table-hover">
+              <caption>Tabella pratiche</caption>
+              <thead>
+                <tr style="background-color: #0381d6;">
+                  <td *ngFor="let column of columns" scope="col" class="text-white text-left" style="font-size: 18px;">
+                    <ng-container *ngIf="column === 'Icona'; else elseTemplate">
+                      <em class="bi bi-people w-100" style="color: white;font-size: 1.5rem;"
+                        *ngIf="client.selectedProfilo.profiloCod === 'VIGIL_ENTE'"></em>
+                      <em class="bi bi-building" style="color: white;font-size: 1.5rem;"
+                        *ngIf="client.selectedProfilo.profiloCod === 'VIGIL_RES'"></em>
+                    </ng-container>
+                    <ng-template #elseTemplate>
+                      {{column}}
+                    </ng-template>
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let praticaAggiunta of client.listaPraticheAggiunte; index as i"
+                  (click)="onRowClick(praticaAggiunta)" style="font-size: 15px;">
+                  <td>
+                    {{ praticaAggiunta.struttura.strutturaCodArpe ? praticaAggiunta.struttura.strutturaCodArpe : '' }} -
+                    {{ praticaAggiunta.struttura.strutturaDesc ? praticaAggiunta.struttura.strutturaDesc : '' }}
+                  </td>
+                  <td>{{ praticaAggiunta.tipo.praticaTipoDesc ? praticaAggiunta.tipo.praticaTipoDesc : '' }}</td>
+                  <td>
+                    <span *ngFor="let ap of praticaAggiunta.appuntamenti">
+                      {{ ap.appuntamentoTipo.appuntamentoTipoDesc ? ap.appuntamentoTipo.appuntamentoTipoDesc : '' }} -
+                      {{ ap.appuntamentoStato.appuntamentoStatoDesc ? ap.appuntamentoStato.appuntamentoStatoDesc : ''
+                      }}
+                    </span>
+                  </td>
+                  <td>
+                    <span *ngFor="let pr of praticaAggiunta.prescrizioni">
+                      {{ pr.prescrizioneTipo.prescrizioneTipoDesc ? pr.prescrizioneTipo.prescrizioneTipoDesc : '' }} -
+                      {{ pr.prescrizioneStato.prescrizioneStatoDesc ? pr.prescrizioneStato.prescrizioneStatoDesc : ''
+                      }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="d-flex justify-content-between">
+              <ngb-pagination [collectionSize]="client.collectionSize" [(page)]="client.pagePraticheVigilanza"
+                [pageSize]="client.pageSizePraticheVigilanza" (pageChange)="cerca()" [boundaryLinks]="true"
+                [maxSize]="5">
+              </ngb-pagination>
+
+              <select class="custom-select" style="width: auto" [(ngModel)]="client.pageSizePraticheVigilanza"
+                (ngModelChange)="cercaButtonPage()">
+                <option [ngValue]="5">5</option>
+                <option [ngValue]="10">10</option>
+                <option [ngValue]="15">15</option>
+              </select>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="client.listaPraticheAggiunte && client.listaPraticheAggiunte.length <= 0">
+            <p class="ml-2 mt-2">Nessuna pratica trovata con la ricerca selezionata...</p>
+          </ng-container>
+        </ng-container>
+
+      </ng-template>
+    </li>
+  </ul>
+  <div [ngbNavOutlet]="nav" class="mt-2"></div>
+</ng-container>

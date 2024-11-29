@@ -1,0 +1,226 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<ng-container *ngIf="isSpinEmitter">
+  <!-- <mat-spinner></mat-spinner> -->
+  <div class="d-flex justify-content-center" *ngIf="isSpinEmitter">
+    <div class="spinner-border text-primary spin-emitter-style" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+</ng-container>
+<ng-container *ngIf="!isSpinEmitter" style="min-height: 100vh;">
+  <ul ngbNav #nav="ngbNav" [(activeId)]="activeFirst" class="nav-tabs">
+    <ng-container *ngIf="client.checkAzioni('vigil_ril-inf') !== 'null'">
+      <li [ngbNavItem]="0">
+        <a ngbNavLink (click)="onChangeTabInit()">Informazioni</a>
+        <ng-template ngbNavContent>
+          <div class="d-flex justify-content-center" *ngIf="isSpinEmitterInformazioni">
+            <div class="spinner-border text-primary spin-emitter-style" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
+          <ng-container *ngIf="!isSpinEmitterInformazioni">
+            <div class="row d-flex justify-content-end pt-2">
+              <div class="col-auto ml-auto d-flex align-items-center">
+                <div ngbDropdown placement="bottom-right" class="d-inline-block"
+                  *ngIf="client.listaDocumentazioniCompilabili && client.listaDocumentazioniCompilabili.length > 0 && client.checkAzioni('vigil_ril-inf') === 'W'">
+                  <button class="btn btn-primary m-0 button-basic" id="dropdownBasic2"
+                    ngbDropdownToggle>AGGIUNGI</button>
+                  <div ngbDropdownMenu aria-labelledby="dropdownBasic2">
+                    <button ngbDropdownItem *ngFor="let doc of client.listaDocumentazioniCompilabili; index as i"
+                      (click)="showAddDocumentazione(doc)">
+                      <span class="text-dropdown">
+                        {{ doc.moduloConfigDesc ? doc.moduloConfigDesc : ''}} {{ doc.docFlgObbligatorio ? '*' : '' }}
+                      </span>
+                    </button>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-primary button-basic m-0 ml-2"
+                  (click)="moduloCommon.modificaDocumentazione()"
+                  *ngIf="client.listaDocumentazioniCompilate && client.listaDocumentazioniCompilate.length > 0 && client.checkAzioni('vigil_ril-inf') === 'W'">
+                  <span *ngIf="client.disabilitaCampi">MODIFICA</span>
+                  <span *ngIf="!client.disabilitaCampi">ANNULLA</span>
+                </button>
+                <button type="button" class="btn btn-primary button-basic ml-2" [disabled]="client.disabilitaCampi"
+                  *ngIf="client.listaDocumentazioniCompilate && client.listaDocumentazioniCompilate.length > 0 && client.checkAzioni('vigil_ril-inf') === 'W'"
+                  (click)="sendDocumentazione()">
+                  <span *ngIf="!isSpinEmitterInformazioni">SALVA</span>
+                  <span *ngIf="isSpinEmitterInformazioni">IN CARICAMENTO...</span>
+                </button>
+              </div>
+            </div>
+            <br>
+            <ng-container *ngIf="showModuloInformazioni; else elseTemplateInfo">
+              <app-test></app-test>
+            </ng-container>
+            <ng-template #elseTemplateInfo>
+              <p class="ml-2" style="font-size: 18px;">Nessun documento...</p>
+            </ng-template>
+          </ng-container>
+        </ng-template>
+      </li>
+    </ng-container>
+    <ng-container *ngIf="client.checkAzioni('vigil_ril-ril') !== 'null'">
+      <li [ngbNavItem]="1">
+        <a ngbNavLink>Rilevazioni</a>
+        <ng-template ngbNavContent>
+          <ng-container
+            *ngIf="!client.listaTabRilevazioni || client.listaTabRilevazioni.length <= 0; else elseTemplateNoTabRilevazioni">
+            <p class="mt-3" style="font-size: 16px;">Nessuna rilevazione ....</p>
+          </ng-container>
+          <ng-template #elseTemplateNoTabRilevazioni>
+            <section style="padding: 0.5rem; min-height: 100vh;">
+              <div class="row w-100 d-flex justify-content-end align-items-center pb-3">
+                <div class="col-auto m-0 p-0">
+                  <button type="button" class="btn btn-primary button-basic pr-2" (click)="scaricaCsvStorico()"
+                    *ngIf="activeFirst !== 0 && client.checkAzioni('vigil_ril-csvcovid') === 'R'">
+                    SCARICA RILEVAZIONI STORICHE
+                  </button>
+                </div>
+              </div>
+              <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-pills" orientation="orizontal">
+                <li *ngFor="let tab of client.listaTabRilevazioni;  let i = index" [ngbNavItem]="i">
+                  <a ngbNavLink (click)="onChangeTab(tab.moduloConfigCod)">
+                    {{ tab.moduloConfigDesc }}
+                  </a>
+                  <ng-template ngbNavContent>
+                    <!-- FUNCTION ROW -->
+                    <div class="row w-100 d-flex justify-content-end pt-3">
+                      <!-- EXCEL -->
+                      <div class="col-auto d-flex align-items-center m-0 p-0 pr-2">
+                        <button type="button" class="btn btn-primary button-basic pr-2" (click)="scaricaCsv()"
+                          *ngIf="activeFirst !== 0">
+                          SCARICA RILEVAZIONI
+                        </button>
+                      </div>
+                      <!-- AGGIUNGI -->
+                      <div class="col-auto m-0 p-0">
+                        <div ngbDropdown placement="bottom-right" class="d-inline-block"
+                          *ngIf="client.checkAzioni('vigil_ril-ril') === 'W'">
+                          <button class="btn btn-primary button-basic" id="dropdownBasic2" ngbDropdownToggle
+                            matTooltip="Nessuna rilevazione da aggiungere" matTooltipPosition="above"
+                            matTooltipClass="style-tooltip" [matTooltipDisabled]="!showTooltipNoRilevazioniAggiungi"
+                            [disabled]="showTooltipNoRilevazioniAggiungi">AGGIUNGI</button>
+                          <div ngbDropdownMenu aria-labelledby="dropdownBasic2">
+                            <button ngbDropdownItem
+                              *ngFor="let rilevazione of client.listaTabRilevazioniAggiungi; index as i"
+                              (click)="showAddRilevazione(rilevazione, tab)">
+                              {{ rilevazione.dataoraRilevazione | date: 'dd/MM/yyyy HH:mm:ss'}}
+                              {{ rilevazione.strutturaCategoria ?
+                              (rilevazione.strutturaCategoria.strutturaCategoriaDesc ?
+                              rilevazione.strutturaCategoria.strutturaCategoriaDesc : '') :
+                              ''}}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- CONTENT -->
+                    <br>
+                    <div class="d-flex justify-content-center" *ngIf="isLoadingData">
+                      <div class="spinner-border text-primary spin-emitter-style" role="status">
+                        <span class="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                    <div *ngIf="!isLoadingData">
+                      <ng-container
+                        *ngIf="client.listeRilevazioniPerTab && client.listeRilevazioniPerTab[active].length <=0; else elseTemplate">
+                        <p class="p-1" style="font-size: 16px;">Nessuna rilevazione trovata...</p>
+                      </ng-container>
+                      <ng-template #elseTemplate>
+                        <!-- TAB RILEVAZIONI -->
+                        <table class="table table-hover">
+                          <caption>Tabella delle rilevazioni</caption>
+                          <thead>
+                            <tr>
+                              <th scope="col">Data/Ora Rilevazione</th>
+                              <th scope="col">Categoria</th>
+                              <!-- SHOW HEADERS FROM SEZIONI AND VOCI AT FIRST LEVEL -->
+                              <th *ngFor="let sezione of listaSezioniToShow" scope="col" class="text-left">
+                                {{sezione.moduloDesc}}
+                              </th>
+                              <th *ngFor="let voce of listaVociToShow" scope="col" class="text-left">
+                                {{voce.moduloVoceDesc}}
+                              </th>
+                              <th scope="col" class="text-center">Dettaglio/modifica Rilevazione</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let rilevazione of numeroRilevazioniToShow; index as i">
+                              <!-- DATA/ORA -->
+                              <th scope="row">{{ rilevazione.dataoraRilevazione | date: 'dd/MM/yyyy HH:mm:ss'}}</th>
+                              <!-- Codice della categoria -->
+                              <td class="text-nowrap">
+                                {{ rilevazione.strutturaCategoria ?
+                                (rilevazione.strutturaCategoria.strutturaCategoriaDesc ?
+                                rilevazione.strutturaCategoria.strutturaCategoriaDesc : '-')
+                                : '-'}}
+                              </td>
+                              <!-- SHOW VOCI VALORE IN CASE OF  moduloCompilatoRidotto.sezioni -->
+                              <td *ngFor="let sezione of rilevazione.modulo.moduloCompilatoRidotto.sezioni">
+                                <span *ngFor="let voce of sezione.voci">
+                                  <ng-container *ngIf="voce.lista; else elseTemplate">
+                                    <span *ngFor="let voceLista of voce.lista.valori">
+                                      <span *ngIf="voceLista.valore text-wrap">{{ voceLista.moduloListaValoreDesc
+                                        }}</span>
+                                    </span>
+                                  </ng-container>
+                                  <ng-template #elseTemplate>
+                                    {{voce.moduloVoceDesc}}: {{voce.valore !== null ? voce.valore : '-'}}<br>
+                                  </ng-template>
+                                </span>
+                                <!-- IN CASE OF SEZIONI NESTED IN SEZIONI FIRST LEVEL -->
+                                <ng-container *ngFor="let subSezione of sezione.sezioni">
+                                  <ng-container *ngIf="subSezione.lista; else elseTemplate">
+                                    <span *ngFor="let voceLista of subSezione.lista.valori">
+                                      <span *ngIf="voceLista.valore text-wrap">{{ voceLista.moduloListaValoreDesc
+                                        }}</span>
+                                    </span>
+                                  </ng-container>
+                                  <ng-template #elseTemplate>
+                                    <span *ngFor="let voce of subSezione.voci">
+                                      {{voce.moduloVoceDesc}}: {{voce.valore !== null ? voce.valore : '-'}}<br>
+                                    </span>
+                                  </ng-template>
+                                </ng-container>
+                              </td>
+                              <!-- SHOW VOCI VALORE IN CASE OF  moduloCompilatoRidotto.voci -->
+                              <td *ngFor="let voce of rilevazione.modulo.moduloCompilatoRidotto.voci">
+                                <ng-container *ngIf="voce.lista; else elseTemplate">
+                                  <span *ngFor="let voceLista of voce.lista.valori">
+                                    <span *ngIf="voceLista.valore text-wrap">{{ voceLista.moduloListaValoreDesc
+                                      }}</span>
+                                  </span>
+                                </ng-container>
+                                <ng-template #elseTemplate>
+                                  {{voce.valore !== null ? voce.valore : '-'}}<br>
+                                </ng-template>
+                              </td>
+                              <!-- AZIONI -->
+                              <td class="text-center">
+                                <button mat-button matTooltip="Dettaglio/modifica rilevazione" matTooltipPosition="left"
+                                  matTooltipClass="style-tooltip"
+                                  (click)="showDettaglioRilevazione(rilevazione, tab, true)">
+                                  <em class="bi bi-file-earmark vigilsan-icon-style"></em>
+                                </button>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </ng-template>
+                    </div>
+                  </ng-template>
+                </li>
+              </ul>
+              <div [ngbNavOutlet]="nav" class="mt-2"></div>
+            </section>
+          </ng-template>
+        </ng-template>
+      </li>
+    </ng-container>
+  </ul>
+  <div [ngbNavOutlet]="nav" class="mt-2"></div>
+</ng-container>

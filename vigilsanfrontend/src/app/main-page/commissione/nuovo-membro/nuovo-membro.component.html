@@ -1,0 +1,184 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<h1 mat-dialog-title>MEMBRO COMMISSIONE</h1>
+<div mat-dialog-content>
+  <br>
+  <div class="d-flex justify-content-center" *ngIf="isSpinEmitter">
+    <div class="spinner-border text-primary spin-emitter-style" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+  <ng-container *ngIf="!isSpinEmitter">
+    <div class="row d-flex align-items-center">
+      <div class="col-md-3 w-100 d-flex align-items-center">
+        <p class="text-nowrap w-100 text-left d-flex align-items-center m-0"><span>Codice fiscale: </span></p>
+      </div>
+      <div class="col-md-5 w-100 d-flex align-items-center">
+        <input type="text" class="form-control w-100" id="cfId" aria-describedby="Codice fiscale" [(ngModel)]="cf"
+          (keydown.enter)="cerca()" [disabled]="membro !== null">
+      </div>
+      <div class="col-md-4 w-100 d-flex align-items-center">
+        <button type="button" class="btn btn-primary button-basic px-4 w-100" (click)="cerca()"
+          [disabled]="membro !== null">CERCA</button>
+      </div>
+    </div>
+    <br>
+    <ng-container *ngIf="soggettoTrovato">
+      <div class="row d-flex align-items-center">
+        <div class="col-md-3 w-100 d-flex align-items-center">
+          <p class="text-nowrap w-100 text-left d-flex align-items-center m-0"><span>Cognome: </span></p>
+        </div>
+        <div class="col-md-5 w-100 d-flex align-items-center">
+          <input type="text" class="form-control w-100" id="cfId" aria-describedby="Cognome" [(ngModel)]="cognome"
+            disabled>
+        </div>
+        <div class="col-md-4 w-100 d-flex align-items-center">
+        </div>
+      </div>
+      <br>
+      <div class="row d-flex align-items-center">
+        <div class="col-md-3 w-100 d-flex align-items-center">
+          <p class="text-nowrap w-100 text-left d-flex align-items-center m-0"><span>Nome: </span></p>
+        </div>
+        <div class="col-md-5 w-100 d-flex align-items-center">
+          <input type="text" class="form-control w-100" id="nomeId" aria-describedby="Nome" [(ngModel)]="nome" disabled>
+        </div>
+        <div class="col-md-4 w-100 d-flex align-items-center">
+        </div>
+      </div>
+      <br>
+      <div class="row d-flex align-items-center">
+        <div class="col-md-3 w-100 d-flex align-items-center">
+          <p class="text-nowrap w-100 text-left d-flex align-items-center m-0"><span>Data di nascita: </span></p>
+        </div>
+        <div class="col-md-5 w-100 d-flex align-items-center">
+          <div class="form-group w-100">
+            <div class="input-group">
+              <input class="form-control" placeholder="yyyy/mm/dd" name="dp" [(ngModel)]="dataNascita" ngbDatepicker
+                #dataNascitaToggle="ngbDatepicker" id="dataNascitaId" [footerTemplate]="footerTemplateDataNascita"
+                readonly disabled>
+              <!-- (ngModelChange)="onDataSelezionata()" -->
+              <div class="input-group-append">
+                <button class="btn btn-outline-primary" (click)="dataNascitaToggle.toggle()" type="button" disabled>
+                  <em class="bi bi-calendar3 vigilsan-icon-style" style="font-size:  1rem;" disabled></em>
+                </button>
+              </div>
+            </div>
+            <ng-template #footerTemplateDataNascita>
+              <hr class="my-0">
+              <button class="btn btn-secondary btn-sm m-2 float-left"
+                (click)="eraseData('dataNascita'); dataNascitaToggle.close()">CANCELLA</button>
+            </ng-template>
+          </div>
+        </div>
+        <div class="col-md-4 w-100 d-flex align-items-center">
+        </div>
+      </div>
+      <br>
+      <div class="row d-flex align-items-center">
+        <div class="col-md-3 w-100 d-flex align-items-center">
+          <p class="text-nowrap w-100 text-left d-flex align-items-center m-0"><span>Ruolo: </span></p>
+        </div>
+        <div class="col-md-5 w-100 d-flex align-items-center">
+          <div class="form-group w-100">
+            <div class="input-group">
+              <select class="form-control" id="listaRuoliId" name="listaRuoli" [(ngModel)]="client.ruoloSelected">
+                <option *ngFor="let ruolo of client.listaRuoli" [ngValue]="ruolo">{{ ruolo.ruoloEnteSoggettoDesc }}
+                </option>
+              </select>
+            </div>
+            <ng-template #footerTemplateDataNascita>
+              <hr class="my-0">
+              <button class="btn btn-secondary btn-sm m-2 float-left"
+                (click)="eraseData('dataNascita'); dataNascitaToggle.close()">CANCELLA</button>
+            </ng-template>
+          </div>
+        </div>
+        <div class="col-md-4 w-100 d-flex align-items-center">
+        </div>
+      </div>
+      <br>
+      <div class="row d-flex align-items-center">
+        <div class="col-md-3 w-100 d-flex align-items-center">
+          <p class="text-nowrap w-100 text-left d-flex align-items-center m-0"><span>Inizio validit&agrave;: </span></p>
+        </div>
+        <div class="col-md-5 w-100 d-flex align-items-center">
+          <div class="form-group w-100">
+            <div class="input-group">
+              <input class="form-control" placeholder="yyyy/mm/dd" name="dp" [(ngModel)]="inizioValidita" ngbDatepicker
+                #inizioValiditaToggle="ngbDatepicker" id="dinizioValiditaId"
+                [footerTemplate]="footerTemplatedateInizioValidita" readonly>
+              <div class="input-group-append">
+                <button class="btn btn-outline-primary" (click)="inizioValiditaToggle.toggle()" type="button">
+                  <em class="bi bi-calendar3 vigilsan-icon-style" style="font-size:  1rem;"></em>
+                </button>
+              </div>
+            </div>
+            <ng-template #footerTemplatedateInizioValidita>
+              <hr class="my-0">
+              <button class="btn btn-secondary btn-sm m-2 float-left"
+                (click)="eraseData('inizioValidita'); inizioValiditaToggle.close()">CANCELLA</button>
+            </ng-template>
+          </div>
+        </div>
+        <div class="col-md-4 w-100 d-flex align-items-center">
+        </div>
+      </div>
+      <br>
+      <div class="row d-flex align-items-center">
+        <div class="col-md-3 w-100 d-flex align-items-center">
+          <p class="text-nowrap w-100 text-left d-flex align-items-center m-0"><span>Fine validit&agrave;: </span></p>
+        </div>
+        <div class="col-md-5 w-100 d-flex align-items-center">
+          <div class="form-group w-100">
+            <div class="input-group">
+              <input class="form-control" placeholder="yyyy/mm/dd" name="dp" [(ngModel)]="fineValidita" ngbDatepicker
+                #fineValiditaToggle="ngbDatepicker" id="dfineValiditaId"
+                [footerTemplate]="footerTemplatedateInizioValidita" readonly>
+              <div class="input-group-append">
+                <button class="btn btn-outline-primary" (click)="fineValiditaToggle.toggle()" type="button">
+                  <em class="bi bi-calendar3 vigilsan-icon-style" style="font-size:  1rem;"></em>
+                </button>
+              </div>
+            </div>
+            <ng-template #footerTemplatedateFineValidita>
+              <hr class="my-0">
+              <button class="btn btn-secondary btn-sm m-2 float-left"
+                (click)="eraseData('fineValidita'); fineValiditaToggle.close()">CANCELLA</button>
+            </ng-template>
+          </div>
+        </div>
+        <div class="col-md-4 w-100 d-flex align-items-center">
+        </div>
+      </div>
+      <br>
+    </ng-container>
+  </ng-container>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+</div>
+<div mat-dialog-actions>
+  <button mat-button mat-dialog-close>CHIUDI</button>
+  <button type="button" class="btn btn-primary ml-auto button-basic" (click)="sendNewMembro()"
+    [disabled]="isLoadingNewMembro || !soggettoTrovato || !inizioValidita || !client.ruoloSelected">
+    <span *ngIf="!isLoadingNewMembro">SALVA</span>
+    <span *ngIf="isLoadingNewMembro">IN CARICAMENTO...</span>
+  </button>
+</div>

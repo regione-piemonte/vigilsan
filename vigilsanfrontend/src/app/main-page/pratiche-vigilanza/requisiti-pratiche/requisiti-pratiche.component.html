@@ -1,0 +1,111 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<button type="button" class="btn btn-light mb-2" (click)="goBack()">
+  <em class="bi bi-arrow-left-short vigilsan-icon-style"></em>
+</button>
+<br>
+<div class="row mb-3" *ngIf="client.atRequisiti || client.genericAppPreRequisiti">
+  <div class="col-12 col-lg-4 text-left" *ngIf="client.atRequisiti">
+    <span class="font-weight-bold" style="font-size: large;">Azione: </span>
+    <span style="font-size: large;">{{ client.atRequisiti.azioneDesc ? client.atRequisiti.azioneDesc : '' }}</span>
+  </div>
+  <div class="col-12 col-lg-4 text-left" *ngIf="client.atRequisiti">
+    <span class="font-weight-bold" style="font-size: large;">Data/ora: </span>
+    <span style="font-size: large;">{{ client.atRequisiti.dataoraAzione ? (client.atRequisiti.dataoraAzione | date:
+      'dd/MM/yyyy HH:mm') : '' }}</span>
+  </div>
+  <div class="col-12 col-lg-4 text-left" *ngIf="client.atRequisiti && client.atRequisiti.appuntamentoId">
+    <span class="font-weight-bold" style="font-size: large;">Sopralluogo: </span>
+    <span style="font-size: large;">{{ getNumeroAttivita(client.atRequisiti) ? getNumeroAttivita(client.atRequisiti) :
+      '' }}</span>
+  </div>
+  <div class="col-12 col-lg-4 text-left" *ngIf="client.atRequisiti && client.atRequisiti.prescrizioneId">
+    <span class="font-weight-bold" style="font-size: large;">Prescrizione: </span>
+    <span style="font-size: large;">{{ getNumeroAttivita(client.atRequisiti) ? getNumeroAttivita(client.atRequisiti) :
+      '' }}</span>
+  </div>
+  <div class="col-12 col-lg-4 text-left" *ngIf="client.genericAppPreRequisiti">
+    <span class="font-weight-bold" style="font-size: large;">Prescrizione: </span>
+    <span style="font-size: large;">{{ client.genericAppPreRequisiti.prescrizioneNumero ?
+      client.genericAppPreRequisiti.prescrizioneNumero : '' }}</span>
+  </div>
+</div>
+<div class="row">
+  <div class="col-12 col-lg-2 text-left">
+    <span class="font-weight-bold m-0 pr-1" style="font-size: large;">Filtra requisiti:</span>
+  </div>
+  <div class="col-12 col-lg-2 text-left">
+    <input type="radio" class="custom-checkbox pr-1" [(ngModel)]="filter" name="tutti" [value]="'tutti'"
+      (ngModelChange)="filterData($event)" [disabled]="client.isLoadingDataRequisito" />
+    <span style="font-size: large;">Tutti</span>
+  </div>
+  <div class="col-12 col-lg-2 text-left">
+    <input type="radio" class="custom-checkbox pr-1" [(ngModel)]="filter" name="selezionabili" [value]="'selezionabili'"
+      (ngModelChange)="filterData($event)" [disabled]="client.isLoadingDataRequisito" />
+    <span style="font-size: large;">Selezionabili</span>
+  </div>
+  <div class="col-12 col-lg-2 text-left">
+    <input type="radio" class="custom-checkbox pr-1" [(ngModel)]="filter" name="selezionati" [value]="'selezionati'"
+      (ngModelChange)="filterData($event)" [disabled]="client.isLoadingDataRequisito" />
+    <span style="font-size: large;">Selezionati</span>
+  </div>
+  <div class="col-12 col-lg-2 text-left">
+    <input type="radio" class="custom-checkbox pr-1" [(ngModel)]="filter" name="nonconformi" [value]="'nonconformi'"
+      (ngModelChange)="filterData($event)" [disabled]="client.isLoadingDataRequisito" />
+    <span style="font-size: large;">Non conformi</span>
+  </div>
+</div>
+<br>
+<mat-progress-bar mode="buffer" *ngIf="isSpinEmitter"></mat-progress-bar>
+<ng-container *ngIf="!isSpinEmitter">
+  <div class="container-fluid mb-2 my-2">
+    <div class="row align-items-center justify-content-center" *ngIf="listaRequisitiPratica">
+      <div class="col-12 col-lg-5 pr-1">
+        <div class="scrollable-section py-1">
+          <app-requisito [listaRequisitiPraticaTo]="listaRequisitiPraticaTo" *ngIf="listaRequisitiPraticaTo && listaRequisitiPraticaTo.length > 0">
+          </app-requisito>
+        </div>
+      </div>
+      <div class="col-12 col-lg-7 pl-0">
+        <mat-card class="card-section">
+          <mat-progress-bar mode="buffer" *ngIf="client.isSpinEmitterCardDx"></mat-progress-bar>
+          <ng-container *ngIf="!client.isSpinEmitterCardDx">
+            <mat-card-title>{{ client.reqSelected && client.reqSelected.clreqDesc ? client.reqSelected.clreqDesc : ''
+              }}</mat-card-title>
+            <br>
+            <div class="row my-3" *ngIf="client.reqSelected">
+              <div class="col-12 col-lg-4 text-left" *ngFor="let item of client.listaDecodificaRequisiti">
+                <input type="radio" class="custom-checkbox mr-1" [(ngModel)]="decodificaRequisito"
+                  name="{{item.clreqEsitoCod}}" [value]="'{{item.clreqEsitoCod}}'"
+                  [disabled]="client.isLoadingDataRequisito" />
+                <span style="font-size: large;">{{ item.clreqEsitoDesc }}</span>
+              </div>
+            </div>
+            <div class="row mb-1" *ngIf="client.reqSelected">
+              <div class="col-auto ml-auto d-flex align-items-center">
+                <button type="button" class="btn btn-primary m-0 button-basic"
+                  (click)="moduloCommon.modificaDocumentazione()">
+                  <span *ngIf="client.disabilitaCampi">MODIFICA</span>
+                  <span *ngIf="!client.disabilitaCampi">ANNULLA</span>
+                </button>
+              </div>
+            </div>
+            <app-test *ngIf="client.reqSelected"></app-test>
+            <div class="row mt-1" *ngIf="client.reqSelected">
+              <div class="col-auto ml-auto d-flex align-items-center">
+                <button type="button" class="btn btn-primary m-0 button-basic" (click)="addModulo()"
+                  [disabled]="client.disabilitaCampi || isLoadingAddModulo">
+                  <span *ngIf="!isLoadingAddModulo">SALVA</span>
+                  <span *ngIf="isLoadingAddModulo">IN CARICAMENTO...</span>
+                </button>
+              </div>
+            </div>
+          </ng-container>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</ng-container>

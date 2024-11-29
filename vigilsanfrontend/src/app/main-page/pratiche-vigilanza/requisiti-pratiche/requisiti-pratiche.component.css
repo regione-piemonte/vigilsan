@@ -1,0 +1,29 @@
+/*
+ Copyright Regione Piemonte - 2024
+ SPDX-License-Identifier: EUPL-1.2
+*/
+
+.arrow-icon {
+  transition: transform 0.3s ease;
+  margin-right: 8px;
+  /* Aggiungi uno spazio a destra tra la freccia e il testo */
+}
+
+.rotated {
+  transform: rotate(180deg);
+}
+
+
+.scrollable-section {
+  height: 70vh;
+  overflow-y: auto;
+}
+
+.card-section {
+  height: 70vh;
+}
+
+.custom-checkbox {
+  width: 1rem;
+  height: 1rem;
+}

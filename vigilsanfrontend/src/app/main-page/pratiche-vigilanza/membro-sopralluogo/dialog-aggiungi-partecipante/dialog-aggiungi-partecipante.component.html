@@ -1,0 +1,46 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<h1 mat-dialog-title>
+  Aggiungi partecipante
+</h1>
+<div mat-dialog-content class="my-2">
+  <div class="container-fluid mb-2 my-2">
+    <div class="row align-items-center justify-content-center">
+      <ng-container
+        *ngIf="client.listaSoggettiCommissione && client.listaSoggettiCommissione.length > 0; else elseTemplate">
+        <table class="table table-hover">
+          <caption>Tabella partecipanti</caption>
+          <thead>
+            <tr style="background-color: #0381d6;">
+              <td *ngFor="let column of columnsCommissione" scope="col" class="text-left text-white"
+                style="font-size: 18px;">
+                {{column}}
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let s of client.listaSoggettiCommissione; index as i" (click)="closeModal(s)" style=" font-size:
+              15px;">
+              <td>{{ s.soggetto && s.soggetto.codiceFiscale ? s.soggetto.codiceFiscale : '-' }}</td>
+              <td>{{ s.soggetto && s.soggetto.cognome ? s.soggetto.cognome : '-' }}</td>
+              <td>{{ s.soggetto && s.soggetto.nome ? s.soggetto.nome : '-' }}</td>
+              <td>{{ s.ruoloEnteSoggetto && s.ruoloEnteSoggetto.ruoloEnteSoggettoDesc ?
+                s.ruoloEnteSoggetto.ruoloEnteSoggettoDesc : '-' }}</td>
+              <td>{{ s.validitaInizio ? (s.validitaInizio | date : 'dd/MM/yyyy') : '-' }}</td>
+              <td>{{ s.validitaFine ? (s.validitaFine | date : 'dd/MM/yyyy') : '-' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </ng-container>
+      <ng-template #elseTemplate>
+        <p class="mt-2 ml-3 lead">Nessung soggetto trovato.</p>
+      </ng-template>
+    </div>
+  </div>
+</div>
+<div mat-dialog-actions>
+  <button mat-button mat-dialog-close>CHIUDI</button>
+</div>

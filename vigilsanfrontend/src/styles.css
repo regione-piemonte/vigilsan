@@ -1,0 +1,54 @@
+/*
+ Copyright Regione Piemonte - 2024
+ SPDX-License-Identifier: EUPL-1.2
+*/
+
+/* You can add global styles to this file, and also import other style files */
+@import "~bootstrap-icons/font/bootstrap-icons.css";
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.style-tooltip {
+  color: #0381d6;
+  background: #0381d6 !important;
+  font-size: 14px;
+}
+
+.spin-emitter-style {
+  width: 3rem;
+  height: 3rem;
+}
+
+.button-basic {
+  background-color: #0381d6;
+}
+
+.align-center {
+  align-content: center;
+}
+
+
+.vigilsan-icon-style {
+  font-size: 2rem;
+  color: #0381d6;
+}
+
+.vigilsan-icon-style-grigio {
+  font-size: 2rem;
+  color: grey;
+}
+
+.popover {
+  max-width: 550px !important;
+  /* Rimuove la larghezza massima */
+  width: auto;
+  /* Consente al contenuto di determinare la larghezza */
+}

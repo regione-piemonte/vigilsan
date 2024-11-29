@@ -1,0 +1,92 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<ng-container *ngIf="!isInCaricamento">
+  <button type="button" class="btn btn-light mb-2" (click)="goBack()">
+    <em class="bi bi-arrow-left-short vigilsan-icon-style"></em>
+  </button>
+  <br>
+</ng-container>
+<ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs mt-3">
+  <li [ngbNavItem]="0">
+    <a ngbNavLink>Per codice fiscale</a>
+    <ng-template ngbNavContent>
+      <div class="row mt-4">
+        <div class="col-md-2 d-flex align-items-center">
+          <label for="cfId" class="m-0 pl-2 text-nowrap w-100">Codice fiscale</label>
+        </div>
+        <div class="col-md-3">
+          <input type="text" class="form-control w-100" id="cfId" aria-describedby="cf" [(ngModel)]="cf"
+            (input)="removeSpaces()" (keydown.enter)="cerca()">
+        </div>
+        <div class="col-md-7 d-flex justify-content-end">
+          <button type="button" class="btn btn-primary button-basic px-5" (click)="cerca()" id="cercaId">
+            <span *ngIf="!isInCaricamento">CERCA</span>
+            <span *ngIf="isInCaricamento">IN CARICAMENTO...</span>
+          </button>
+        </div>
+      </div>
+      <br><br>
+      <div class="d-flex justify-content-center" *ngIf="isInCaricamento">
+        <div class="spinner-border text-primary spin-emitter-style" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+    </ng-template>
+  </li>
+  <!-- <li [ngbNavItem]="1">
+    <a ngbNavLink>Per cognome, nome, data di nascita</a>
+    <ng-template ngbNavContent>
+      <div class="row mt-4">
+        <div class="col-md-2 d-flex align-items-center">
+          <label for="cognomeId" class="m-0 pl-2 text-nowrap w-100">Cognome</label>
+        </div>
+        <div class="col-md-2">
+          <input type="text" class="form-control w-100" id="cognomeId" aria-describedby="cognome" [(ngModel)]="cognome">
+        </div>
+        <div class="col-md-8 d-flex justify-content-end">
+          <button type="button" class="btn btn-outline-primary px-5" (click)="cerca()" id="cercaId">
+            CERCA
+          </button>
+        </div>
+      </div>
+      <div class="row mt-4">
+        <div class="col-md-2 d-flex align-items-center">
+          <label for="nomeId" class="m-0 pl-2 text-nowrap w-100">Nome</label>
+        </div>
+        <div class="col-md-2">
+          <input type="text" class="form-control w-100" id="nomeId" aria-describedby="nome" [(ngModel)]="nome">
+        </div>
+        <div class="col-md-8"></div>
+      </div>
+      <div class="row mt-4">
+        <div class="col-md-2 d-flex align-items-center">
+          <label for="nomeId" class="m-0 pl-2 text-nowrap w-100">Data di nascita</label>
+        </div>
+        <div class="col-md-2">
+          <div class="form-group p-0 m-0">
+            <div class="input-group">
+              <input class="form-control" placeholder="dd/mm/yyyy" name="dp" [(ngModel)]="client.dataNascitaOspite" ngbDatepicker
+                #dataNascitaOspiteId="ngbDatepicker" id="dataNascitaOspiteId" [footerTemplate]="footerTemplateDataNascitaOspiteId">
+              <div class="input-group-append">
+                <button class="btn btn-outline-primary" (click)="dataNascitaOspiteId.toggle()" type="button">
+                  <em class="bi bi-calendar3" style="font-size:  1rem;"></em>
+                </button>
+              </div>
+            </div>
+          </div>
+          <ng-template #footerTemplateDataNascitaOspiteId>
+            <hr class="my-0">
+            <button class="btn btn-secondary btn-sm m-2 float-left"
+              (click)="eraseData(); dataNascitaOspiteId.close()">CANCELLA</button>
+          </ng-template>
+        </div>
+        <div class="col-md-8"></div>
+      </div>
+    </ng-template>
+  </li> -->
+</ul>
+
+<div [ngbNavOutlet]="nav" class="mt-2"></div>

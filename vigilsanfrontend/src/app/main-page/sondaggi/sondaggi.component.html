@@ -1,0 +1,135 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<mat-progress-bar mode="buffer" *ngIf="isSpinEmitter"></mat-progress-bar>
+<ng-container *ngIf="!isSpinEmitter">
+  <ng-container
+    *ngIf="!client.listaTabSondaggi || client.listaTabSondaggi.length <= 0; else elseTemplateNoTabQuestionari">
+    <p class="mt-3" style="font-size: 16px;">Nessuna rilevazione ....</p>
+  </ng-container>
+  <ng-template #elseTemplateNoTabQuestionari>
+    <section style="padding: 0.5rem; min-height: 100vh;">
+      <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-pills" orientation="orizontal">
+        <li *ngFor="let tab of client.listaTabSondaggi;  let i = index" [ngbNavItem]="i">
+          <a ngbNavLink (click)="onChangeTab(tab.moduloConfigCod)">
+            {{ tab.moduloConfigDesc }}
+          </a>
+          <ng-template ngbNavContent>
+            <!-- AGGIUNGI -->
+            <div class="row w-100 d-flex justify-content-end pt-2" *ngIf="client.checkAzioni('vigil_qst') === 'W'">
+              <div class="col-auto m-0 p-0">
+                <div ngbDropdown placement="bottom-right" class="d-inline-block">
+                  <!-- *ngIf="client.checkAzioni('vigil_ril-ril') === 'W'" -->
+                  <button class="btn btn-primary button-basic" id="dropdownBasic2" ngbDropdownToggle
+                    matTooltip="Nessun questionario da compilare" matTooltipPosition="above"
+                    matTooltipClass="style-tooltip" [matTooltipDisabled]="!showTooltipNoRilevazioniAggiungi"
+                    [disabled]="showTooltipNoRilevazioniAggiungi">
+                    AGGIUNGI
+                  </button>
+                  <div ngbDropdownMenu aria-labelledby="dropdownBasic2">
+                    <button ngbDropdownItem *ngFor="let qst of client.listaTabSondaggiAggiungi; index as i"
+                      (click)="showAddRilevazione(qst, tab)">
+                      {{ qst.dataoraRilevazione | date: 'dd/MM/yyyy HH:mm:ss'}}
+                      {{ qst.strutturaCategoria ?
+                      (qst.strutturaCategoria.strutturaCategoriaDesc ?
+                      qst.strutturaCategoria.strutturaCategoriaDesc : '') :
+                      ''}}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <br>
+            <mat-progress-bar mode="buffer" *ngIf="isLoadingData"></mat-progress-bar>
+            <ng-container *ngIf="!isLoadingData">
+              <ng-container
+                *ngIf="client.listeSondaggiPerTab && client.listeSondaggiPerTab[active].length <=0; else elseTemplateNoDataPerTab">
+                <p class="mt-3" style="font-size: 16px;">Nessun questionario ....</p>
+              </ng-container>
+              <ng-template #elseTemplateNoDataPerTab>
+                <ng-container *ngIf="questionariPerTab && questionariPerTab.length <=0; else elseTemplate">
+                  <p class="p-1" style="font-size: 16px;">Nessuna questionario trovato...</p>
+                </ng-container>
+                <ng-template #elseTemplate>
+                  <!-- TAB RILEVAZIONI -->
+                  <table class="table table-hover">
+                    <caption>Tabella dei questionari</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">Data Questionario</th>
+                        <!-- SHOW HEADERS FROM SEZIONI AND VOCI AT FIRST LEVEL -->
+                        <th *ngFor="let sezione of questionarioSezioniToShow" scope="col" class="text-left">
+                          {{sezione.moduloDesc}}
+                        </th>
+                        <th *ngFor="let voce of questionarioVociToShow" scope="col" class="text-left">
+                          {{voce.moduloVoceDesc}}
+                        </th>
+                        <th scope="col" class="text-center">Dettaglio/modifica Questionario</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let questionario of questionariPerTab; index as i">
+                        <!-- DATA/ORA -->
+                        <th scope="row">{{ questionario.dataoraRilevazione | date: 'dd/MM/yyyy'}}</th>
+                        <!-- SHOW VOCI VALORE IN CASE OF  moduloCompilatoRidotto.sezioni -->
+                        <td *ngFor="let sezione of questionario.modulo.moduloCompilatoRidotto?.sezioni">
+                          <span *ngFor="let voce of sezione.voci">
+                            <ng-container *ngIf="voce && voce.lista && voce.lista.valori; else elseTemplate">
+                              <span *ngFor="let voceLista of voce.lista.valori">
+                                <span *ngIf="voceLista && voceLista.valore text-wrap">{{ voceLista.moduloListaValoreDesc
+                                  }}</span>
+                              </span>
+                            </ng-container>
+                            <ng-template #elseTemplate>
+                              {{voce.moduloVoceDesc}}: {{voce.valore !== null ? voce.valore : '-'}}<br>
+                            </ng-template>
+                          </span>
+                          <!-- IN CASE OF SEZIONI NESTED IN SEZIONI FIRST LEVEL -->
+                          <ng-container *ngFor="let subSezione of sezione.sezioni">
+                            <ng-container *ngIf="subSezione.lista; else elseTemplate">
+                              <span *ngFor="let voceLista of subSezione.lista.valori">
+                                <span *ngIf="voceLista.valore text-wrap">{{ voceLista.moduloListaValoreDesc
+                                  }}</span>
+                              </span>
+                            </ng-container>
+                            <ng-template #elseTemplate>
+                              <span *ngFor="let voce of subSezione.voci">
+                                {{voce.moduloVoceDesc}}: {{voce.valore !== null ? voce.valore : '-'}}<br>
+                              </span>
+                            </ng-template>
+                          </ng-container>
+                        </td>
+                        <!-- SHOW VOCI VALORE IN CASE OF  moduloCompilatoRidotto.voci -->
+                        <td *ngFor="let voce of questionario.modulo.moduloCompilatoRidotto?.voci">
+                          <ng-container *ngIf="voce.lista; else elseTemplate">
+                            <span *ngFor="let voceLista of voce.lista.valori">
+                              <span *ngIf="voceLista.valore text-wrap">{{ voceLista.moduloListaValoreDesc
+                                }}</span>
+                            </span>
+                          </ng-container>
+                          <ng-template #elseTemplate>
+                            {{voce.valore !== null ? voce.valore : '-'}}<br>
+                          </ng-template>
+                        </td>
+                        <!-- AZIONI -->
+                        <td class="text-center">
+                          <button mat-button matTooltip="Dettaglio/modifica questionario" matTooltipPosition="left"
+                            matTooltipClass="style-tooltip" class="bi bi-file-earmark vigilsan-icon-style"
+                            (click)="showDettaglioRilevazione(questionario, tab, true)">
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </ng-template>
+              </ng-template>
+            </ng-container>
+          </ng-template>
+        </li>
+      </ul>
+      <div [ngbNavOutlet]="nav" class="mt-2"></div>
+    </section>
+  </ng-template>
+</ng-container>

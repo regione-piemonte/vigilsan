@@ -1,0 +1,2609 @@
+---
+openapi: 3.0.1
+info:
+  title: API vigilsancommon
+  description: Componente API vigilsancommon del prodotto vigilsan
+  version: 1.0.0
+servers:
+  - url: /api
+paths:
+  /status:
+    get:
+      tags:
+        - system
+      description: ping
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: string
+  /soggetto:
+    get:
+      operationId: funzionalita_soggettoGet
+      tags:
+        - soggetto
+      description: Ritorna un elenco delle funzionalita ricavate dalla tabella tipi parametro
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/header_x_request_id'
+        - $ref: '#/components/parameters/header_x_codice_servizio'
+        - $ref: '#/components/parameters/session_id'
+        - name: soggetto_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_soggetto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      operationId: funzionalita_soggettoPost
+      tags:
+        - soggetto
+      description: Inserisce il soggetto se gia presente torna l'oggetto soggetto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_soggetto'
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_soggetto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /soggetto/lista/csv:
+    get:
+      operationId: funzionalita_soggettoListaCsvGet
+      tags:
+      - soggetto
+      description: Ritorna un elenco dei soggetti in formato csv
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/header_x_request_id'
+        - $ref: '#/components/parameters/header_x_codice_servizio'
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/struttura_id'
+        - name: filter
+          in: query
+          schema:
+            type: string
+        - name: ruolo_struttura_cod
+          in: query
+          schema:
+            type: string
+        - name: ospite_stato_id
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: data_ingresso_da
+          in: query
+          schema:
+            type: string
+            description: data in formato yyyy-MM-dd
+        - name: data_ingresso_a
+          in: query
+          schema:
+            type: string
+            description: data in formato yyyy-MM-dd
+        - name: data_uscita_da
+          in: query
+          schema:
+            type: string
+            description: data in formato yyyy-MM-dd
+        - name: data_uscita_a
+          in: query
+          schema:
+            type: string
+            description: data in formato yyyy-MM-dd
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Disposition:
+              description: Il nome del csv scaricato
+              schema:
+                type: string
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /soggetto/lista:
+    get:
+      operationId: funzionalita_soggettoListaGet
+      tags:
+        - soggetto
+      description: Ritorna un elenco dei soggetti paginato
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/header_x_request_id'
+        - $ref: '#/components/parameters/header_x_codice_servizio'
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/struttura_id'
+        - name: filter
+          in: query
+          schema:
+            type: string
+        - name: ruolo_struttura_cod
+          in: query
+          schema:
+            type: string
+        - name: ospite_stato_id
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: data_ingresso_da
+          in: query
+          schema:
+            type: string
+            description: data in formato yyyy-MM-dd
+        - name: data_ingresso_a
+          in: query
+          schema:
+            type: string
+            description: data in formato yyyy-MM-dd
+        - name: data_uscita_da
+          in: query
+          schema:
+            type: string
+            description: data in formato yyyy-MM-dd
+        - name: data_uscita_a
+          in: query
+          schema:
+            type: string
+            description: data in formato yyyy-MM-dd  
+        - name: page_number
+          in: query
+          schema:
+            type: integer
+            format: int64
+        - name: row_per_page
+          in: query
+          schema:
+            type: integer
+            format: int64
+        - name: descending
+          in: query
+          schema:
+            type: boolean
+        - name: order_by
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_soggetto_esteso_lista'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /ente:
+    get:
+      operationId: funzionalita_enteGet
+      tags:
+        - ente
+      description: Ritorna l'ente corrente
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/header_x_request_id'
+        - $ref: '#/components/parameters/header_x_codice_servizio'
+        - $ref: '#/components/parameters/session_id'
+        - name: ente_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_ente'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /ente/tipo:
+    get:
+      operationId: funzionalita_enteTipoGet
+      tags:
+        - ente
+      description: Ritorna l'ente tipo
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/ente_tipo_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_ente_tipo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /comune/esteso:
+    get:
+      operationId: funzionalita_comuneEstesoGet
+      tags:
+        - comune
+      description: Ritorna il comune esteso di dati
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/header_x_request_id'
+        - $ref: '#/components/parameters/header_x_codice_servizio'
+        - $ref: '#/components/parameters/session_id'
+        - name: comune_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_comune_esteso'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /struttura/parametro:
+    get:
+      operationId: funzionalita_strutturaParametroGet
+      tags:
+        - struttura
+      description: Ritorna il valore di un parametro dato il codice e la struttura
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/struttura_id'
+        - name: parametro_cod
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_parametro'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /struttura/tipo:
+    get:
+      operationId: funzionalita_strutturaTipoGet
+      tags:
+        - struttura
+      description: Ritorna il tipo della struttura
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/header_x_request_id'
+        - $ref: '#/components/parameters/header_x_codice_servizio'
+        - $ref: '#/components/parameters/session_id'
+        - name: struttura_tipo_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_struttura_tipo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /struttura/accreditamento:
+    get:
+      operationId: funzionalita_strutturaAccreditamentoGet
+      tags:
+        - struttura
+      description: Ritorna l'accreditamento della struttura
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/header_x_request_id'
+        - $ref: '#/components/parameters/header_x_codice_servizio'
+        - $ref: '#/components/parameters/session_id'
+        - name: struttura_accreditamento_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_struttura_accreditamento'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /struttura/titolarita:
+    get:
+      operationId: funzionalita_strutturaTitolaritaGet
+      tags:
+        - struttura
+      description: Ritorna la titolarita della struttura
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/header_x_request_id'
+        - $ref: '#/components/parameters/header_x_codice_servizio'
+        - $ref: '#/components/parameters/session_id'
+        - name: struttura_titolarita_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_struttura_titolarita'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /struttura/asl:
+    get:
+      operationId: funzionalita_strutturaAslGet
+      tags:
+        - struttura
+      description: Ritorna la asl della struttura
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/header_x_request_id'
+        - $ref: '#/components/parameters/header_x_codice_servizio'
+        - $ref: '#/components/parameters/session_id'
+        - name: struttura_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_ente'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /struttura/categoria/lista:
+    get:
+      operationId: funzionalita_strutturaCategoriaListaGet
+      tags:
+        - struttura
+      description: Ritorna le categorie della struttura
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/header_x_request_id'
+        - $ref: '#/components/parameters/header_x_codice_servizio'
+        - $ref: '#/components/parameters/session_id'
+        - name: struttura_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_struttura_categoria'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /struttura/categoria:
+    get:
+      operationId: funzionalita_strutturaCategoriaGet
+      tags:
+        - struttura
+      description: Ritorna le categorie della struttura
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/header_x_request_id'
+        - $ref: '#/components/parameters/header_x_codice_servizio'
+        - $ref: '#/components/parameters/session_id'
+        - name: str_cat_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_struttura_categoria'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /struttura/natura:
+    get:
+      operationId: funzionalita_strutturaNaturaGet
+      tags:
+        - struttura
+      description: Ritorna la natura della struttura
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/header_x_request_id'
+        - $ref: '#/components/parameters/header_x_codice_servizio'
+        - $ref: '#/components/parameters/session_id'
+        - name: struttura_natura_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_natura'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /struttura:
+    get:
+      operationId: funzionalita_strutturaGet
+      tags:
+        - struttura
+      description: Ritorna la struttura
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/header_x_request_id'
+        - $ref: '#/components/parameters/header_x_codice_servizio'
+        - $ref: '#/components/parameters/session_id'
+        - name: struttura_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_struttura'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      operationId: funzionalita_strutturaPost
+      tags:
+        - struttura
+      description: Inserisce la struttura
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_struttura'
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_struttura'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /struttura/lista:
+    get:
+      operationId: funzionalita_strutturaListaGet
+      tags:
+        - struttura
+      description: Ritorna la struttura
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/ente_id'
+        - $ref: '#/components/parameters/struttura_id'
+        - $ref: '#/components/parameters/ruolo_ente_struttura_cod'
+        - $ref: '#/components/parameters/filter'  
+        - $ref: '#/components/parameters/page_number'
+        - $ref: '#/components/parameters/row_per_page'
+        - $ref: '#/components/parameters/descending'
+        - $ref: '#/components/parameters/order_by'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_struttura'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /arpe/struttura/dettaglio:
+    get:
+      operationId: funzionalita_arpeStrutturaDettaglioGet
+      tags:
+        - arpe
+      description: Ritorna le informazioni da arpe legate alla struttura corrente
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/session_id'
+        - name: struttura_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_arpe_struttura_dettaglio_esteso'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /ruolo:
+    get:
+      operationId: funzionalita_ruoloGet
+      tags:
+        - ruolo
+      description: Ritorna il ruolo
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/header_x_request_id'
+        - $ref: '#/components/parameters/header_x_codice_servizio'
+        - $ref: '#/components/parameters/session_id'
+        - name: ruolo_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_ruolo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /profilo:
+    get:
+      operationId: funzionalita_profiloGet
+      tags:
+        - profilo
+      description: Ritorna il profilo
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/header_x_request_id'
+        - $ref: '#/components/parameters/header_x_codice_servizio'
+        - $ref: '#/components/parameters/session_id'
+        - name: profilo_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_profilo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /profilo/lista:
+    get:
+      operationId: funzionalita_profiloListaGet
+      tags:
+        - profilo
+      description: Ritorna una lista dei profili attivi
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/header_x_request_id'
+        - $ref: '#/components/parameters/header_x_codice_servizio'
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_profilo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /applicativo:
+    get:
+      operationId: funzionalita_applicativoGet
+      tags:
+        - applicativo
+      description: Ritorna l'applicativo
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/header_x_request_id'
+        - $ref: '#/components/parameters/header_x_codice_servizio'
+        - $ref: '#/components/parameters/session_id'
+        - name: applicativo_id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_applicativo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /ospite/stato/lista:
+    get:
+      operationId: funzionalita_ospiteStatoListaGet
+      tags:
+        - ospite
+      description: Ritorna la lista di decodifica di ospite stato lista
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_ospite_stato'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /ospite/condizioni/lista:
+    get:
+      operationId: funzionalita_ospiteCondizioniListaGet
+      tags:
+        - ospite
+      description: Ritorna la lista di decodifica di ospite condizioni
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_ospite_condizioni'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /ospite/movimento:
+    post:
+      operationId: funzionalita_ospiteMovimentoPost
+      tags:
+        - movimento
+      description: Inserisce il movimento dell'ospite
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_ospite_movimento_post'
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/struttura_id'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_ospite_movimento'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /ospite/movimento/lista:
+    get:
+      operationId: funzionalita_ospiteMovimentoListaGet
+      tags:
+        - movimento
+      description: Ritorna la lista degli ospiti movimento
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/struttura_id'
+        - $ref: '#/components/parameters/soggetto_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                 $ref: '#/components/schemas/model_ospite_movimento_esteso'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /ospite/movimento/delete:
+    post:
+      operationId: funzionalita_ospiteMovimentoDeletePost
+      tags:
+        - movimento
+      description: invalida l'ultimo movimento inserito'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_ospite_movimento'
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/struttura_id'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_ospite_movimento'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /ospite/movimento/tipo/lista:
+    get:
+      operationId: funzionalita_ospiteMovimentoTipoListaGet
+      tags:
+        - movimento
+      description: Ritorna la lista di decodifica degli ospite movimento tipo
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                 $ref: '#/components/schemas/model_ospite_movimento_tipo_esteso'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /ente/soggetto/lista:
+    get:
+      operationId: funzionalita_enteSoggettoListaGet
+      tags:
+        - ente
+      description: Ritorna la lista dei soggetti associati all'ente
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+        - $ref: '#/components/parameters/ente_id'
+        - $ref: '#/components/parameters/ente_ruolo_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_ente_soggetto_esteso'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /ente/soggetto/ruolo/decodifica/lista:
+    get:
+      operationId: funzionalita_enteSoggettoRuoloDecodificaListaGet
+      tags:
+        - ente
+      description: Ritorna la lista dei ruoli ente soggetto validi
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_ruolo_ente_soggetto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /ente/soggetto:
+    post:
+      operationId: funzionalita_enteSoggettoPost
+      tags:
+        - ente
+      description: Inserisce o modifica l'associazione ente soggetto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_ente_soggetto'
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_ente_soggetto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /ente/soggetto/invalida:
+    post:
+      operationId: funzionalita_enteSoggettoInvalidaPost
+      tags:
+        - ente
+      description: Inserisce o modifica l'associazione ente soggetto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_ente_soggetto'
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_ente_soggetto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /ente/soggetto/delete:
+    post:
+      operationId: funzionalita_enteSoggettoDeletePost
+      tags:
+        - ente
+      description: cancella logicamente l'associazione ente soggetto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_ente_soggetto'
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_ente_soggetto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /utente/auth:
+    get:
+      operationId: funzionalita_utenteAuthGet
+      tags:
+        - utente
+      description: Ritorna il jwt associato all'utente dato il token
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/header_x_request_id'
+        - $ref: '#/components/parameters/header_x_codice_servizio'
+        - $ref: '#/components/parameters/header_x_forwarded_for'
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_profilo_utente'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+          
+  /utente/modifica/sessione:
+    post:
+      operationId: funzionalita_utenteModificaSessionePost
+      tags:
+        - utente
+      description: modifica la sessione corrente dell'utente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_profilo_utente'
+      parameters:
+        - $ref: '#/components/parameters/header_x_forwarded_for'
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_profilo_utente'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /utente/permessi:
+    get:
+      operationId: funzionalita_utentePermessiGet
+      tags:
+        - utente
+      description: Ritorna la lista di tutti i permessi dato servizio e profilo
+      parameters:
+        - $ref: '#/components/parameters/profilo_id'
+        - $ref: '#/components/parameters/applicativo_id'
+        - $ref: '#/components/parameters/struttura_id'
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_profilo_utente'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /utente/sessione-batch:
+    get:
+      operationId: funzionalita_sessioneBatchGet
+      tags:
+        - utente
+      description: Ritorna la sessione specifica legata all'utente dato il token
+      parameters:
+        - $ref: '#/components/parameters/header_x_forwarded_for'
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/header_x_forwarded_for'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/model_profilo_utente'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /utente/logout:
+    post:
+      operationId: funzionalita_utenteLogout
+      tags:
+        - utente
+      description: setta data di logout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /notifica:
+    post:
+      operationId: funzionalita_notificaPost
+      tags:
+        - noifica
+      description: inserisce una notifica
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_notifica'
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/model_notifica'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /batch/rpviar:
+    post:
+      operationId: funzionalita_batchrpviar
+      tags:
+        - batch
+      description: aggiorna le strutture dai dati forniti da arpe
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model_input_file_information'
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '201':
+          description: OK
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /batch/rpvinv:
+    post:
+      operationId: funzionalita_Batchrpvinv
+      tags:
+        - batch
+      description: gestisce la verifica dell'invio delle notifiche
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '201':
+          description: OK
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /batch/rpvini:
+    post:
+      operationId: funzionalita_Batchrpvini
+      tags:
+        - batch
+      description: gestisce l'invio delle notifiche
+      parameters:
+        - $ref: '#/components/parameters/header_shib_identita_codice_fiscale'
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '201':
+          description: OK
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+  parameters:
+    page_number:
+      description: numero di pagine per paginazione
+      in: query
+      name: page_number
+      schema:
+        type: integer
+        default: 1
+        format: int64
+    row_per_page:
+      description: righe per pagina per paginazione
+      in: query
+      name: row_per_page
+      schema:
+        type: integer
+        default: 10
+        format: int64
+    descending:
+      description: ordinamento direzione per paginazione
+      in: query
+      name: descending
+      schema: 
+        default: true
+        type: boolean
+    order_by:
+      description: chiave ordinamento per paginazione
+      in: query
+      name: order_by
+      schema: 
+        default: 1
+        type: string
+    header_content_type:
+      description: MIME Type del file che viene caricato come allegato
+      name: Content-Type
+      in: header
+      schema:
+        type: string
+        enum:
+          - document/pdf
+          - image/jpeg
+          - image/png
+    header_shib_identita_codice_fiscale:
+      description: Contiene il codice fiscale dell utente loggato ottenuto tramite shibboleth
+      name: Shib-Identita-CodiceFiscale
+      in: header
+      schema:
+        type: string
+      required: true
+    header_x_request_id:
+      description: Contiene un id univoco (`uuid v4`) della chiamata HTTP che viene generato dal front-end, viene propagato agli strati successivi e viene restituito al front-end assieme alla response, permettendo così di tracciare l intero ciclo di vita della richiesta
+      in: header
+      name: X-Request-Id
+      schema:
+        type: string
+      required: true
+    header_x_forwarded_for:
+      description: Contiene un elenco degli ip che hanno gestito la richiesta.Utile per log e audit.Il formato della stringa è <ip-front-end>, <ip-primo-server>, ..., <ip-ultimo-server> Es. `10.10.10.10, 10.38.45.68, 10.128.69.244`
+      in: header
+      name: X-Forwarded-For
+      schema:
+        type: string
+      required: true
+    header_x_codice_servizio:
+      in: header
+      name: X-Codice-Servizio
+      description: Contiene una stringa identificativa del servizio chiamante (es.COD)
+      schema:
+        type: string
+      required: true
+    session_id:
+      description: Contiene l'id della sessione corrente su log session
+      in: query
+      name: s_id
+      schema:
+        type: integer
+        format: int32
+    struttura_id:
+      description: Contiene l'id della struttura corrente
+      in: query
+      name: struttura_id
+      schema:
+        type: integer
+        format: int32
+    ente_id:
+      in: query
+      name: ente_id
+      schema:
+        type: integer
+        format: int32
+    ente_ruolo_id:
+      in: query
+      name: ente_ruolo_id
+      schema:
+        type: integer
+        format: int32
+    ruolo_ente_struttura_cod:
+      in: query
+      name: ruolo_ente_struttura_cod
+      schema:
+        type: string
+    ente_tipo_id:
+      in: query
+      name: ente_tipo_id
+      schema:
+        type: integer
+        format: int32
+    soggetto_id:
+      description: Contiene l'id del soggetto corrente
+      in: query
+      name: soggetto_id
+      schema:
+        type: integer
+        format: int32
+    profilo_id:
+      description: Contiene l'id del profilo corrente
+      in: query
+      name: profilo_id
+      schema:
+        type: integer
+        format: int32
+    applicativo_id:
+      description: Contiene l'id dell applicativo corrente
+      in: query
+      name: applicativo_id
+      schema:
+        type: integer
+        format: int32
+    filter:
+      in: query
+      name: filter
+      schema:
+        type: string
+  responses:
+    BadRequest:
+      description: La richiesta fatta dal client è errata.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errore'
+    Forbidden:
+      description: La richiesta fatta dal client è errata.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errore'
+      headers:
+        X-Request-ID:
+          description: Ritorno del parametro ricevuto nella request.
+          schema:
+            type: string
+    NotFound:
+      description: La richiesta fatta dal client errata.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errore'
+      headers:
+        X-Request-ID:
+          description: Ritorno del parametro ricevuto nella request.
+          schema:
+            type: string
+    InternalServerError:
+      description: La richiesta fatta dal client errata.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errore'
+      headers:
+        X-Request-ID:
+          description: Ritorno del parametro ricevuto nella request.
+          schema:
+            type: string
+  schemas:
+    model_natura:
+      type: object
+      title: Model natura
+      properties:
+        strutturaNaturaId:
+          type: integer
+          format: int32
+        strutturaNaturaCod:
+          type: string
+        strutturaNaturaCodArpe:
+          type: string
+        strutturaNaturaDesc:
+          type: string
+        validitaInizio:
+          type: string
+          format: date
+        validitaFine:
+          type: string
+          format: date
+        dataCreazione:
+          type: string
+          format: date
+        dataModifica:
+          type: string
+          format: date
+        dataCancellazione:
+          type: string
+          format: date
+        utenteCreazione:
+          type: string
+        utenteModifica:
+          type: string
+        utenteCancellazione:
+          type: string
+    model_profilo:
+      type: object
+      title: Model profilo
+      properties:
+        profiloId:
+          type: integer
+          format: int32
+        profiloCod:
+          type: string
+        profiloDesc:
+          type: string
+        validitaInizio:
+          type: string
+          format: date
+        validitaFine:
+          type: string
+          format: date
+        dataCreazione:
+          type: string
+          format: date
+        dataModifica:
+          type: string
+          format: date
+        dataCancellazione:
+          type: string
+          format: date
+        utenteCreazione:
+          type: string
+        utenteModifica:
+          type: string
+        utenteCancellazione:
+          type: string
+    model_applicativo:
+      type: object
+      title: Model applicativo
+      properties:
+        applicativoId:
+          type: integer
+          format: int32
+        applicativoCod:
+          type: string
+        applicativoDesc:
+          type: string
+        validitaInizio:
+          type: string
+          format: date
+        validitaFine:
+          type: string
+          format: date
+        dataCreazione:
+          type: string
+          format: date
+        dataModifica:
+          type: string
+          format: date
+        dataCancellazione:
+          type: string
+          format: date
+        utenteCreazione:
+          type: string
+        utenteModifica:
+          type: string
+        utenteCancellazione:
+          type: string
+    model_ruolo:
+      type: object
+      title: Model ruolo
+      properties:
+        ruoloId:
+          type: integer
+          format: int32
+        ruoloCod:
+          type: string
+        ruoloDesc:
+          type: string
+        validitaInizio:
+          type: string
+          format: date
+        validitaFine:
+          type: string
+          format: date
+        dataCreazione:
+          type: string
+          format: date
+        dataModifica:
+          type: string
+          format: date
+        dataCancellazione:
+          type: string
+          format: date
+        utenteCreazione:
+          type: string
+        utenteModifica:
+          type: string
+        utenteCancellazione:
+          type: string
+    model_profilo_utente:
+      type: object
+      title: Model profilo utente
+      properties:
+        sessioneId:
+          type: integer
+          format: int32
+        soggettoId:
+          type: integer
+          format: int32
+        ruoloId:
+          type: integer
+          format: int32
+        strutturaId:
+          type: integer
+          format: int32
+        enteId:
+          type: integer
+          format: int32
+        profiloId:
+          type: integer
+          format: int32
+        applicativoId:
+          type: integer
+          format: int32
+        profili:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_profilo_utente_profili'
+        auth:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_auth'
+    model_auth:
+      type: object
+      title: Model auth
+      properties:
+        f:
+          type: string
+        p:
+          type: string
+        a:
+          type: array
+          items:
+            $ref: '#/components/schemas/model_auth'
+    model_profilo_utente_profili:
+      type: object
+      title: Model profili
+      properties:
+        profiloId:
+          type: integer
+          format: int32
+        funzione:
+          type: array
+          items:
+            type: string
+    model_ente_soggetto:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model ente soggetto
+          properties:
+            enteSoggId:
+              type: integer
+              format: int32
+            enteId:
+              type: integer
+              format: int32
+            soggettoId:
+              type: integer
+              format: int32
+            ruoloEnteSoggettoId:
+              type: integer
+              format: int32
+    model_ente_soggetto_esteso:
+      allOf:
+        - $ref: '#/components/schemas/model_ente_soggetto'
+        - type: object
+          title: Model ente soggetto esteso
+          properties:
+            ruoloEnteSoggetto:
+              $ref: '#/components/schemas/model_ruolo_ente_soggetto'
+            soggetto:
+              $ref: '#/components/schemas/model_soggetto'
+    model_ruolo_ente_soggetto:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model ente soggetto
+          properties:
+            ruoloEnteSoggettoId:
+              type: integer
+              format: int32
+            ruoloEnteSoggettoCod:
+              type: string
+            ruoloEnteSoggettoDesc:
+              type: string
+    model_notifica:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model notifica
+          properties:
+            notificaId:
+              type: integer
+              format: int32
+            profiloId:
+              type: integer
+              format: int32
+            enteId:
+              type: integer
+              format: int32
+            strutturaId:
+              type: integer
+              format: int32
+            soggettoId:
+              type: integer
+              format: int32
+            title:
+              type: string
+            bodyTextShort:
+              type: string
+            bodyTextLong:
+              type: string
+            bodyHtml:
+              type: string
+    model_invio_notifica:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model invio notifica
+          properties:
+            invioNotificaId:
+              type: integer
+              format: int32
+            notificaId:
+              type: integer
+              format: int32
+            cfDestinatario:
+              type: string
+            dataoraInvio:
+              type: string
+              format: date
+            esitoInvio:
+              type: boolean
+            erroreInvio:
+              type: string
+            requestContent:
+              type: string
+            responseContent:
+              type: string
+            responseResult:
+              type: string
+    model_parametro:
+      type: object
+      properties:
+        chiave:
+          type: string
+        valore:
+          type: string
+    model_comune_esteso:
+      type: object
+      title: Model comune esteso
+      properties:
+        comuneId:
+          type: integer
+          format: int32
+        comuneCod:
+          type: string
+        comuneDesc:
+          type: string
+        provinciaId:
+          type: integer
+          format: int32
+        validitaInizio:
+          type: string
+          format: date
+        validitaFine:
+          type: string
+          format: date
+        dataCreazione:
+          type: string
+          format: date
+        dataModifica:
+          type: string
+          format: date
+        dataCancellazione:
+          type: string
+          format: date
+        utenteCreazione:
+          type: string
+        utenteModifica:
+          type: string
+        utenteCancellazione:
+          type: string
+        provincia:
+          $ref: '#/components/schemas/model_provincia_esteso'
+    model_provincia_esteso:
+      type: object
+      title: Model provincia esteso
+      properties:
+        provinciaId:
+          type: integer
+          format: int32
+        provinciaCod:
+          type: string
+        provinciaSigla:
+          type: string
+        provinciaDesc:
+          type: string
+        regioneId:
+          type: integer
+          format: int32
+        regione:
+          $ref: '#/components/schemas/model_regione'
+        validitaInizio:
+          type: string
+          format: date
+        validitaFine:
+          type: string
+          format: date
+        dataCreazione:
+          type: string
+          format: date
+        dataModifica:
+          type: string
+          format: date
+        dataCancellazione:
+          type: string
+          format: date
+        utenteCreazione:
+          type: string
+        utenteModifica:
+          type: string
+        utenteCancellazione:
+          type: string
+    model_regione:
+      type: object
+      title: Model regione
+      properties:
+        regioneId:
+          type: integer
+          format: int32
+        regioneCod:
+          type: string
+        regioneDesc:
+          type: string
+        validitaInizio:
+          type: string
+          format: date
+        validitaFine:
+          type: string
+          format: date
+        dataCreazione:
+          type: string
+          format: date
+        dataModifica:
+          type: string
+          format: date
+        dataCancellazione:
+          type: string
+          format: date
+        utenteCreazione:
+          type: string
+        utenteModifica:
+          type: string
+        utenteCancellazione:
+          type: string
+    model_ente_tipo:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model ente tipo
+          properties:
+            enteTipoId:
+              type: integer
+              format: int32
+            enteTipoCod:
+              type: string
+            enteTipoDesc:
+              type: string
+    model_ente:
+      type: object
+      title: Model ente
+      properties:
+        enteId:
+          type: integer
+          format: int32
+        enteCod:
+          type: string
+        enteCodConfiguratore:
+          type: string
+        enteDesc:
+          type: string
+        enteTipoId:
+          type: integer
+          format: int32
+        validitaInizio:
+          type: string
+          format: date
+        validitaFine:
+          type: string
+          format: date
+        dataCreazione:
+          type: string
+          format: date
+        dataModifica:
+          type: string
+          format: date
+        dataCancellazione:
+          type: string
+          format: date
+        utenteCreazione:
+          type: string
+        utenteModifica:
+          type: string
+        utenteCancellazione:
+          type: string
+    model_struttura_accreditamento:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model struttura accreditamento
+          properties:
+            strutturaAccreditamentoId:
+              type: integer
+              format: int32
+            strutturaAccreditamentoCod:
+              type: string
+            strutturaAccreditamentoCodArpe:
+              type: string
+            strutturaAccreditamentoDesc:
+              type: string
+    model_struttura_tipo:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model struttura tipo
+          properties:
+            strutturaTipoId:
+              type: integer
+              format: int32
+            strutturaTipoCod:
+              type: string
+            strutturaTipoDesc:
+              type: string
+    model_arpe_struttura_tipo:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model arpe struttura tipo
+          properties:
+            arpeStrutturaTipoId:
+              type: integer
+              format: int32
+            arpeStrutturaTipoCod:
+              type: string
+            arpeStrutturaTipoDesc:
+              type: string
+    model_arpe_assistenza_tipo:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model arpe assistenza tipo
+          properties:
+            arpeAssistenzaTipoId:
+              type: integer
+              format: int32
+            arpeAssistenzaTipoCod:
+              type: string
+            arpeAssistenzaTipoDesc:
+              type: string
+    model_arpe_attivita:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model arpe attivita
+          properties:
+            arpeAttivitaId:
+              type: integer
+              format: int32
+            arpeAttivitaCod:
+              type: string
+            arpeAttivitaDesc:
+              type: string
+    model_arpe_attivita_classe:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model arpe attivita classe
+          properties:
+            arpeAttivitaClasseId:
+              type: integer
+              format: int32
+            arpeAttivitaClasseCod:
+              type: string
+            arpeAttivitaClasseDesc:
+              type: string
+    model_arpe_disciplina:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model arpe disciplina
+          properties:
+            arpeDisciplinaId:
+              type: integer
+              format: int32
+            arpeDisciplinaCod:
+              type: string
+            arpeDisciplinaDesc:
+              type: string
+    model_struttura_titolarita:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model struttura titolarita
+          properties:
+            strutturaTitolaritaId:
+              type: integer
+              format: int32
+            strutturaTitolaritaCod:
+              type: string
+            strutturaTitolaritaCodArpe:
+              type: string
+            strutturaTitolaritaDesc:
+              type: string
+    model_arpe_struttura_dettaglio:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model arpe struttura dettaglio
+          properties:
+            arpeStrDettId:
+              type: integer
+              format: int32
+            strutturaId:
+              type: integer
+              format: int32
+            arpeStrutturaTipoId:
+              type: integer
+              format: int32
+            arpeAssistenzaTipoId:
+              type: integer
+              format: int32     
+            arpeAttivitaId:
+              type: integer
+              format: int32
+            arpeAttivitaClasseId:
+              type: integer
+              format: int32
+            arpeDisciplinaId:
+              type: integer
+              format: int32
+            arpeDataAttivazioneStruttura:
+              type: string
+              format: date
+            arpeDataAttivazioneAssistenza:
+              type: string
+              format: date              
+            arpeDataAttivazioneAttivita:
+              type: string
+              format: date                        
+    model_struttura_categoria:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model struttura categoria
+          properties:
+            strutturaCategoriaId:
+              type: integer
+              format: int32
+            strutturaCategoriaCod:
+              type: string
+            strutturaCategoriaDesc:
+              type: string
+    model_ospite_stato_ultimo:
+      allOf:
+        - $ref: '#/components/schemas/model_ospite_stato'
+        - type: object
+          title: Model ultimo ospite stato
+          properties:
+            dataMovimento:
+              type: string
+              format: date
+    model_ospite_stato:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model ospite stato
+          properties:
+            ospiteStatoId:
+              type: integer
+              format: int32
+            ospiteStatoCod:
+              type: string
+            ospiteStatoDesc:
+              type: string
+            ospiteStatoOrd:
+              type: string
+            ospiteStatoHint:
+              type: string
+            flgPresenza:
+              type: boolean
+            flgPosto:
+              type: boolean
+    model_ospite_movimento_tipo:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model ospite movimento
+          properties:
+            ospiteMovimentoTipoId:
+              type: integer
+              format: int32
+            ospiteMovimentoTipoCod:
+              type: string
+            ospiteMovimentoTipoDesc:
+              type: string
+            ospiteMovimentoTipoOrd:
+              type: string
+            ospiteMovimentoTipoHint:
+              type: string
+            ospiteStatoId:
+              type: integer
+              format: int32
+    model_ospite_movimento_tipo_esteso_generico:
+      allOf:
+        - $ref: '#/components/schemas/model_ospite_movimento_tipo'
+        - type: object
+          title: Model ospite movimento
+          properties:
+            ospiteStato:
+              $ref: '#/components/schemas/model_ospite_stato'
+    model_ospite_movimento_tipo_esteso:
+      allOf:
+        - $ref: '#/components/schemas/model_ospite_movimento_tipo'
+        - type: object
+          title: Model ospite movimento
+          properties:
+            ospiteMovimentoTipoConfig:
+              type: array
+              items:
+                $ref: '#/components/schemas/model_ospite_movimento_tipo_config'
+    model_ospite_movimento_tipo_config:
+      allOf:
+      - $ref: '#/components/schemas/model_generico'
+      - type: object
+        title: Model ospite movimento
+        properties:
+          ospiteMovimentoTipoCfgId:
+            type: integer
+            format: int32
+          ospiteMovimentoTipoId:
+            type: integer
+            format: int32
+          ospiteStatoId:
+            type: integer
+            format: int32
+    model_ospite_movimento_esteso:
+      allOf:
+        - $ref: '#/components/schemas/model_ospite_movimento'
+        - type: object
+          title: Model ospite movimento esteso
+          properties:
+            ospiteMovimentoTipo:
+              $ref: '#/components/schemas/model_ospite_movimento_tipo_esteso_generico'
+            ospiteCondizioni:
+              $ref: '#/components/schemas/model_ospite_condizioni'
+            strutturaCategoria:
+              $ref: '#/components/schemas/model_struttura_categoria'
+    model_ospite_movimento_post:
+      allOf:
+        - $ref: '#/components/schemas/model_ospite_movimento'
+        - type: object
+          title: Model ospite movimento post
+          properties:
+            soggettoId:
+              type: integer
+              format: int32
+    model_ospite_movimento:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model ospite movimento
+          properties:
+            ospiteMovimentoId:
+              type: integer
+              format: int32
+            dataMovimento:
+              type: string
+              format: date
+            strSoggId:
+              type: integer
+              format: int32
+            ospiteMovimentoTipoId:
+              type: integer
+              format: int32
+            ospiteCondizioniId:
+              type: integer
+              format: int32
+            strutturaIdOd:
+              type: integer
+              format: int32
+            note:
+              type: string
+            strutturaCategoriaId:
+              type: integer
+              format: int32
+    model_struttura_soggetto:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model struttura soggetto
+          properties:
+            strSoggId:
+              type: integer
+              format: int32
+            strutturaId:
+              type: integer
+              format: int32
+            soggettoId:
+              type: integer
+              format: int32
+            ruoloStrutturaSoggettoId:
+              type: integer
+              format: int32
+    model_generico:
+      type: object
+      title: Model generico
+      properties:
+        validitaInizio:
+          type: string
+          format: date
+        validitaFine:
+          type: string
+          format: date
+        dataCreazione:
+          type: string
+          format: date
+        dataModifica:
+          type: string
+          format: date
+        dataCancellazione:
+          type: string
+          format: date
+        utenteCreazione:
+          type: string
+        utenteModifica:
+          type: string
+        utenteCancellazione:
+          type: string
+    model_struttura:
+      type: object
+      title: Model struttura
+      properties:
+        strutturaId:
+          type: integer
+          format: int32
+        strutturaCod:
+          type: string
+        strutturaCodConfiguratore:
+          type: string
+        strutturaCodArpe:
+          type: string
+        strutturaDesc:
+          type: string
+        strutturaTipoId:
+          type: integer
+          format: int32
+        comuneId:
+          type: integer
+          format: int32
+        indirizzo:
+          type: string
+        cap:
+          type: string
+        coordSrid:
+          type: string
+        coordX:
+          type: string
+        coordY:
+          type: string
+        strutturaNaturaId:
+          type: integer
+          format: int32
+        strutturaAccreditamentoId:
+          type: integer
+          format: int32
+        strutturaTitolaritaId:
+          type: integer
+          format: int32
+        validitaInizio:
+          type: string
+          format: date
+        validitaFine:
+          type: string
+          format: date
+        dataCreazione:
+          type: string
+          format: date
+        dataModifica:
+          type: string
+          format: date
+        dataCancellazione:
+          type: string
+          format: date
+        utenteCreazione:
+          type: string
+        utenteModifica:
+          type: string
+        utenteCancellazione:
+          type: string
+    model_arpe_struttura_dettaglio_esteso:
+      allOf:
+        - $ref: '#/components/schemas/model_arpe_struttura_dettaglio'
+        - type: object
+          title: Model arpe struttura dettaglio esteso
+          properties:
+            arpeAssistenzaTipo:
+              $ref: '#/components/schemas/model_arpe_assistenza_tipo'
+            arpeAttivitaClasse:
+              $ref: '#/components/schemas/model_arpe_attivita_classe'
+            arpeAttivita:
+              $ref: '#/components/schemas/model_arpe_attivita'
+            arpeDisciplina:
+              $ref: '#/components/schemas/model_arpe_disciplina'
+            arpeStrutturaTipo:
+              $ref: '#/components/schemas/model_arpe_struttura_tipo'
+    model_soggetto_esteso_lista:
+      allOf:
+        - $ref: '#/components/schemas/model_soggetto'
+        - type: object
+          title: Model soggetto esteso per lista
+          properties:
+            strutturaSoggetto:
+              $ref: '#/components/schemas/model_struttura_soggetto'
+            ruoloStruttura:
+              $ref: '#/components/schemas/model_ruolo_struttura_soggetto'
+            ultimoStato:
+              $ref: '#/components/schemas/model_ospite_stato_ultimo'
+            dataPrimoIngresso:
+              type: string
+              format: date
+            dataUltimaUscita:
+              type: string
+              format: date
+            strutturaCategoriaDesc:
+              type: string
+    model_ospite_condizioni:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model ospite condizioni
+          properties:
+            ospiteCondizioniId:
+              type: integer
+              format: int32
+            ospiteCondizioniCod:
+              type: string
+            ospiteCondizioniDesc:
+              type: string
+            ospiteCondizioniOrd:
+              type: string
+            ospiteCondizioniHint:
+              type: string
+    model_soggetto:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model soggetto
+          properties:
+            soggettoId:
+              type: integer
+              format: int32
+            codiceFiscale:
+              type: string
+            nome:
+              type: string
+            cognome:
+              type: string
+            dataNascita:
+              type: string
+              format: date
+            presenteConfiguratore:
+              type: boolean
+    model_ruolo_struttura_soggetto:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model ruolo struttura
+          properties:
+            ruoloStrutturaSoggettoId:
+              type: integer
+              format: int32
+            ruoloStrutturaSoggettoCod:
+              type: string
+            ruoloStrutturaSoggettoDesc:
+              type: string
+    model_ruolo_ente_struttura:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model ruolo struttura
+          properties:
+            ruoloEnteStrutturaId:
+              type: integer
+              format: int32
+            ruoloEnteStrutturaCod:
+              type: string
+            ruoloEnteStrutturaDesc:
+              type: string
+    model_ente_struttura:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model ente struttura
+          properties:
+            enteStrId:
+              type: integer
+              format: int32
+            enteId:
+              type: integer
+              format: int32
+            strutturaId:
+              type: integer
+              format: int32
+            ruoloEnteStrutturaId:
+              type: integer
+              format: int32
+    model_applicativo_operazione_ridotto_custom:
+      type: object
+      title: Model applicativo operazione ridotto custom
+      properties:
+        funzione:
+          type: string
+        permesso:
+          type: string
+    model_applicativo_operazione:
+      allOf:
+        - $ref: '#/components/schemas/model_generico'
+        - type: object
+          title: Model applicativo operazione
+          properties:
+            applicativoOperazioneId:
+              type: integer
+              format: int32
+            applicativoId:
+              type: integer
+              format: int32
+            profiloId:
+              type: integer
+              format: int32
+            operazione:
+              type: string
+    boolean_crit:
+      type: object
+      properties:
+        eq:
+          type: boolean
+    string_crit:
+      type: object
+      properties:
+        eq:
+          type: string
+        ne:
+          type: string
+        lt:
+          type: string
+        lte:
+          type: string
+        gt:
+          type: string
+        gte:
+          type: string
+        in:
+          type: array
+          items:
+            type: string
+        nin:
+          type: array
+          items:
+            type: string
+        c:
+          type: string
+        ci:
+          type: string
+        s:
+          type: string
+        si:
+          type: string
+        e:
+          type: string
+        ei:
+          type: string
+      description: criterio su singola property di tipo stringa
+    integer_crit:
+      type: object
+      properties:
+        eq:
+          type: integer
+          format: int32
+        ne:
+          type: integer
+          format: int32
+        lt:
+          type: integer
+          format: int32
+        lte:
+          type: integer
+          format: int32
+        gt:
+          type: integer
+          format: int32
+        gte:
+          type: integer
+          format: int32
+        in:
+          type: array
+          items:
+            type: integer
+            format: int32
+        nin:
+          type: array
+          items:
+            type: integer
+            format: int32
+      description: criterio su singola property di tipo integer
+    date_crit:
+      type: object
+      properties:
+        eq:
+          type: string
+          format: date
+        ne:
+          type: string
+          format: date
+        lt:
+          type: string
+          format: date
+        lte:
+          type: string
+          format: date
+        gt:
+          type: string
+          format: date
+        gte:
+          type: string
+          format: date
+        in:
+          type: array
+          items:
+            type: string
+            format: date
+        nin:
+          type: array
+          items:
+            type: string
+            format: date
+      description: criterio su singola property di tipo data
+    model_input_file_information:
+      type: object
+      properties:
+        pathFile:
+          type: string
+    errore:
+      title: '[ERRORE] Generico'
+      type: object
+      properties:
+        status:
+          type: integer
+        code:
+          type: string
+        title:
+          type: string
+        detail:
+          type: array
+          items:
+            $ref: '#/components/schemas/errore_dettaglio'
+        links:
+          type: array
+          items:
+            type: string
+    errore_dettaglio:
+      title: '[ERRORE] Dettaglio'
+      type: object
+      properties:
+        chiave:
+          type: string
+        valore:
+          type: string
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        messaggioCittadino:
+          type: string
+        errorMessage:
+          type: string
+        fields:
+          type: string
+          nullable: true

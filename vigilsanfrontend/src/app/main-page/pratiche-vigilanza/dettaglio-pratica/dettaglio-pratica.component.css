@@ -1,0 +1,60 @@
+/*
+ Copyright Regione Piemonte - 2024
+ SPDX-License-Identifier: EUPL-1.2
+*/
+
+.button-basic {
+  background-color: #0381d6;
+}
+
+.spin-emitter-style {
+  width: 3rem;
+  height: 3rem;
+}
+
+.bi {
+  font-size: 2rem;
+  color: #0381d6;
+}
+
+
+.custom-checkbox {
+  width: 15px;
+  /* Larghezza desiderata */
+  height: 15px;
+  /* Altezza desiderata */
+  transform: scale(1.5);
+  /* Scala la dimensione della checkbox */
+  -webkit-transform: scale(1.5);
+  /* Scala per i browser Webkit */
+  -moz-transform: scale(1.5);
+  /* Scala per i browser Mozilla */
+  -ms-transform: scale(1.5);
+  /* Scala per i browser Microsoft */
+  -o-transform: scale(1.5);
+  /* Scala per i browser Opera */
+  margin: 5px;
+  /* Spazio extra attorno alla checkbox */
+}
+
+.custom-checkbox:checked {
+  background-color: #0381d6;
+  /* Colore di sfondo quando selezionata */
+}
+
+
+.border-valida {
+  background-color: mediumspringgreen;
+}
+
+.border-scaduta {
+  background-color: lightpink;
+}
+
+.struttura {
+  color: black;
+}
+
+.ente {
+  color: #0381d6;;
+}

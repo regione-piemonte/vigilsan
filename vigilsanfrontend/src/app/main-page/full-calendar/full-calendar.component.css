@@ -1,0 +1,35 @@
+/*
+ Copyright Regione Piemonte - 2024
+ SPDX-License-Identifier: EUPL-1.2
+*/
+
+.highlight-border {
+  border: 2px solid #0381d6;
+  /* Sostituisci #ff9800 con il colore desiderato */
+}
+
+.custom-round-button {
+  width: 40px;
+  /* Puoi regolare la dimensione in base alle tue necessitÃ  */
+  height: 40px;
+  /* Puoi regolare la dimensione in base alle tue necessitÃ  */
+  border-radius: 50%;
+  /* display: flex; */
+  align-items: center;
+  /* justify-content: center; */
+}
+
+.custom-round-button:hover {
+  background-color: #f1f1f1;
+  /* Colore di sfondo quando il bottone Ã¨ in hover */
+}
+
+.underline-on-hover {
+  text-decoration: none;
+  /* Nessuna sottolineatura di default */
+}
+
+.underline-on-hover:hover {
+  text-decoration: underline;
+  /* Sottolinea quando il mouse Ã¨ sopra */
+}

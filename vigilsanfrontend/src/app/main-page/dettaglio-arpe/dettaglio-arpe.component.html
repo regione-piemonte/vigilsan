@@ -1,0 +1,33 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<h1 mat-dialog-title>Dettaglio Struttura ARPE</h1>
+<div mat-dialog-content>
+  <table class="table table-hover">
+    <caption>Dettaglio Arpe</caption>
+    <thead>
+      <tr>
+        <th *ngFor="let column of columns" scope="col" class="text-left">
+          {{column}}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let arpe of listaSettaglioArpe; index as i">
+        <td *ngIf="arpe.arpeStrutturaTipo"><span class="text-nowrap">{{ arpe.arpeStrutturaTipo.arpeStrutturaTipoCod }} - {{ arpe.arpeStrutturaTipo.arpeStrutturaTipoDesc }}</span></td>
+        <td *ngIf="arpe.arpeAssistenzaTipo"><span class="text-nowrap">{{ arpe.arpeAssistenzaTipo.arpeAssistenzaTipoCod }} - {{ arpe.arpeAssistenzaTipo.arpeAssistenzaTipoDesc }}</span>
+        </td>
+        <td *ngIf="arpe.arpeAttivita"><span>{{ arpe.arpeAttivita.arpeAttivitaCod }} - {{ arpe.arpeAttivita.arpeAttivitaDesc }}</span></td>
+        <td *ngIf="arpe.arpeAttivitaClasse"><span class="text-nowrap">{{ arpe.arpeAttivitaClasse.arpeAttivitaClasseCod }} - {{ arpe.arpeAttivitaClasse.arpeAttivitaClasseDesc }}</span>
+        </td>
+        <td *ngIf="arpe.arpeDisciplina"><span class="text-nowrap">{{ arpe.arpeDisciplina.arpeDisciplinaCod }} - {{ arpe.arpeDisciplina.arpeDisciplinaDesc }}</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div mat-dialog-actions>
+  <button mat-button mat-dialog-close>CHIUDI</button>
+</div>

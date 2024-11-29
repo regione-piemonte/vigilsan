@@ -1,0 +1,21 @@
+/*
+ Copyright Regione Piemonte - 2024
+ SPDX-License-Identifier: EUPL-1.2
+*/
+
+.button-basic {
+  background-color: #0381d6;
+}
+.spin-emitter-style {
+  width: 3rem;
+  height: 3rem;
+}
+
+/* class="mat-step-icon mat-step-icon-state-number mat-step-icon-selected" */
+::ng-deep .mat-step-icon.mat-step-icon-selected {
+  background-color: #0381d6;
+}
+::ng-deep .mat-step-icon.mat-step-icon-state-edit {
+  background-color: #0381d6;
+}
+

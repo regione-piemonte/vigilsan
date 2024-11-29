@@ -1,0 +1,178 @@
+
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:ns2="http://RicercaAssistitoCUP.central.services.auraws.aura.csi.it" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://ScreeningEpatiteC.central.services.auraws.aura.csi.it" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://ScreeningEpatiteC.central.services.auraws.aura.csi.it">
+<types>
+<s:schema elementFormDefault="qualified" targetNamespace="http://ScreeningEpatiteC.central.services.auraws.aura.csi.it">
+<s:import namespace="http://RicercaAssistitoCUP.central.services.auraws.aura.csi.it"/>
+<s:element name="ScreeningEpatiteC">
+<s:complexType>
+<s:sequence>
+<s:element name="assistito" type="s0:Request"/>
+</s:sequence>
+</s:complexType>
+</s:element>
+<s:complexType name="Request">
+<s:complexContent>
+<s:extension base="s0:Ens_Request">
+<s:sequence>
+<s:element name="codiceFiscale">
+<s:simpleType>
+<s:restriction base="s:string">
+<s:maxLength value="16"/>
+<s:minLength value="11"/>
+</s:restriction>
+</s:simpleType>
+</s:element>
+</s:sequence>
+</s:extension>
+</s:complexContent>
+</s:complexType>
+<s:complexType name="Ens_Request">
+<s:complexContent>
+<s:extension base="s0:Ens_Messagebody"/>
+</s:complexContent>
+</s:complexType>
+<s:complexType name="Ens_Messagebody"/>
+<s:element name="ScreeningEpatiteCResponse">
+<s:complexType>
+<s:sequence>
+<s:element name="ScreeningEpatiteCResult" type="s0:Response"/>
+</s:sequence>
+</s:complexType>
+</s:element>
+<s:complexType name="Response">
+<s:complexContent>
+<s:extension base="s0:Ens_Response">
+<s:sequence>
+<s:element minOccurs="0" name="capDomicilio" type="s:string"/>
+<s:element minOccurs="0" name="capResidenza" type="s:string"/>
+<s:element minOccurs="0" name="cittadinanza" type="s:string"/>
+<s:element minOccurs="0" name="codiceAslAssistenza" type="s:string"/>
+<s:element minOccurs="0" name="codiceAslDomicilio" type="s:string"/>
+<s:element minOccurs="0" name="codiceAslResidenzaAsl" type="s:string"/>
+<s:element minOccurs="0" name="codiceAssistito" type="s:string"/>
+<s:element minOccurs="0" name="codiceComuneDomicilio" type="s:string"/>
+<s:element minOccurs="0" name="codiceFiscale" type="s:string"/>
+<s:element minOccurs="0" name="codiceFiscaleMedico" type="s:string"/>
+<s:element minOccurs="0" name="codiceIstatNascita" type="s:string"/>
+<s:element minOccurs="0" name="codiceIstatResidenza" type="s:string"/>
+<s:element minOccurs="0" name="codiceMunicipio" type="s:string"/>
+<s:element minOccurs="0" name="codiceRegioneAssistenza" type="s:string"/>
+<s:element minOccurs="0" name="codiceRegioneDomicilio" type="s:string"/>
+<s:element minOccurs="0" name="codiceRegioneResidenzaAsl" type="s:string"/>
+<s:element minOccurs="0" name="codiceTipoAssistito" type="s:string"/>
+<s:element minOccurs="0" name="cognome" type="s:string"/>
+<s:element minOccurs="0" name="cognomeMedico" type="s:string"/>
+<s:element minOccurs="0" name="comuneDomicilio" type="s:string"/>
+<s:element minOccurs="0" name="comuneNascita" type="s:string"/>
+<s:element minOccurs="0" name="comuneResidenza" type="s:string"/>
+<s:element minOccurs="0" name="dataDecesso" type="s:string"/>
+<s:element minOccurs="0" name="dataFineValidita" type="s:string"/>
+<s:element minOccurs="0" name="dataFineValiditaSSN" type="s:string"/>
+<s:element minOccurs="0" name="dataInizioValidita" type="s:string"/>
+<s:element minOccurs="0" name="dataNascita" type="s:string"/>
+<s:element minOccurs="0" name="descrizioneTipologiaAssistenza" type="s:string"/>
+<s:element minOccurs="0" name="idAura" type="s:long"/>
+<s:element minOccurs="0" name="indirizzoDomicilio" type="s:string"/>
+<s:element minOccurs="0" name="indirizzoEmail" type="s:string"/>
+<s:element minOccurs="0" name="indirizzoResidenza" type="s:string"/>
+<s:element minOccurs="0" name="nome" type="s:string"/>
+<s:element minOccurs="0" name="nomeMedico" type="s:string"/>
+<s:element minOccurs="0" name="numeroTessera" type="s:string"/>
+<s:element minOccurs="0" name="provinciaNascita" type="s:string"/>
+<s:element minOccurs="0" name="provinciaResidenza" type="s:string"/>
+<s:element minOccurs="0" name="provinciaDomicilio" type="s:string"/>
+<s:element minOccurs="0" name="sesso" type="s:string"/>
+<s:element minOccurs="0" name="siglaProvNasc" type="s:string"/>
+<s:element minOccurs="0" name="siglaProvRes" type="s:string"/>
+<s:element minOccurs="0" name="tipoAssistito" type="s:string"/>
+<s:element minOccurs="0" name="tipoMovimento" type="s:string"/>
+<s:element minOccurs="0" name="telefonoDomicilio" type="s:string"/>
+<s:element minOccurs="0" name="telefonoResidenza" type="s:string"/>
+<s:element minOccurs="0" name="tipologiaAssistenza" type="s:string"/>
+<s:element minOccurs="0" name="telefonoCup" type="s:string"/>
+<s:element minOccurs="0" name="fonteDati" type="s:string"/>
+<s:element minOccurs="0" name="checkEsenzione" type="s:long"/>
+<s:element minOccurs="0" name="listaDiagnosi" type="s0:ArrayOfdiagnosiResponseDiagnosi"/>
+<s:element minOccurs="0" name="listaMessaggi" type="s0:ArrayOfmsgResponseBodyMsgs"/>
+<s:element minOccurs="0" name="esito">
+<s:simpleType>
+<s:restriction base="s:string">
+<s:maxLength value="100"/>
+</s:restriction>
+</s:simpleType>
+</s:element>
+<s:element minOccurs="0" name="DistrettoDomicilio" type="s:string"/>
+</s:sequence>
+</s:extension>
+</s:complexContent>
+</s:complexType>
+<s:complexType name="Ens_Response">
+<s:complexContent>
+<s:extension base="s0:Ens_Messagebody"/>
+</s:complexContent>
+</s:complexType>
+<s:complexType name="ArrayOfdiagnosiResponseDiagnosi">
+<s:sequence>
+<s:element maxOccurs="unbounded" minOccurs="0" name="diagnosi" nillable="true" type="ns2:ResponseDiagnosi"/>
+</s:sequence>
+</s:complexType>
+<s:complexType name="ArrayOfmsgResponseBodyMsgs">
+<s:sequence>
+<s:element maxOccurs="unbounded" minOccurs="0" name="msg" nillable="true" type="ns2:ResponseBodyMsgs"/>
+</s:sequence>
+</s:complexType>
+</s:schema>
+<s:schema elementFormDefault="qualified" targetNamespace="http://RicercaAssistitoCUP.central.services.auraws.aura.csi.it">
+<s:import namespace="http://ScreeningEpatiteC.central.services.auraws.aura.csi.it"/>
+<s:complexType name="ResponseDiagnosi">
+<s:complexContent>
+<s:extension base="s0:Ens_Response">
+<s:sequence>
+<s:element name="codDiagnosi" type="s:string"/>
+<s:element name="diagnosi" type="s:string"/>
+</s:sequence>
+</s:extension>
+</s:complexContent>
+</s:complexType>
+<s:complexType name="ResponseBodyMsgs">
+<s:complexContent>
+<s:extension base="s0:Ens_Response">
+<s:sequence>
+<s:element name="codice" type="s:string"/>
+<s:element name="descrizione" type="s:string"/>
+</s:sequence>
+</s:extension>
+</s:complexContent>
+</s:complexType>
+</s:schema>
+</types>
+<message name="ScreeningEpatiteCSoapIn">
+<part name="parameters" element="s0:ScreeningEpatiteC"/>
+</message>
+<message name="ScreeningEpatiteCSoapOut">
+<part name="parameters" element="s0:ScreeningEpatiteCResponse"/>
+</message>
+<portType name="ScreeningEpatiteCSoap">
+<operation name="ScreeningEpatiteC">
+<input message="s0:ScreeningEpatiteCSoapIn"/>
+<output message="s0:ScreeningEpatiteCSoapOut"/>
+</operation>
+</portType>
+<binding name="ScreeningEpatiteCSoap" type="s0:ScreeningEpatiteCSoap">
+<soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+<operation name="ScreeningEpatiteC">
+<soap:operation soapAction="http://ScreeningEpatiteC.central.services.auraws.aura.csi.it/AURA.WS.ScreeningEpatiteC" style="document"/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+</binding>
+<service name="ScreeningEpatiteC">
+<port name="ScreeningEpatiteCSoap" binding="s0:ScreeningEpatiteCSoap">
+<soap:address location="http://vm-itgsan102.csi.it:57772/sanitxens/AURA.WS.ScreeningEpatiteC.cls"/>
+</port>
+</service>
+</definitions>

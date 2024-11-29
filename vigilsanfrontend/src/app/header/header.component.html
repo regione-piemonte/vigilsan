@@ -1,0 +1,112 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<nav class="navbar navbar-light style-nav-bar">
+  <div class="row w-100">
+    <div class="col-md-auto">
+      <button mat-icon-button [disabled]="nome === ''" class="text-light" (click)="sidenav.toggle();">
+        <mat-icon>menu</mat-icon>
+      </button>
+    </div>
+    <div class="col-md-auto mr-auto d-flex align-items-center">
+      <p class="text-white m-0" style="font-size: 24px;">Piattaforma regionale residenzialit&agrave;</p>
+    </div>
+    <div class="col-md-auto mr-2 d-flex align-items-center">
+      <button mat-button [matMenuTriggerFor]="menuAssistenza" class="mr-2 mat-fat-style"
+        *ngIf="nome !== '' && cognome !== ''">
+        <span class="text-login-button">?</span>
+      </button>
+      <h3 class="text-white m-0 mr-4 display-1" *ngIf="nome !== '' && cognome !== ''">Assistenza</h3>
+      <button mat-button class="bi bi-person-circle mr-2 mat-fat-style" [matMenuTriggerFor]="menu"
+        *ngIf="nome !== '' && cognome !== ''">
+      </button>
+      <h3 class="text-white m-0 mr-4 display-1" *ngIf="nome !== '' && cognome !== ''">
+        {{ client.capitalize(client.loggedUser.soggetto ? client.loggedUser.soggetto.nome : '') }}
+        {{ client.capitalize(client.loggedUser.soggetto ? client.loggedUser.soggetto.cognome : '') }}
+      </h3>
+    </div>
+  </div>
+  <mat-menu #menuAssistenza="matMenu" class="mt-1">
+    <button mat-menu-item (click)="client.openUrlPdf()" class="d-flex align-items-center">
+      <em class="bi bi-file-earmark-pdf pr-2 vigilsan-icon-style"></em>
+      <span>MANUALE UTENTE</span>
+    </button>
+    <button mat-menu-item (click)="client.gotoAssistenza()" class="d-flex align-items-center">
+      <em class="bi bi-info-square pr-2 vigilsan-icon-style"></em>
+      <span>RICHIESTA ASSISTENZA</span>
+    </button>
+  </mat-menu>
+  <mat-menu #menu="matMenu" class="mt-1">
+    <button mat-menu-item (click)="navigate('main-page/profilo')" class="d-flex align-items-center">
+      <em class="bi bi-person-badge pr-2 vigilsan-icon-style"></em>
+      {{ client.capitalize(client.loggedUser.soggetto ? client.loggedUser.soggetto.nome : '') }}
+      {{ client.capitalize(client.loggedUser.soggetto ? client.loggedUser.soggetto.cognome : '') }}
+    </button>
+    <button mat-menu-item (click)="goLogout()" class="d-flex align-items-center">
+      <em class="bi bi-box-arrow-left pr-2 vigilsan-icon-style"></em>
+      <span>ESCI</span>
+    </button>
+  </mat-menu>
+</nav>
+<nav class="navbar navbar-light style-nav-bar-collocazione m-0 p-0" *ngIf="ruolo !== ''">
+  <div class="row w-100 d-flex align-items-center m-0 p-0">
+    <div class="col-md-auto mr-auto ml-3 d-flex align-items-center">
+      <span class="text-white" style="font-size: 14px;">
+        <span *ngIf="client.loggedUser.ente">{{ client.loggedUser.ente.enteCod ? client.loggedUser.ente.enteCod : '' }}
+        </span>
+        {{ struttura | uppercase }}
+        <span *ngIf="client.loggedUser.struttura && client.loggedUser.ente">[{{ client.loggedUser.struttura.strutturaCod
+          ? client.loggedUser.struttura.strutturaCod : '' }} {{ client.loggedUser.struttura.strutturaDesc ?
+          client.loggedUser.struttura.strutturaDesc : '' }}]</span>
+        > {{ client.textRoute }}</span>
+    </div>
+    <div class="col-md-auto mr-2 d-flex align-items-center">
+      <span class="text-white" style="font-size: 14px;">{{client.selectedProfilo && client.selectedProfilo.profiloDesc ?
+        (client.selectedProfilo.profiloDesc | uppercase) : ''}}</span>
+    </div>
+  </div>
+</nav>
+<mat-sidenav-container>
+  <mat-sidenav #sidenav mode="side" [style.width]="'280px'" [(opened)]="client.opened">
+    <mat-nav-list class="pl-2 pr-2">
+      <ng-container *ngFor="let item of client.menuItems">
+
+        <ng-container *ngIf="item.route && item.route !== ''">
+          <a mat-list-item (click)="navigate(item.route)" class="mb-2 route-link-style"
+            [ngClass]="{'border border-primary border-top-0 border-right-0 border-bottom-0 custom-tab-selected': item.route === client.selectedTab}"
+            [disabled]="client.isErrorLogin" matTooltip="Rieffettua il login per poter riutilizzare l'applicativo"
+            matTooltipPosition="above" matTooltipClass="style-tooltip" [matTooltipDisabled]="!client.isErrorLogin">
+            <em [class]="item.icon"></em>
+            <span mat-line class="line-break" style="font-size: 18px;">
+              {{item.label}}
+              <span *ngIf="item.labelTwo" style="font-size: 18px;">
+                <br>{{item.labelTwo}}
+              </span>
+            </span>
+          </a>
+        </ng-container>
+        <ng-container *ngIf="item.href &&item.href !== ''">
+          <a mat-list-item href="{{item.href}}" target="_blank" class="mb-2 route-link-style"
+            [disabled]="client.isErrorLogin" matTooltip="Rieffettua il login per poter riutilizzare l'applicativo"
+            matTooltipPosition="above" matTooltipClass="style-tooltip" [matTooltipDisabled]="!client.isErrorLogin">
+            <em [class]="item.icon"></em>
+            <span mat-line class="line-break" style="font-size: 18px;">
+              {{item.label}}
+              <span *ngIf="item.labelTwo" style="font-size: 18px;">
+                <br>{{item.labelTwo}}
+              </span>
+            </span>
+          </a>
+        </ng-container>
+
+      </ng-container>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content [ngClass]="{'bg-container': router.url === '/main-page/vetrina'}">
+    <section style="min-height: 100vh;padding: 2rem;">
+      <router-outlet></router-outlet>
+    </section>
+  </mat-sidenav-content>
+</mat-sidenav-container>

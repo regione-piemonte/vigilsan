@@ -1,0 +1,262 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<button type="button" class="btn btn-light mb-2" (click)="goBack()" *ngIf="router.url !== '/main-page/add-pratica'">
+  <em class="bi bi-arrow-left-short vigilsan-icon-style"></em>
+</button>
+
+<div class="d-flex justify-content-center" *ngIf="isSpinEmitter">
+  <div class="spinner-border text-primary spin-emitter-style" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+<ng-container *ngIf="!isSpinEmitter">
+  <h2 *ngIf="router.url !== '/main-page/add-pratica'">{{ title }}</h2>
+  <br>
+  <!-- Azione -->
+  <div class="container-fluid">
+    <div class="row align-items-center" [ngClass]="{'mt-3': router.url !== '/main-page/pratiche-vigilanza'}">
+      <ng-container *ngIf="router.url !== '/main-page/add-pratica'; else elseTemplateNumeri">
+        <div class="col-12 col-lg-6 col-xl-6 mt-2">
+          <h3 [class]="classLabelFilter">Numero pratica:</h3>
+          <div class="form-group w-100 d-flex align-items-center m-0 p-0">
+            <input class="form-control" id="textInputPraticaDialogAddAzioneId" [(ngModel)]="client.textNumeroPratica"
+              [disabled]="!client.selectedAzioneDialogAddAzione?.azioneInizialePratica">
+          </div>
+        </div>
+        <div class="col-0 col-lg-6 col-xl-6 mt-2"
+          *ngIf="!client.selectedAzioneDialogAddAzione?.appuntamentoTipoId && !client.selectedAzioneDialogAddAzione?.prescrizioneTipoId
+          && !client.selectedAzioneDialogAddAzione?.azioneInizialeAppuntamento && !client.selectedAzioneDialogAddAzione?.azioneInizialePrescrizione">
+        </div>
+        <div class="col-12 col-lg-6 col-xl-6 mt-2"
+          *ngIf="client.selectedAzioneDialogAddAzione?.appuntamentoTipoId || client.selectedAzioneDialogAddAzione?.azioneInizialeAppuntamento">
+          <h3 [class]="classLabelFilter">Numero sopralluogo:</h3>
+          <div class="form-group w-100 d-flex align-items-center m-0 p-0">
+            <input class="form-control" id="textInputSopralluogoDialogAddAzioneId"
+              [(ngModel)]="client.textNumeroSopralluogo"
+              [disabled]="!client.selectedAzioneDialogAddAzione?.azioneInizialeAppuntamento">
+          </div>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-6 mt-2"
+          *ngIf="client.selectedAzioneDialogAddAzione?.prescrizioneTipoId || client.selectedAzioneDialogAddAzione?.azioneInizialePrescrizione">
+          <h3 [class]="classLabelFilter">Numero prescrizione:</h3>
+          <div class="form-group w-100 d-flex align-items-center m-0 p-0">
+            <input class="form-control" id="textInputPrescrizioneDialogAddAzioneId"
+              [(ngModel)]="client.textNumeroPrescrizione"
+              [disabled]="!client.selectedAzioneDialogAddAzione?.azioneInizialePrescrizione">
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #elseTemplateNumeri>
+        <div class="col-12 col-lg-6 col-xl-6 mt-2">
+          <h3 [class]="classLabelFilter">Numero pratica:</h3>
+          <div class="form-group w-100 d-flex align-items-center m-0 p-0">
+            <input class="form-control" id="textInputPraticaDialogAddAzioneId" [(ngModel)]="client.textNumeroPratica"
+              [disabled]="!client.selectedAzioneDialoagAddPratica?.azioneInizialePratica">
+          </div>
+        </div>
+        <div class="col-0 col-lg-6 col-xl-6 mt-2"
+          *ngIf="!client.selectedAzioneDialoagAddPratica?.appuntamentoTipoId && !client.selectedAzioneDialoagAddPratica?.prescrizioneTipoId
+                  && !client.selectedAzioneDialoagAddPratica?.azioneInizialeAppuntamento && !client.selectedAzioneDialoagAddPratica?.azioneInizialePrescrizione">
+        </div>
+        <div class="col-12 col-lg-6 col-xl-6 mt-2"
+          *ngIf="client.selectedAzioneDialoagAddPratica?.appuntamentoTipoId || client.selectedAzioneDialoagAddPratica?.azioneInizialeAppuntamento">
+          <h3 [class]="classLabelFilter">Numero sopralluogo:</h3>
+          <div class="form-group w-100 d-flex align-items-center m-0 p-0">
+            <input class="form-control" id="textInputSopralluogoDialogAddAzioneId"
+              [(ngModel)]="client.textNumeroSopralluogo"
+              [disabled]="!client.selectedAzioneDialoagAddPratica?.azioneInizialeAppuntamento">
+          </div>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-6 mt-2"
+          *ngIf="client.selectedAzioneDialoagAddPratica?.prescrizioneTipoId || client.selectedAzioneDialoagAddPratica?.azioneInizialePrescrizione">
+          <h3 [class]="classLabelFilter">Numero prescrizione:</h3>
+          <div class="form-group w-100 d-flex align-items-center m-0 p-0">
+            <input class="form-control" id="textInputPrescrizioneDialogAddAzioneId"
+              [(ngModel)]="client.textNumeroPrescrizione"
+              [disabled]="!client.selectedAzioneDialoagAddPratica?.azioneInizialePrescrizione">
+          </div>
+        </div>
+      </ng-template>
+      <div class="col-12 col-lg-6 col-xl-6 mt-2">
+        <h3 [class]="classLabelFilter">Azione:</h3>
+        <div class="w-100 m-0 p-0">
+          <ng-container
+            *ngIf="router.url !== '/main-page/add-pratica' && listaAzioni && listaAzioni.length > 0 ; else elseTemplateAzione">
+            <select class="form-control" id="tipoPId" [(ngModel)]="client.selectedAzioneDialogAddAzione"
+              *ngIf="client.azioniPerPratiche" [disabled]="choice === 'ModificaAttivita'">
+              <option *ngFor="let azione of listaAzioni" [ngValue]="azione">{{azione.azioneDesc}}
+              </option>
+            </select>
+          </ng-container>
+          <ng-template #elseTemplateAzione>
+            <ng-container *ngIf="client.selectedAzioneDialoagAddPratica">
+              <select class="form-control" id="tipoPId" [(ngModel)]="client.selectedAzioneDialoagAddPratica"
+                [disabled]="client.selectedAzioneDialoagAddPratica !== null">
+                <option [ngValue]="client.selectedAzioneDialoagAddPratica">
+                  {{client.selectedAzioneDialoagAddPratica.azioneDesc}}
+                </option>
+              </select>
+            </ng-container>
+          </ng-template>
+        </div>
+      </div>
+      <!-- Data e ora -->
+      <div class="col-12 col-lg-6 col-xl-6 mt-2">
+        <h3 [class]="classLabelFilter">Data/ora:</h3>
+        <div class="form-group w-100 m-0 p-0">
+          <div class="input-group m-0 p-0">
+            <input class="form-control" placeholder="yyyy/mm/dd hh:mm" [(ngModel)]="client.textDataOraDialogAddAzione"
+              type="text" id="textInizioValiditaId" readonly>
+            <div class="input-group-append">
+              <input placeholder="dd/mm/yyyy" name="dp" [(ngModel)]="client.dataOraDialogAddAzione" ngbDatepicker hidden
+                #dataOraDialogAddAzioneToggle="ngbDatepicker" id="dataOraDialogAddAzioneId"
+                [footerTemplate]="footerTemplateDataOraDialogAddAzione"
+                (ngModelChange)="onDateTimeChangeDataOraDialogAddAzione()">
+              <button class="btn btn-outline-primary" (click)="dataOraDialogAddAzioneToggle.toggle()" type="button">
+                <em class="bi bi-calendar3 vigilsan-icon-style" style="font-size:  1rem;"></em>
+              </button>
+              <button class="btn btn-outline-primary" (click)="pickerDataOraDialogAddAzione.open()" type="button"
+                [disabled]="!client.dataOraDialogAddAzione">
+                <em class="bi bi-clock vigilsan-icon-style" style="font-size:  1rem;"></em>
+              </button>
+              <input matInput name="selected_time_B" [format]="formatTimePicket"
+                [formControl]="client.timeDataOraDialogAddAzione" [ngxMatTimepicker]="pickerDataOraDialogAddAzione"
+                readonly class="input-font" hidden (ngModelChange)="onDateTimeChangeDataOraDialogAddAzione()" />
+              <ngx-mat-timepicker color="accent" #pickerDataOraDialogAddAzione></ngx-mat-timepicker>
+            </div>
+          </div>
+          <ng-template #footerTemplateDataOraDialogAddAzione>
+            <hr class="my-0">
+            <button class="btn btn-secondary btn-sm m-2 float-left"
+              (click)="eraseData('dataOraDialogAddAzione'); dataOraDialogAddAzioneToggle.close()">CANCELLA</button>
+          </ng-template>
+        </div>
+      </div>
+      <!-- Inizio/fine sopralluogo -->
+      <div class="col-12 col-lg-6 col-xl-6 mt-2" *ngIf="(client.selectedAzioneDialogAddAzione && client.selectedAzioneDialogAddAzione.azioneInizialeAppuntamento) ||
+      (client.selectedAzioneDialoagAddPratica && client.selectedAzioneDialoagAddPratica.azioneInizialeAppuntamento)">
+        <h3 [class]="classLabelFilter">Inizio/fine sopralluogo:</h3>
+        <div class="form-group w-100 m-0 p-0">
+          <div class="input-group m-0 p-0">
+            <input class="form-control" placeholder="yyyy/mm/dd" name="dp"
+              [(ngModel)]="client.dataOraInizioDialogAddAzione" ngbDatepicker
+              #dataOraInizioDialogAddAzioneToggle="ngbDatepicker" id="dinizioValiditaId"
+              [footerTemplate]="footerTemplateDataOraInizioDialogAddAzione" readonly>
+            <div class="input-group-append">
+              <button class="btn btn-outline-primary" (click)="dataOraInizioDialogAddAzioneToggle.toggle()"
+                type="button">
+                <em class="bi bi-calendar3 vigilsan-icon-style" style="font-size:  1rem;"></em>
+              </button>
+            </div>
+          </div>
+          <ng-template #footerTemplateDataOraInizioDialogAddAzione>
+            <hr class="my-0">
+            <button class="btn btn-secondary btn-sm m-2 float-left"
+              (click)="eraseData('dataOraInizioDialogAddAzione'); dataOraInizioDialogAddAzioneToggle.close()">CANCELLA</button>
+          </ng-template>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3 col-xl-3 mt-2"
+        *ngIf="(client.selectedAzioneDialogAddAzione && client.selectedAzioneDialogAddAzione.azioneInizialeAppuntamento) ||
+              (client.selectedAzioneDialoagAddPratica && client.selectedAzioneDialoagAddPratica.azioneInizialeAppuntamento)">
+        <h3 [class]="classLabelFilter">Dalle:</h3>
+        <div class="form-group w-100 m-0 p-0">
+          <div class="input-group m-0 p-0">
+            <!-- Input che mostra l'orario selezionato -->
+            <input class="form-control" placeholder="hh:mm" [formControl]="client.timeDataOraInizioDialogAddAzione"
+              type="text" id="textInizioValiditaId" readonly>
+            <div class="input-group-append">
+              <!-- Timepicker Input nascosto per gestire il timepicker -->
+              <input matInput name="selected_time_B" [format]="formatTimePicket"
+                [ngxMatTimepicker]="pickerDataOraInizioDialogAddAzione"
+                [formControl]="client.timeDataOraInizioDialogAddAzione" readonly class="input-font" hidden />
+              <ngx-mat-timepicker color="accent" #pickerDataOraInizioDialogAddAzione
+                (timeSet)="onTimeSetInizio($event)"></ngx-mat-timepicker>
+              <!-- Bottone per aprire il timepicker -->
+              <button class="btn btn-outline-primary" (click)="pickerDataOraInizioDialogAddAzione.open()" type="button"
+                [disabled]="!client.dataOraInizioDialogAddAzione">
+                <em class="bi bi-clock vigilsan-icon-style" style="font-size:  1rem;"></em>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3 col-xl-3 mt-2"
+        *ngIf="(client.selectedAzioneDialogAddAzione && client.selectedAzioneDialogAddAzione.azioneInizialeAppuntamento) ||
+              (client.selectedAzioneDialoagAddPratica && client.selectedAzioneDialoagAddPratica.azioneInizialeAppuntamento)">
+        <h3 [class]="classLabelFilter">Alle:</h3>
+        <div class="form-group w-100 m-0 p-0">
+          <div class="input-group m-0 p-0">
+            <!-- Input che mostra l'orario selezionato -->
+            <input class="form-control" placeholder="hh:mm" [formControl]="client.timeDataOraFineDialogAddAzione"
+              type="text" id="textFineValiditaId" readonly>
+            <div class="input-group-append">
+              <!-- Timepicker Input nascosto per gestire il timepicker -->
+              <input matInput name="selected_time_B" [format]="formatTimePicket"
+                [ngxMatTimepicker]="pickerDataOraFineDialogAddAzione"
+                [formControl]="client.timeDataOraFineDialogAddAzione" readonly class="input-font" hidden />
+              <ngx-mat-timepicker color="accent" #pickerDataOraFineDialogAddAzione
+                (timeSet)="onTimeSetFine($event)"></ngx-mat-timepicker>
+              <!-- Bottone per aprire il timepicker -->
+              <button class="btn btn-outline-primary" (click)="pickerDataOraFineDialogAddAzione.open()" type="button"
+                [disabled]="!client.dataOraInizioDialogAddAzione">
+                <em class="bi bi-clock vigilsan-icon-style" style="font-size:  1rem;"></em>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Note -->
+      <div class="col-12 mt-2">
+        <h3 [class]="classLabelFilter">Note:</h3>
+        <div class="form-group w-100 d-flex align-items-center m-0 p-0">
+          <textarea class="form-control" id="exampleFormControlTextarea1" rows="1"
+            [(ngModel)]="client.noteDialogAddAzione"></textarea>
+        </div>
+      </div>
+      <div class="col-0 col-xl-6"></div>
+      <div class="col-12 col-xl-6 mt-2 text-left text-lg-right">
+        <div *ngIf="router.url !== '/main-page/add-pratica'">
+          <ng-container
+            *ngIf="client.selectedAzioneDialogAddAzione && client.selectedAzioneDialogAddAzione.azioneInizialeAppuntamento; else elseTemplate">
+            <button type="button" class="btn btn-primary px-4 button-basic" (click)="addAzione()"
+              [disabled]="!client.selectedAzioneDialogAddAzione || !client.dataOraDialogAddAzione || !client.dataOraInizioDialogAddAzione || addAzioneButton">
+              <span *ngIf="!addAzioneButton">SALVA</span>
+              <span *ngIf="addAzioneButton">IN CARICAMENTO...</span>
+            </button>
+          </ng-container>
+          <ng-template #elseTemplate>
+            <button type="button" class="btn btn-primary px-4 button-basic" (click)="addAzione()"
+              [disabled]="!client.selectedAzioneDialogAddAzione || !client.dataOraDialogAddAzione || addAzioneButton">
+              <span *ngIf="!addAzioneButton">SALVA</span>
+              <span *ngIf="addAzioneButton">IN CARICAMENTO...</span>
+            </button>
+          </ng-template>
+        </div>
+      </div>
+      <ng-container *ngIf="client.moduloToshow">
+        <div class="col-12 text-right">
+          <hr>
+          <section *ngIf="!client.warningModulo">
+            <button type="button" class="btn btn-primary px-4 mb-1 button-basic"
+              (click)="moduloCommon.modificaDocumentazione()">
+              <span *ngIf="client.disabilitaCampi">MODIFICA</span>
+              <span *ngIf="!client.disabilitaCampi">ANNULLA</span>
+            </button>
+          </section>
+          <br>
+          <app-test></app-test>
+          <br>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</ng-container>
+<ng-container *ngIf="listaAzioni && listaAzioni.length <= 0 && router.url !== '/main-page/add-pratica'">
+  <p class="ml-2 mt-2"> Nessuna attivit&agrave; da poter aggiungere.</p>
+</ng-container>

@@ -1,0 +1,77 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<div class="container-xl bg-container" style="min-height: 100vh;">
+  <div class="row justify-content-center">
+    <div class="col-12 p-2 mb-4">
+      <div class="card w-100">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-1 text-right">
+              <em class="bi bi-person-square" style="font-size: 2rem;"></em>
+            </div>
+            <div class="col-8 text-left">
+              <h2 class="m-0 text-nowrap">{{ client.selectedProfilo && client.selectedProfilo.profiloDesc ?
+                (client.selectedProfilo.profiloDesc | uppercase) : '' }}</h2>
+            </div>
+            <div class="col-3 text-center">
+              <a (click)="navigate('main-page/profilo')" class="gestisci-profilo-style">
+                <h2 class="m-0 text-nowrap">
+                  Gestisci profilo
+                </h2>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="col-xl-3 p-2 mt-4" *ngFor="let item of this.menuItems">
+      <ng-container *ngIf="item.route && item.route !== ''">
+        <div class="card w-100 card-hover" (click)="navigate(item.route)">
+          <div class="card-body" style="min-height: 285px;">
+            <div class="container-fluid m-0 p-0">
+              <div class="row m-0 p-0 align-items-center">
+                <div class="col-3 p-0">
+                  <em [class]="item.icon"></em>
+                </div>
+                <div class="col-9 p-0">
+                  <h4 class="display-1 font-weight-bold m-0">
+                    <a class="item-label-style"><span>{{ item.label }}</span></a>
+                  </h4>
+                </div>
+              </div>
+            </div>
+            <p class="card-text mt-2">{{ item.text }}</p>
+          </div>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="item.href && item.href !== ''">
+        <div class="card w-100 card-hover">
+          <div class="card-body" style="min-height: 285px;">
+            <div class="container-fluid m-0 p-0">
+              <div class="row m-0 p-0 align-items-center">
+                <div class="col-3 p-0">
+                  <em [class]="item.icon"></em>
+                </div>
+                <div class="col-9 p-0">
+                  <h4 class="display-1 font-weight-bold m-0">
+                    <a [href]="item.href" target="_blank" rel="noopener noreferrer" class="item-label-style">
+                      <span>{{ item.label }}</span>
+                    </a>
+                  </h4>
+                </div>
+              </div>
+            </div>
+            <p class="card-text mt-2">{{ item.text }}</p>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>

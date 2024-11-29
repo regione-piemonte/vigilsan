@@ -1,0 +1,46 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<div class="row">
+  <div class="col-auto d-flex align-items-center">
+    <h2 mat-dialog-title class="m-0">
+      {{ tab.moduloConfigDesc ? tab.moduloConfigDesc : ''}}
+      {{ rilevazione.dataoraRilevazione ? (rilevazione.dataoraRilevazione | date: 'dd/MM/yyyy') : ''}}
+      {{ rilevazione.strutturaCategoria?.strutturaCategoriaDesc }}
+    </h2>
+  </div>
+  <div class="col-auto ml-auto d-flex align-items-center" *ngIf="client.modulo.visible && visualizzazione">
+    <button type="button" class="btn btn-primary button-basic m-0" (click)="moduloCommon.modificaDocumentazione()"
+      [disabled]="!isValidDate" matTooltip="La rilevazione non Ã¨ piÃ¹ modificabile" matTooltipPosition="above"
+      matTooltipClass="style-tooltip" [matTooltipDisabled]="isValidDate">
+      <span *ngIf="client.disabilitaCampi">MODIFICA</span>
+      <span *ngIf="!client.disabilitaCampi">ANNULLA</span>
+    </button>
+  </div>
+</div>
+<div mat-dialog-content class="mt-3">
+  <div class="d-flex justify-content-center" *ngIf="isSpinEmitter">
+    <div class="spinner-border text-primary spin-emitter-style" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+  <ng-container *ngIf="!isSpinEmitter">
+    <p *ngIf="alertValidModulo">
+      <ngb-alert [dismissible]="false" [type]="'danger'">
+        <strong>Attenzione!</strong> Per poter procedere con il salvataggio bisogna compilare tutti i campi
+        <strong>obbligatori</strong> contrassegnati da un <strong>*</strong>.
+      </ngb-alert>
+    </p>
+    <app-test></app-test>
+  </ng-container>
+</div>
+<div mat-dialog-actions>
+  <button mat-button mat-dialog-close>CHIUDI</button>
+  <button type="button" class="btn btn-primary button-basic ml-auto" (click)="sendRilevazione()"
+    [disabled]="client.disabilitaCampi || isLoadingAddRilevazione" *ngIf="client.modulo.visible && visualizzazione">
+    <span *ngIf="!isLoadingAddRilevazione">SALVA</span>
+    <span *ngIf="isLoadingAddRilevazione">IN CARICAMENTO...</span>
+  </button>
+</div>

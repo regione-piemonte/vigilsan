@@ -1,0 +1,196 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<ng-container *ngIf="isSpinEmitter">
+  <mat-spinner></mat-spinner>
+</ng-container>
+<ng-container *ngIf="!isSpinEmitter">
+  <!-- TEST RELEASE NOTES -->
+  <!-- <br>
+  <button type="button" class="btn btn-outline-primary mb-3" (click)="openReleaseNotes()">
+    TEST RELEASE NOTES
+  </button>
+  <br> -->
+  <!-- -------------------- -->
+  <h1 class="my-4" style="color: #0381d6;">Profilo di {{ client.capitalize(client.loggedUser.soggetto ?
+    client.loggedUser.soggetto.nome : '') }}
+    {{
+    client.capitalize(client.loggedUser.soggetto ? client.loggedUser.soggetto.cognome : '') }}</h1>
+
+  <br>
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>UTENTE</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="row p-3">
+        <div class="col-md-2">
+          <p><strong>Cognome e nome:</strong> </p>
+        </div>
+        <div class="col-md-4">
+          <p>{{client.loggedUser.soggetto?.cognome}} {{client.loggedUser.soggetto?.nome}}</p>
+        </div>
+        <div class="col-md-2">
+          <p><strong>Profilo di accesso:</strong> </p>
+        </div>
+        <div class="col-md-4">
+          <p>{{client.loggedUser.ruolo?.ruoloDesc}}</p>
+        </div>
+      </div>
+      <div class="row px-3">
+        <div class="col-md-2">
+          <p><strong>Codice fiscale:</strong> </p>
+        </div>
+        <div class="col-md-4">
+          <p>{{client.loggedUser.soggetto?.codiceFiscale}}</p>
+        </div>
+        <div class="col-md-2">
+          <p><strong>Profilo applicativo:</strong> </p>
+        </div>
+        <div class="col-md-4">
+          <p>{{getProfilo()}}</p>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  <br>
+  <div class="row" *ngIf="client.loggedUser && client.loggedUser.profili && client.loggedUser.profili.length > 1">
+    <div class="col-12 col-xl-4 d-flex justify-content-start">
+      <button type="button" class="btn btn-outline-primary w-100" (click)="openCambioProfilo()">
+        CAMBIO PROFILO
+      </button>
+    </div>
+  </div>
+  <ng-container *ngIf="client.loggedUser.ente !== null">
+    <br>
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>ENTE</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="row p-3">
+          <div class="col-md-2">
+            <p><strong>Codice:</strong> </p>
+          </div>
+          <div class="col-md-4">
+            <p>{{client.loggedUser.ente?.enteCod}}</p>
+          </div>
+          <div class="col-md-2">
+            <p><strong>Tipo:</strong> </p>
+          </div>
+          <div class="col-md-4">
+            <p>{{client.loggedUser.ente?.enteTipo?.enteTipoDesc ? client.loggedUser.ente?.enteTipo?.enteTipoDesc :
+              ''}}</p>
+          </div>
+        </div>
+        <div class="row px-3">
+          <div class="col-md-2">
+            <p><strong>Denominazione:</strong> </p>
+          </div>
+          <div class="col-md-4">
+            <p>{{client.loggedUser.ente?.enteDesc}}</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </ng-container>
+  <br>
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>STRUTTURA</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p class="ml-3 mt-4 mb-3" *ngIf="!client.loggedUser.struttura?.strutturaCod">Nessuna struttura selezionata</p>
+      <ng-container *ngIf="client.loggedUser.struttura !== null">
+        <div class="row p-3">
+          <div class="col-md-2">
+            <p><strong>Codice ARPE:</strong> </p>
+          </div>
+          <div class="col-md-4">
+            <p>{{client.loggedUser.struttura?.strutturaCod}}</p>
+          </div>
+          <div class="col-md-2">
+            <p><strong>Tipo:</strong> </p>
+          </div>
+          <div class="col-md-4">
+            <p>{{client.loggedUser.struttura?.strutturaTipo?.strutturaTipoDesc}}</p>
+          </div>
+        </div>
+        <div class="row px-3">
+          <div class="col-md-2">
+            <p><strong>Denominazione:</strong> </p>
+          </div>
+          <div class="col-md-4">
+            <p>{{client.loggedUser.struttura?.strutturaDesc}}</p>
+          </div>
+          <div class="col-md-2">
+            <p><strong>Natura:</strong> </p>
+          </div>
+          <div class="col-md-4">
+            <p>{{client.loggedUser.struttura?.natura?.strutturaNaturaDesc}}</p>
+          </div>
+        </div>
+        <div class="row px-3 pt-3">
+          <div class="col-md-2">
+            <p><strong>Indirizzo:</strong> </p>
+          </div>
+          <div class="col-md-4">
+            <p>{{client.loggedUser.struttura?.indirizzo}}</p>
+          </div>
+          <div class="col-md-2">
+            <p><strong>Titolarit&agrave;:</strong> </p>
+          </div>
+          <div class="col-md-4">
+            <p>{{client.loggedUser.struttura?.strutturaTitolarita?.strutturaTitolaritaDesc}}</p>
+          </div>
+        </div>
+        <div class="row px-3 pt-3">
+          <div class="col-md-2"></div>
+          <div class="col-md-4">
+            <p>{{client.loggedUser.struttura?.comune?.comuneDesc}}
+              {{client.loggedUser.struttura?.comune?.provincia?.provinciaSigla}}</p>
+          </div>
+          <div class="col-md-2">
+            <p><strong>Accreditamento:</strong> </p>
+          </div>
+          <div class="col-md-4">
+            <p>{{client.loggedUser.struttura?.strutturaAccreditamento?.strutturaAccreditamentoDesc}}</p>
+          </div>
+        </div>
+        <div class="row px-3 pt-3">
+          <div class="col-md-2">
+            <p><strong>Data attivazione:</strong> </p>
+          </div>
+          <div class="col-md-4">
+            <p>{{client.loggedUser.struttura?.validitaInizio | date : 'dd/MM/yyyy'}}</p>
+          </div>
+          <div class="col-md-2">
+            <p><strong>Categorie:</strong> </p>
+          </div>
+          <div class="col-md-4">
+            <p *ngFor="let categoria of client.loggedUser.struttura.categorie">{{categoria.strutturaCategoriaDesc}}
+              (dal: {{categoria.validitaInizio | date : 'dd/MM/yyyy'}})
+            </p>
+          </div>
+        </div>
+      </ng-container>
+    </mat-card-content>
+  </mat-card>
+  <br>
+  <div class="row justify-content-start">
+    <div class="col-12 col-xl-4 d-flex justify-content-start" *ngIf="client.loggedUser.ente !== null">
+      <button type="button" class="btn btn-outline-primary w-100" (click)="openCambioStruttura()">
+        SELEZIONA STRUTTURA
+      </button>
+    </div>
+    <div class="col-12 col-xl-4 d-flex justify-content-start"
+      *ngIf="client.loggedUser.struttura !== null && client.checkAzioni('vigil_hom-arpe') === 'R'">
+      <button type="button" class="btn btn-outline-primary w-100" (click)="openDettaglioArpe()">
+        <span *ngIf="!loadDettaglioArpe">VISUALIZZA DETTAGLIO ARPE</span>
+        <span *ngIf="loadDettaglioArpe">IN CARICAMENTO ...</span>
+      </button>
+    </div>
+  </div>
+</ng-container>

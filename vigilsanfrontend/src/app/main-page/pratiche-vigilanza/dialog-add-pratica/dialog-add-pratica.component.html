@@ -1,0 +1,202 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<button type="button" class="btn btn-light mb-2" (click)="goBack()">
+  <em class="bi bi-arrow-left-short vigilsan-icon-style"></em>
+</button>
+<br>
+
+<div class="d-flex justify-content-center" *ngIf="isSpinEmitter">
+  <div class="spinner-border text-primary spin-emitter-style" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+<ng-container *ngIf="!isSpinEmitter">
+  <div class="container-fluid">
+    <mat-stepper linear #stepper style="background-color: unset;">
+      <mat-step [optional]="false">
+        <ng-template matStepLabel>Selezione nuova pratica</ng-template>
+        <br>
+        <ng-template matStepContent>
+          <!-- TIPO PRATICA -->
+          <div class="row mt-3 align-items-center">
+            <div class="col-12 col-lg-6 mt-2">
+              <h3 [class]="classLabelFilter">Tipo pratica:</h3>
+              <div class="w-100 m-0 p-0">
+                <select class="form-control" id="tipoPId" [(ngModel)]="selectedPraticaTipo">
+                  <option [ngValue]="null" selected></option>
+                  <option *ngFor="let tipo of listaPraticaTipo" [ngValue]="tipo">{{tipo.praticaTipoDesc}}</option>
+                </select>
+              </div>
+            </div>
+            <!-- ULTIMA ESECUZIONE -->
+            <div class="col-12 col-lg-6 mt-2">
+              <h3 [class]="classLabelFilter">Ultima esecuzione anteriore al:</h3>
+              <div class="form-group w-100 m-0 p-0">
+                <div class="input-group m-0 p-0">
+                  <input class="form-control" placeholder="yyyy/mm/dd" name="dp" [(ngModel)]="ultimaEsecuzione"
+                    ngbDatepicker #ultimaEsecuzioneToggle="ngbDatepicker" id="ultimaEsecuzioneId"
+                    [footerTemplate]="footerTemplateUltimaEsecuzione" readonly>
+                  <div class="input-group-append">
+                    <button class="btn btn-outline-primary" (click)="ultimaEsecuzioneToggle.toggle()" type="button">
+                      <em class="bi bi-calendar3 vigilsan-icon-style" style="font-size:  1rem;"></em>
+                    </button>
+                  </div>
+                </div>
+                <ng-template #footerTemplateUltimaEsecuzione>
+                  <hr class="my-0">
+                  <button class="btn btn-secondary btn-sm m-2 float-left"
+                    (click)="eraseData('ultimaEsecuzione'); ultimaEsecuzioneToggle.close()">CANCELLA</button>
+                </ng-template>
+              </div>
+            </div>
+            <!-- TIPO STRUTTURA -->
+            <div class="col-12 col-lg-6 mt-2">
+              <h3 [class]="classLabelFilter">Tipo struttura:</h3>
+              <div class="w-100 m-0 p-0">
+                <select class="form-control" id="tipoPId" [(ngModel)]="selectedStrutturaTipo">
+                  <option [ngValue]="null" selected></option>
+                  <option *ngFor="let tipo of listaStrutturaTipo" [ngValue]="tipo">{{tipo.strutturaTipoDesc}}</option>
+                </select>
+              </div>
+            </div>
+            <!-- STRUTTURA -->
+            <div class="col-12 col-lg-6 mt-2">
+              <h3 [class]="classLabelFilter">Struttura:</h3>
+              <input type="text" class="form-control w-100" id="strutturaEnteId" aria-describedby="Struttura"
+                [(ngModel)]="struttura">
+            </div>
+            <div class="col-0 col-lg-6 mt-3"></div>
+            <div class="col-12 col-lg-6 mt-3 text-right">
+              <button type="button" class="btn btn-primary button-basic px-5" (click)="cercaButton()">CERCA</button>
+            </div>
+          </div>
+          <br>
+          <ng-container *ngIf="listaPraticheToAdd && listaPraticheToAdd.length > 0">
+            <ng-container *ngIf="isPraticaSelected">
+              <div class="d-flex justify-content-center" *ngIf="isSpinEmitterSceltaAttivita">
+                <div class="spinner-border text-primary spin-emitter-style" role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="!isSpinEmitterSceltaAttivita">
+              <table class="table table-hover">
+                <caption>Tabella strutture</caption>
+                <thead>
+                  <tr style="background-color: #0381d6;">
+                    <td *ngFor="let column of columns" scope="col" class="text-left text-white"
+                      style="font-size: 18px;">
+                      {{column}}
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- <div class="d-flex justify-content-center" *ngIf="isSpinEmitterTable">
+                  <div class="spinner-border text-primary spin-emitter-style" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div>
+                </div> -->
+                  <div class="d-flex justify-content-center" *ngIf="isSpinEmitterTable">
+                    <tr>
+                      <td>
+                        <div class="spinner-grow text-primary spin-emitter-style" role="status">
+                          <span class="sr-only">Loading...</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="spinner-grow text-primary spin-emitter-style" role="status">
+                          <span class="sr-only">Loading...</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="spinner-grow text-primary spin-emitter-style" role="status">
+                          <span class="sr-only">Loading...</span>
+                        </div>
+                      </td>
+                    </tr>
+                  </div>
+                  <ng-container *ngIf="!isSpinEmitterTable">
+                    <tr *ngFor="let pratica of listaPraticheToAdd; index as i" style="font-size: 15px;"
+                      (click)="advanceStepper(pratica)">
+                      <td>
+                        <span *ngIf="pratica.struttura">
+                          {{ pratica.struttura.strutturaCodArpe ? pratica.struttura.strutturaCodArpe : '' }} -
+                          {{ pratica.struttura.strutturaDesc ? pratica.struttura.strutturaDesc : '' }}
+                        </span>
+                      </td>
+                      <td><span *ngIf="pratica.praticaTipo">{{ pratica.praticaTipo.praticaTipoDesc ?
+                          pratica.praticaTipo.praticaTipoDesc : '' }}</span></td>
+                      <td>{{ pratica.dataoraChiusura ? (pratica.dataoraChiusura | date: 'dd/MM/yyyy') : '' }}</td>
+                    </tr>
+                  </ng-container>
+                </tbody>
+              </table>
+              <div class="d-flex justify-content-between">
+                <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize"
+                  (pageChange)="cerca()" [boundaryLinks]="true" [maxSize]="5">
+                </ngb-pagination>
+
+                <select class="custom-select" style="width: auto" [(ngModel)]="pageSize" (ngModelChange)="cerca()">
+                  <option [ngValue]="5">5</option>
+                  <option [ngValue]="10">10</option>
+                  <option [ngValue]="15">15</option>
+                </select>
+              </div>
+            </ng-container>
+          </ng-container>
+          <ng-container *ngIf="listaPraticheToAdd && listaPraticheToAdd.length <= 0">
+            <p class="ml-2 mt-2">Nessuna pratica da aggiungere per la ricerca selezionata...</p>
+          </ng-container>
+        </ng-template>
+      </mat-step>
+      <!-- SECONDO STEP -->
+      <mat-step [optional]="false" [completed]="isPraticaSelected">
+        <ng-template matStepLabel>Scelta attivit&agrave;</ng-template>
+        <br>
+        <ng-template matStepContent>
+          <button mat-button matStepperPrevious (click)="backStepper()">Torna alla selezione</button>
+          <div class="alert alert-danger" role="alert" *ngIf="!isPraticaSelected">
+            Per poter procedere &egrave; <strong>obbligatorio selezionare</strong> una <strong>pratica</strong>.
+          </div>
+          <ng-container *ngIf="isPraticaSelected">
+            <div class="container-fluid">
+              <div class="row flex-row-reverse">
+                <div class="col-auto">
+                  <button type="button" class="btn btn-primary px-4 button-basic" (click)="addPratica()"
+                    [disabled]="!isPraticaSelected">
+                    <span *ngIf="!addPraticaButton">SALVA</span>
+                    <span *ngIf="addPraticaButton">IN CARICAMENTO...</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <br>
+            <p *ngIf="alertValidModulo">
+              <ngb-alert [dismissible]="false" [type]="'danger'">
+                <strong>Attenzione!</strong> Per poter procedere con il salvataggio bisogna compilare tutti i campi
+                <strong>obbligatori</strong> contrassegnati da un <strong>*</strong>.
+              </ngb-alert>
+            </p>
+            <app-dialog-add-azione></app-dialog-add-azione>
+          </ng-container>
+          <br>
+          <button mat-button matStepperPrevious (click)="backStepper()">Torna alla selezione</button>
+          <div class="container-fluid">
+            <div class="row flex-row-reverse">
+              <div class="col-auto">
+                <button type="button" class="btn btn-primary px-4 button-basic" (click)="addPratica()"
+                  [disabled]="!isPraticaSelected">
+                  <span *ngIf="!addPraticaButton">SALVA</span>
+                  <span *ngIf="addPraticaButton">IN CARICAMENTO...</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </mat-step>
+    </mat-stepper>
+  </div>
+</ng-container>

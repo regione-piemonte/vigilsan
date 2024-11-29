@@ -1,0 +1,61 @@
+/*
+ Copyright Regione Piemonte - 2024
+ SPDX-License-Identifier: EUPL-1.2
+*/
+
+.style-nav-bar {
+  /* background: #006CB4 0% 0% no-repeat padding-box; */
+  background: #026cb3 0% 0% no-repeat padding-box;
+  height: 60px !important;
+}
+
+.style-nav-bar-collocazione {
+  /* background: #006CB4 0% 0% no-repeat padding-box; */
+  background: #0381d6 0% 0% no-repeat padding-box;
+  height: 30px !important;
+}
+
+.route-link-style {
+  border-style: solid;
+  border-width: 1px;
+  border-color: lightgray;
+  border-radius: 5px;
+}
+
+.mat-fat-style {
+  background-color: white;
+  color: #0381d6;
+  font-size: 20px;
+}
+
+.line-break {
+  white-space: break-spaces;
+  /* o break-spaces a seconda delle tue esigenze */
+}
+
+.custom-tab-selected {
+  border-width: 5px !important;
+  padding: 1rem;
+}
+
+
+/* Imposta le immagini di sfondo del contenitore principale */
+.bg-container {
+  position: relative;
+  background-image: url('../../assets/img/vetrina-2.png'), url('../../assets/img/vetrina-1.png');
+  background-position: +140% calc(100% - 400px), -35% calc(100% + 110px);
+  /* Sposta vetrina-1 a destra e vetrina-2 a sinistra */
+  background-size: 600px, 600px;
+  /* Ridimensiona le immagini, modificalo se necessario */
+  /* Ridimensiona le immagini, puoi modificare le dimensioni secondo necessitÃ  */
+  background-repeat: no-repeat;
+  /* Evita la ripetizione delle immagini */
+  z-index: 1;
+  /* Mantieni lo sfondo sotto gli altri contenuti */
+}
+
+/* Assicurati che i contenuti siano sopra le immagini di sfondo */
+.bg-container .row {
+  position: relative;
+  z-index: 2;
+}

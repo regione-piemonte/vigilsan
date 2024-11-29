@@ -1,0 +1,50 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<ng-container *ngIf="voce?.voceControl && !voce?.voceControlTime">
+  <span *ngIf="voce?.voceControl?.hasError('required')" class="stile-error">{{ takeError(typeRules.NOT_NULL) }}</span>
+  <ng-container *ngIf="voce?.regole">
+    <ng-container *ngFor="let regola of voce?.regole; let i = index">
+      <span *ngIf="regola.nomeRegola && voce?.voceControl?.hasError(regola.nomeRegola)" class="stile-error">{{ regola.moduloVoceRegolaErrore }}</span>
+    </ng-container>
+  </ng-container>
+  <span *ngIf="voce?.moduloVoceTipoDati === enum.EMAIL && voce?.voceControl?.hasError('email')" class="stile-error">E-mail non valida</span>
+  <!-- FILES -->
+  <!-- <span *ngIf="voce?.moduloVoceTipoDati === enum.FILE && checkFile()">
+    File obbligatorio
+  </span> -->
+  <!-- MULTISELECT -->
+  <span *ngIf="voce?.moduloVoceTipoDati === enum.LIST && voce?.voceControl?.hasError('invalidSelectionCount')">
+    <ng-container *ngIf="voce && voce.lista">
+      <span class="stile-error">Selezionare un numero di voci minimo {{voce.lista.moduloListaOccMin}}, massimo {{voce.lista.moduloListaOccMax}}</span>
+    </ng-container>
+  </span>
+</ng-container>
+
+<!-- Se time picker -->
+<ng-container *ngIf="voce?.voceControlTime && !voce?.voceControl">
+  <span *ngIf="voce?.voceControlTime?.hasError('required')" class="stile-error">{{ takeError(typeRules.NOT_NULL) }}</span>
+  <ng-container *ngIf="voce?.regole">
+    <ng-container *ngFor="let regola of voce?.regole; let i = index">
+      <span *ngIf="regola.nomeRegola && voce?.voceControlTime?.hasError(regola.nomeRegola)" class="stile-error">{{ regola.moduloVoceRegolaErrore }}</span>
+    </ng-container>
+  </ng-container>
+</ng-container>
+
+<!-- Se date/time picker -->
+<ng-container *ngIf="voce?.voceControl && voce?.voceControlTime">
+  <span *ngIf="voce?.voceControlTime?.hasError('required')" class="stile-error">{{ takeError(typeRules.NOT_NULL) }}</span>
+  <ng-container *ngIf="voce?.regole">
+    <ng-container *ngFor="let regola of voce?.regole; let i = index">
+      <span *ngIf="regola.nomeRegola && voce?.voceControlTime?.hasError(regola.nomeRegola)" class="stile-error">{{ regola.moduloVoceRegolaErrore }}</span>
+    </ng-container>
+  </ng-container>
+  <span *ngIf="voce?.voceControl?.hasError('required')" class="stile-error">{{ takeError(typeRules.NOT_NULL) }}</span>
+  <ng-container *ngIf="voce?.regole">
+    <ng-container *ngFor="let regola of voce?.regole; let i = index">
+      <span *ngIf="regola.nomeRegola && voce?.voceControl?.hasError(regola.nomeRegola)" class="stile-error">{{ regola.moduloVoceRegolaErrore }}</span>
+    </ng-container>
+  </ng-container>
+</ng-container>

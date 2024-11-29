@@ -1,0 +1,41 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<h1 mat-dialog-title>
+  Verifica documentazione
+</h1>
+<div mat-dialog-content class="my-2">
+  <div class="container-fluid mb-2 my-2">
+    <div class="row align-items-center justify-content-center">
+      <div class="col-0 col-sm-1"></div>
+      <div class="col-sm-5 text-center mt-2">
+        <h2 class="font-weight-bold display-4 m-0 pr-1">Conforme</h2>
+        <input type="radio" class="custom-checkbox" [(ngModel)]="conformita" name="conformita" [value]="'conforme'"
+          [disabled]="!['W'].includes(client.checkAzioni('vigil_doc-verif'))" />
+      </div>
+      <div class="col-sm-5 text-center mt-2">
+        <h2 class="font-weight-bold display-4 m-0 pr-1">Non conforme</h2>
+        <input type="radio" class="custom-checkbox" [(ngModel)]="conformita" name="conformita" [value]="'nonConforme'"
+          [disabled]="!['W'].includes(client.checkAzioni('vigil_doc-verif'))" />
+      </div>
+      <div class="col-0 col-sm-1"></div>
+      <div class="col-sm-2 text-sm-right text-center mt-3">
+        <h2 class="font-weight-bold display-4 m-0 pr-1">Note</h2>
+      </div>
+      <div class="col-sm-10 text-sm-left text-center mt-sm-3 mt-1">
+        <textarea class="form-control" rows="4" [(ngModel)]="note"
+          [disabled]="!['W'].includes(client.checkAzioni('vigil_doc-verif'))"></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+<div mat-dialog-actions>
+  <button mat-button mat-dialog-close>CHIUDI</button>
+  <button type="button" class="btn btn-primary px-4 ml-auto button-basic" (click)="sendVerifica()"
+    [disabled]="isLoadingVerifica || conformita === ''">
+    <span *ngIf="!isLoadingVerifica">SALVA</span>
+    <span *ngIf="isLoadingVerifica">IN CARICAMENTO...</span>
+  </button>
+</div>

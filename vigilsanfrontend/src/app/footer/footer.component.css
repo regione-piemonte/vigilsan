@@ -1,0 +1,21 @@
+/*
+ Copyright Regione Piemonte - 2024
+ SPDX-License-Identifier: EUPL-1.2
+*/
+
+/* TOOLBAR STYLE */
+.style-tool-bar {
+  /* background: #006CB4 0% 0% no-repeat padding-box; */
+  background: #026cb3 0% 0% no-repeat padding-box;
+  height: 120px !important;
+}
+
+::ng-deep.mat-toolbar-multiple-rows {
+  min-height: 60px !important;
+}
+
+.style-tool-bar-two {
+  /* background: #006CB4 0% 0% no-repeat padding-box; */
+  background: #0381d6 0% 0% no-repeat padding-box;
+  height: 120px !important;
+}

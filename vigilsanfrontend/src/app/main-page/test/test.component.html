@@ -1,0 +1,189 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<div class="row" *ngIf="router.url === '/main-page/test'">
+  <div class="col-auto">
+    <label for="input-modulo-id">Modulo id</label>
+    <input id="input-modulo-id" type="text" class="form-control" [(ngModel)]="moduloId" />
+    <button type="button" class="btn btn-outline-primary mt-2" (click)="showModulo(false)">
+      Check modulo
+    </button>
+  </div>
+  <div class="col-auto">
+    <label for="input-modulo-id">Modulo compilato id</label>
+    <input id="input-modulo-id" type="text" class="form-control" [(ngModel)]="moduloCompilatoId" />
+    <button type="button" class="btn btn-outline-primary mt-2" (click)="showModulo(true)">
+      Check modulo compilato
+    </button>
+  </div>
+  <div class="col-auto ml-auto">
+    <button type="button" class="btn btn-primary button-basic m-0" (click)="moduloCommon.modificaDocumentazione()">
+      <span *ngIf="client.disabilitaCampi">MODIFICA</span>
+      <span *ngIf="!client.disabilitaCampi">ANNULLA</span>
+    </button>
+  </div>
+</div>
+<hr *ngIf="router.url === '/main-page/test'">
+
+<div class="d-flex justify-content-center" *ngIf="isLoading">
+  <div class="spinner-border text-primary spin-emitter-style" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+
+<div [hidden]="!isShowModulo">
+
+  <!-- VV ---------------------------------------------------- -->
+  <ng-container *ngIf="client.modulo.voci !== null && client.modulo.voci !== undefined">
+    <mat-card-content class="mt-2" [hidden]="client.modulo.voci.length <= 0">
+      <mat-card [class]="styleMatCard">
+        <mat-card-content>
+          <ng-container *ngFor="let item of client.modulo.voci; let i = index">
+            <app-sotto-test [item]="item" [voceControl]="item?.voceControl"
+              [voceControlTime]="item?.voceControlTime"></app-sotto-test>
+          </ng-container>
+        </mat-card-content>
+      </mat-card>
+    </mat-card-content>
+  </ng-container>
+  <!-- --------------------------------------------------------------------- -->
+
+  <!-- SS ---------------------------------------------------- -->
+  <ng-container *ngFor="let SS of client.modulo.sezioni">
+    <mat-accordion>
+      <mat-expansion-panel hideToggle class="mb-3" [disabled]="!SS.visible"
+        [matTooltip]="SS.visibleMsg ? SS.visibleMsg : ''" matTooltipPosition="above" matTooltipClass="style-tooltip"
+        [matTooltipDisabled]="SS.visible" [expanded]="SS.visible">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <h3 [class]="classModuloDesc">{{SS.moduloDesc}}</h3>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <!-- SSS ---------------------------------------------------- -->
+        <ng-container *ngFor="let SSS of SS.sezioni">
+          <mat-accordion>
+            <mat-expansion-panel hideToggle class="mb-3" [disabled]="!SSS.visible"
+              [matTooltip]="SSS.visibleMsg ? SSS.visibleMsg : ''" matTooltipPosition="above"
+              matTooltipClass="style-tooltip" [matTooltipDisabled]="SSS.visible" [expanded]="SSS.visible">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  <h3 [class]="classModuloDesc">{{SSS.moduloDesc}}</h3>
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <!-- SSSS ---------------------------------------------------- -->
+              <ng-container *ngFor="let SSSS of SSS.sezioni">
+                <mat-accordion>
+                  <mat-expansion-panel hideToggle class="mb-3" [disabled]="!SSSS.visible"
+                    [matTooltip]="SSSS.visibleMsg ? SSSS.visibleMsg : ''" matTooltipPosition="above"
+                    matTooltipClass="style-tooltip" [matTooltipDisabled]="SSSS.visible" [expanded]="SSSS.visible">
+                    <mat-expansion-panel-header>
+                      <mat-panel-title>
+                        <h3 [class]="classModuloDesc">{{SSSS.moduloDesc}}</h3>
+                      </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <!-- SSSSV ---------------------------------------------------- -->
+                    <ng-container *ngFor="let item of SSSS.voci; let i = index">
+                      <app-sotto-test [item]="item" [voceControl]="item?.voceControl"
+                        [voceControlTime]="item?.voceControlTime"></app-sotto-test>
+                      <ng-container *ngIf="item.valore && item.voci && item.voci.length > 0">
+                        <mat-accordion>
+                          <mat-expansion-panel hideToggle class="mb-3" [expanded]="SSSS.visible">
+                            <ng-container *ngFor="let item of item.voci; let j = index">
+                              <ng-container *ngIf="item !== null">
+                                <app-sotto-test [item]="item" [voceControl]="item?.voceControl"
+                                  [voceControlTime]="item?.voceControlTime"></app-sotto-test>
+                              </ng-container>
+                            </ng-container>
+                          </mat-expansion-panel>
+                          <hr>
+                        </mat-accordion>
+                      </ng-container>
+                      <!-- --------------------------------------------------------------------- -->
+                    </ng-container>
+                  </mat-expansion-panel>
+                </mat-accordion>
+              </ng-container>
+              <!-- --------------------------------------------------------------------- -->
+              <!-- SSSV ---------------------------------------------------- -->
+              <ng-container *ngFor="let item of SSS.voci; let i = index">
+                <!-- <p *ngIf="client.devMode">SSSV</p> -->
+                <app-sotto-test [item]="item" [voceControl]="item?.voceControl"
+                  [voceControlTime]="item?.voceControlTime"></app-sotto-test>
+                <!-- SSVV ---------------------------------------------------- -->
+                <ng-container *ngIf="item.valore && item.voci && item.voci.length > 0">
+                  <!-- <p *ngIf="client.devMode">SSVV</p> -->
+                  <mat-accordion>
+                    <mat-expansion-panel hideToggle class="mb-3" [expanded]="SSS.visible">
+                      <ng-container *ngFor="let item of item.voci; let j = index">
+                        <ng-container *ngIf="item !== null">
+                          <app-sotto-test [item]="item" [voceControl]="item?.voceControl"
+                            [voceControlTime]="item?.voceControlTime"></app-sotto-test>
+                        </ng-container>
+                      </ng-container>
+                    </mat-expansion-panel>
+                    <hr>
+                  </mat-accordion>
+                </ng-container>
+                <!-- --------------------------------------------------------------------- -->
+              </ng-container>
+              <!-- --------------------------------------------------------------------- -->
+            </mat-expansion-panel>
+          </mat-accordion>
+        </ng-container>
+        <!-- --------------------------------------------------------------------- -->
+        <!-- SSV ---------------------------------------------------- -->
+        <ng-container *ngFor="let item of SS.voci; let i = index">
+          <!-- <p *ngIf="client.devMode">SSV</p> -->
+          <app-sotto-test [item]="item" [voceControl]="item?.voceControl"
+            [voceControlTime]="item?.voceControlTime"></app-sotto-test>
+          <!-- SSVV ---------------------------------------------------- -->
+          <ng-container
+            *ngIf="item.voci && item.voci.length > 0 && item?.voceControl?.value !== null && item?.voceControl?.value !== false ">
+            <!-- <p *ngIf="client.devMode">SSVV</p> -->
+            <ng-container *ngFor="let item of item.voci; let j = index">
+              <ng-container *ngIf="item !== null">
+                <app-sotto-test [item]="item" [voceControl]="item?.voceControl"
+                  [voceControlTime]="item?.voceControlTime"></app-sotto-test>
+              </ng-container>
+            </ng-container>
+            <hr>
+          </ng-container>
+          <!-- --------------------------------------------------------------------- -->
+        </ng-container>
+        <!-- --------------------------------------------------------------------- -->
+      </mat-expansion-panel>
+    </mat-accordion>
+  </ng-container>
+  <!-- --------------------------------------------------------------------- -->
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Note</mat-label>
+    <textarea matInput cdkTextareaAutosize [(ngModel)]="client.modulo.note" [disabled]="client.disabilitaCampi"
+      class="input-font"></textarea>
+  </mat-form-field>
+
+  <!-- <ng-container>
+    <br>
+    <p>IsValid: {{client.isValidModulo}}</p>
+    <!-- TEST MODULO -->
+  <!-- <div class="row" *ngIf="client.devMode">
+      <div class="col-auto ml-auto">
+        <button type="button" class="btn btn-outline-primary mt-2" (click)="sendModulo()">
+          Test modulo
+        </button>
+      </div>
+    </div>
+  </ng-container> -->
+</div>
+
+
+<div *ngIf="client.warningModulo">
+  <p>
+    <ngb-alert [dismissible]="false">
+      <span style="font-size: 18px;"><strong>ATTENZIONE!</strong> {{ client.modulo.visibleMsg ? client.modulo.visibleMsg
+        : ''}}</span>
+    </ngb-alert>
+  </p>
+</div>

@@ -1,0 +1,182 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<div class="d-flex justify-content-center" *ngIf="isSpinEmitter">
+  <div class="spinner-border text-primary spin-emitter-style" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+<ng-container *ngIf="!isSpinEmitter">
+  <div class="row align-items-center">
+    <div class="col-md-12 col-lg-6 col-xl-3 mt-xl-0 mt-2">
+      <h3 [class]="classLabelFilter">Ospite</h3>
+      <div class="form-group w-100">
+        <input type="text" class="form-control w-100" id="inputOspite" aria-describedby="ospite"
+          [(ngModel)]="client.ospite">
+      </div>
+    </div>
+    <div class="col-md-12 col-lg-6 col-xl-3 mt-xl-0 mt-2">
+      <h3 [class]="classLabelFilter">Ingresso dal:</h3>
+      <div class="form-group">
+        <div class="input-group">
+          <input class="form-control" placeholder="dd/mm/yyyy" name="dp" [(ngModel)]="client.ingressoDal" ngbDatepicker
+            #ingressoDal="ngbDatepicker" id="ingressoDalId" [footerTemplate]="footerTemplateIngressoDal">
+          <div class="input-group-append">
+            <button class="btn btn-outline-primary" (click)="ingressoDal.toggle()" type="button">
+              <em class="bi bi-calendar3 vigilsan-icon-style" style="font-size:  1rem;"></em>
+            </button>
+          </div>
+        </div>
+      </div>
+      <ng-template #footerTemplateIngressoDal>
+        <hr class="my-0">
+        <button class="btn btn-secondary btn-sm m-2 float-left"
+          (click)="eraseData('ingressoDal'); ingressoDal.close()">CANCELLA</button>
+      </ng-template>
+    </div>
+    <div class="col-md-12 col-lg-6 col-xl-3 mt-xl-0 mt-2">
+      <h3 [class]="classLabelFilter">al:</h3>
+      <div class="form-group">
+        <div class="input-group">
+          <input class="form-control" placeholder="dd/mm/yyyy" name="dp" [(ngModel)]="client.ingressoAl" ngbDatepicker
+            #ingressoAl="ngbDatepicker" id="ingressoAlId" [footerTemplate]="footerTemplateIngressoAl">
+          <div class="input-group-append">
+            <button class="btn btn-outline-primary" (click)="ingressoAl.toggle()" type="button">
+              <em class="bi bi-calendar3 vigilsan-icon-style" style="font-size:  1rem;"></em>
+            </button>
+          </div>
+        </div>
+        <ng-template #footerTemplateIngressoAl>
+          <hr class="my-0">
+          <button class="btn btn-secondary btn-sm m-2 float-left"
+            (click)="eraseData('ingressoAl'); ingressoAl.close()">CANCELLA</button>
+        </ng-template>
+      </div>
+    </div>
+    <div class="col-md-12 col-lg-6 col-xl-3 mt-xl-0 mt-2">
+      <button type="button" class="btn btn-primary button-basic w-100 mt-xl-2 mt-lg-2" (click)="nuovoOspite()"
+        *ngIf="client.checkAzioni('vigil_osp-new') === 'W'">
+        NUOVO OSPITE
+      </button>
+    </div>
+    <div class="col-md-12 col-lg-6 col-xl-3 mt-xl-0 mt-2">
+      <h3 [class]="classLabelFilter">Stato</h3>
+      <div class="form-group w-100">
+        <select class="form-control" id="listaStatiOspiteId" [(ngModel)]="client.statoOspiteSelezionato">
+          <option [ngValue]="statoOspiteSelezionatoVuoto" selected></option>
+          <option *ngFor="let stato of client.listaStatiOspite" [ngValue]="stato">{{ stato.ospiteStatoDesc }}</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-12 col-lg-6 col-xl-3 mt-xl-0 mt-2">
+      <h3 [class]="classLabelFilter">Uscita dal:</h3>
+      <div class="form-group">
+        <div class="input-group">
+          <input class="form-control" placeholder="dd/mm/yyyy" name="dp" [(ngModel)]="client.uscitaDal" ngbDatepicker
+            #uscitaDal="ngbDatepicker" id="uscitaDalId" [footerTemplate]="footerTemplateUscitaDal">
+          <div class="input-group-append">
+            <button class="btn btn-outline-primary" (click)="uscitaDal.toggle()" type="button">
+              <em class="bi bi-calendar3 vigilsan-icon-style" style="font-size:  1rem;"></em>
+            </button>
+          </div>
+        </div>
+      </div>
+      <ng-template #footerTemplateUscitaDal>
+        <hr class="my-0">
+        <button class="btn btn-secondary btn-sm m-2 float-left"
+          (click)="eraseData('uscitaDal'); uscitaDal.close()">CANCELLA</button>
+      </ng-template>
+    </div>
+    <div class="col-md-12 col-lg-6 col-xl-3 mt-xl-0 mt-2">
+      <h3 [class]="classLabelFilter">al:</h3>
+      <div class="form-group">
+        <div class="input-group">
+          <input class="form-control" placeholder="dd/mm/yyyy" name="dp" [(ngModel)]="client.uscitaAl" ngbDatepicker
+            #uscitaAl="ngbDatepicker" id="uscitaAlId" [footerTemplate]="footerTemplateUscitaAl">
+          <div class="input-group-append">
+            <button class="btn btn-outline-primary" (click)="uscitaAl.toggle()" type="button">
+              <em class="bi bi-calendar3 vigilsan-icon-style" style="font-size:  1rem;"></em>
+            </button>
+          </div>
+        </div>
+      </div>
+      <ng-template #footerTemplateUscitaAl>
+        <hr class="my-0">
+        <button class="btn btn-secondary btn-sm m-2 float-left"
+          (click)="eraseData('uscitaAl'); uscitaAl.close()">CANCELLA</button>
+      </ng-template>
+    </div>
+    <div class="col-md-12 col-lg-6 col-xl-3 mt-xl-0 mt-2 mb-md-3 mb-lg-0 mb-xl-0">
+      <button type="button" class="btn btn-primary button-basic w-100 mt-xl-2 mt-lg-2" (click)="azzeraFiltri();cerca();"
+        id="cercaId">
+        CERCA
+      </button>
+    </div>
+  </div>
+  <div class="d-flex justify-content-center" *ngIf="isSpinEmitterTable">
+    <div class="spinner-border text-primary spin-emitter-style" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+  <ng-container *ngIf="!isSpinEmitterTable && client.listaOspiti && client.listaOspiti.length > 0">
+    <table class="table table-hover">
+      <caption>Tabella degli ospiti</caption>
+      <thead>
+        <tr style="background-color: #0381d6;">
+          <td *ngFor="let column of columns" scope="col" class="text-left text-white" style="font-size: 18px;"
+            (click)="onHeaderClick(column)">
+            {{column}}
+            <ng-container *ngIf="selectedColumn === column">
+              <em class="bi bi-arrow-up-short vigilsan-icon-style text-white m-0 p-0" *ngIf="!descending"
+                style="font-size: 1.1rem;"></em>
+              <em class="bi bi-arrow-down-short vigilsan-icon-style text-white m-0 p-0" *ngIf="descending"
+                style="font-size: 1.1rem;"></em>
+            </ng-container>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let ospite of listaOspitiPaginations; index as i" (click)="onRowClick(ospite)"
+          style="font-size: 15px;">
+          <td>{{ ospite.codiceFiscale }}</td>
+          <td>{{ ospite.cognome }} {{ ospite.nome }}</td>
+          <td>{{ ospite.dataNascita | date : 'dd/MM/yyyy' }}</td>
+          <td>
+            {{ ospite.ultimoStato.ospiteStatoDesc }}
+            <br>
+            {{ ospite.ultimoStato.dataMovimento | date: 'dd/MM/yyyy' }}
+          </td>
+          <td>{{ ospite.strutturaCategoriaDesc ? ospite.strutturaCategoriaDesc : '-' }}</td>
+          <td>{{ ospite.dataPrimoIngresso | date: 'dd/MM/yyyy' }}</td>
+          <td>{{ ospite.dataUltimaUscita | date: 'dd/MM/yyyy' }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="d-flex justify-content-between">
+      <ngb-pagination [collectionSize]="collectionSize" [(page)]="page" [pageSize]="pageSize" (pageChange)="cerca()">
+      </ngb-pagination>
+
+      <select class="custom-select" style="width: auto" [(ngModel)]="pageSize" (ngModelChange)="cerca()">
+        <option [ngValue]="5">5 ospiti per pagina</option>
+        <option [ngValue]="10">10 ospiti per pagina</option>
+        <option [ngValue]="15">15 ospiti per pagina</option>
+      </select>
+    </div>
+    <div class="row align-items-center mt-2">
+      <div class="col-0 col-md-0 col-lg-6 col-xl-3"></div>
+      <div class="col-0 col-md-0 col-lg-0 col-xl-3"></div>
+      <div class="col-0 col-md-0 col-lg-0 col-xl-3"></div>
+      <div class="col-12 col-md-12 col-lg-6 col-xl-3">
+        <button type="button" class="btn btn-primary button-basic w-100" (click)="scaricaCsv()">
+          SCARICA LISTA OSPITI
+        </button>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="client.listaOspiti && client.listaOspiti.length <= 0">
+    <span style="font-size: 16px;">Non sono stati trovati ospiti con i filtri di ricerca inseriti.....</span>
+  </ng-container>
+
+</ng-container>

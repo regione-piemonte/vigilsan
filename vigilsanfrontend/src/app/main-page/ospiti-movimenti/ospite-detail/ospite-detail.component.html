@@ -1,0 +1,117 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<button type="button" class="btn btn-light mb-2" (click)="goBack()">
+  <em class="bi bi-arrow-left-short vigilsan-icon-style"></em>
+</button>
+<br>
+<div class="d-flex justify-content-center" *ngIf="isSpinEmitterOspitiDetail">
+  <div class="spinner-border text-primary spin-emitter-style" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+<ng-container *ngIf="!isSpinEmitterOspitiDetail && client.ospiteSelezionato">
+  <div class="row align-items-center">
+    <div class="col-md-12 col-lg-6 col-xl-3 mt-xl-0 mt-2">
+      <h3 [class]="classLabelFilter">Codice Fiscale </h3>
+      <h3 [class]="classLabelFilterLead">{{client.ospiteSelezionato.codiceFiscale}}</h3>
+    </div>
+    <div class="col-md-12 col-lg-6 col-xl-3 mt-xl-0 mt-2">
+      <h3 [class]="classLabelFilter">Data di nascita </h3>
+      <h3 [class]="classLabelFilterLead">{{client.ospiteSelezionato.dataNascita ? (client.ospiteSelezionato.dataNascita
+        | date: 'dd/MM/yyyy') : '-'}}</h3>
+    </div>
+    <div class="col-md-12 col-lg-6 col-xl-3 mt-xl-0 mt-2">
+      <h3 [class]="classLabelFilter">Cognome </h3>
+      <h3 [class]="classLabelFilterLead">{{client.ospiteSelezionato.cognome ? client.ospiteSelezionato.cognome : '-'}}
+      </h3>
+    </div>
+    <div class="col-md-12 col-lg-6 col-xl-3 mt-xl-0 mt-2">
+      <h3 [class]="classLabelFilter">Nome </h3>
+      <h3 [class]="classLabelFilterLead">{{client.ospiteSelezionato.nome ? client.ospiteSelezionato.nome : '-'}}</h3>
+    </div>
+  </div>
+  <div class="row flex-row-reverse mb-2">
+    <div class="col-md-12 col-lg-6 col-xl-3 mt-3">
+      <button type="button" class="btn btn-primary button-basic mr-3" (click)="aggiungiMovimento()"
+        [hidden]="active != 0" *ngIf="client.checkAzioni('vigil_osp-mov') === 'W'">
+        AGGIUNGI MOVIMENTO
+      </button>
+    </div>
+    <div class="col-12 mt-2"
+      *ngIf="ospiteDetail && ospiteDetail.ospiteMovimento && ospiteDetail.ospiteMovimento.length <= 0">
+      <p class="m-0">
+        <ngb-alert [dismissible]="false" class="m-0">
+          <strong>ATTENZIONE!</strong> E' necessario inserire un movimento di ingresso per associare il soggetto alla
+          struttura.
+        </ngb-alert>
+      </p>
+    </div>
+  </div>
+  <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs pt-3">
+    <li [ngbNavItem]="0">
+      <a ngbNavLink>MOVIMENTI</a>
+      <ng-template ngbNavContent>
+        <ng-container *ngIf="ospiteDetail && ospiteDetail.ospiteMovimento" class="mt-2">
+          <table class="table table-hover">
+            <caption>Tabella dei movimenti dell'ospite</caption>
+            <thead>
+              <tr style="background-color: #0381d6;">
+                <td *ngFor="let column of columns" scope="col" class="text-left text-white"
+                  [ngClass]="{'text-center': column==='Azioni'}" style="font-size: 18px;">
+                  {{column}}
+                </td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let movimento of ospiteDetail.ospiteMovimento; index as i" style="background-color: #0381d6;"
+                style="font-size: 15px;">
+                <td>{{ movimento.dataMovimento ? (movimento.dataMovimento | date: 'dd/MM/yyyy') : '-'}}</td>
+                <td>{{ movimento.ospiteMovimentoTipo && movimento.ospiteMovimentoTipo.ospiteMovimentoTipoDesc ?
+                  movimento.ospiteMovimentoTipo.ospiteMovimentoTipoDesc : '-'}}</td>
+                <td>{{ movimento.ospiteCondizioni && movimento.ospiteCondizioni.ospiteCondizioniDesc ?
+                  movimento.ospiteCondizioni.ospiteCondizioniDesc : '-' }}</td>
+                <td>{{movimento.ospiteMovimentoTipo && movimento.ospiteMovimentoTipo.ospiteStato ?
+                  movimento.ospiteMovimentoTipo.ospiteStato.ospiteStatoDesc : '-'}}</td>
+                <td>{{movimento.strutturaCategoria && movimento.strutturaCategoria.strutturaCategoriaDesc ?
+                  movimento.strutturaCategoria.strutturaCategoriaDesc : '-'}}</td>
+                <td class="text-center">
+                  <button mat-icon-button color="warn" (click)="eliminaMovimento(movimento.ospiteMovimentoId)"
+                    [disabled]="client.checkAzioni('vigil_osp-mov') !== 'W'">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                  <button mat-icon-button aria-label="Note" style="color: #0381d6;"
+                    (click)="showStickies(movimento.note)" [disabled]="!movimento.note"
+                    matTooltip="Non sono state inserite note per questo movimento" matTooltipPosition="above"
+                    matTooltipClass="style-tooltip" [matTooltipDisabled]="movimento.note">
+                    <mat-icon>note</mat-icon>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </ng-container>
+        <ng-container *ngIf="!ospiteDetail || !ospiteDetail.ospiteMovimento ||ospiteDetail.ospiteMovimento.length <= 0">
+          Nessun movimento...
+        </ng-container>
+      </ng-template>
+    </li>
+    <!-- <li [ngbNavItem]="1">
+      <a ngbNavLink>RENDICONTAZIONI</a>
+      <ng-template ngbNavContent>
+
+      </ng-template>
+    </li>
+    <li [ngbNavItem]="2">
+      <a ngbNavLink>TAMPONI</a>
+      <ng-template ngbNavContent>
+
+      </ng-template>
+    </li> -->
+  </ul>
+
+
+  <div [ngbNavOutlet]="nav" class="mt-2"></div>
+</ng-container>

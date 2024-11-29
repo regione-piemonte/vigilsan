@@ -1,0 +1,247 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<div class="row align-items-center mt-4">
+  <div [ngClass]="item?.moduloVoceDescCheck !== null ? stylePrimaColonna : stylePrimaColonnaNotCheck">
+    <ng-container *ngIf="item?.moduloVoceTipoDati === enum.BOOL">
+      <div class="d-flex align-items-center">
+        <mat-checkbox [formControl]="item?.voceControl" class="mr-2 mt-1"></mat-checkbox>
+        <h3 class="lead mb-0 m-0">{{item.moduloVoceDesc}}</h3>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="item.moduloVoceTipoDati === enum.TEXT">
+      <mat-form-field appearance="outline" [class]="styleMatFormField">
+        <mat-label class="mat-label">{{item.moduloVoceDesc}}</mat-label>
+        <textarea matInput [formControl]="item?.voceControl" class="input-font" [matTooltip]="item.moduloVoceHint"
+          matTooltipPosition="above" matTooltipClass="style-tooltip" [matTooltipDisabled]="!item.moduloVoceHint"
+          rows="1" cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="1"
+          cdkAutosizeMaxRows="5"></textarea>
+        <!-- ERRORE -->
+        <mat-error class="pt-3">
+          <app-error-test [voce]="item"></app-error-test>
+        </mat-error>
+      </mat-form-field>
+    </ng-container>
+    <ng-container *ngIf="item.moduloVoceTipoDati === enum.INT">
+      <mat-form-field appearance="outline" [class]="styleMatFormField"
+        [ngClass]="{'campi-calcolati': item?.regole && item?.regole.length > 0 && item?.regole[0].moduloVoceRegolaTipo === 'calc'}">
+        <mat-label class="mat-label">{{item.moduloVoceDesc}}</mat-label>
+        <input matInput type="number" [formControl]="item?.voceControl" pattern="[0-9]*"
+          [readonly]="item?.regole && item?.regole.length > 0? item?.regole[0].moduloVoceRegolaTipo === 'calc' : false"
+          class="input-font" matTooltip="Questo Ã¨ un campo calcolato in modo automatico, non modificabile"
+          matTooltipPosition="above" matTooltipClass="style-tooltip"
+          [matTooltipDisabled]="checkTooltipCampoCalcolato(item)">
+        <span matSuffix *ngIf="item?.moduloVoceUnitaMisura" class="measure-unit">{{item.moduloVoceUnitaMisura}}</span>
+        <!-- ERRORE -->
+        <mat-error class="pt-3">
+          <app-error-test [voce]="item"></app-error-test>
+        </mat-error>
+      </mat-form-field>
+    </ng-container>
+    <ng-container *ngIf="item.moduloVoceTipoDati === enum.DEC1">
+      <mat-form-field appearance="outline" [class]="styleMatFormField"
+        [ngClass]="{'campi-calcolati': item?.regole && item?.regole.length > 0 && item?.regole[0].moduloVoceRegolaTipo === 'calc'}">
+        <mat-label class="mat-label">{{item.moduloVoceDesc}}</mat-label>
+        <input matInput type="number" [formControl]="item?.voceControl" step="0.1" pattern="\d+(\.\d{1})?"
+          [readonly]="item?.regole && item?.regole.length > 0? item?.regole[0].moduloVoceRegolaTipo === 'calc' : false"
+          class="input-font" matTooltip="Questo Ã¨ un campo calcolato in modo automatico, non modificabile"
+          matTooltipPosition="above" matTooltipClass="style-tooltip"
+          [matTooltipDisabled]="checkTooltipCampoCalcolato(item)">
+        <span matSuffix *ngIf="item?.moduloVoceUnitaMisura" class="measure-unit">{{item.moduloVoceUnitaMisura}}</span>
+        <!-- ERRORE -->
+        <mat-error class="pt-3">
+          <app-error-test [voce]="item"></app-error-test>
+        </mat-error>
+      </mat-form-field>
+    </ng-container>
+    <ng-container *ngIf="item.moduloVoceTipoDati === enum.DEC2">
+      <mat-form-field appearance="outline" [class]="styleMatFormField"
+        [ngClass]="{'campi-calcolati': item?.regole && item?.regole.length > 0 && item?.regole[0].moduloVoceRegolaTipo === 'calc'}">
+        <mat-label class="mat-label">{{item.moduloVoceDesc}}</mat-label>
+        <input matInput type="number" [formControl]="item?.voceControl" step="0.1" pattern="\d+(\.\d{2})?"
+          [readonly]="item?.regole && item?.regole.length > 0? item?.regole[0].moduloVoceRegolaTipo === 'calc' : false"
+          class="input-font" matTooltip="Questo Ã¨ un campo calcolato in modo automatico, non modificabile"
+          matTooltipPosition="above" matTooltipClass="style-tooltip"
+          [matTooltipDisabled]="checkTooltipCampoCalcolato(item)">
+        <span matSuffix *ngIf="item?.moduloVoceUnitaMisura" class="measure-unit">{{item.moduloVoceUnitaMisura}}</span>
+        <!-- ERRORE -->
+        <mat-error class="pt-3">
+          <app-error-test [voce]="item"></app-error-test>
+        </mat-error>
+      </mat-form-field>
+    </ng-container>
+    <ng-container *ngIf="item.moduloVoceTipoDati === enum.LIST && item.lista?.valori">
+      <mat-form-field appearance="outline" [class]="styleMatFormField">
+        <mat-label class="mat-label">{{ item.moduloVoceDesc }}</mat-label>
+        <!-- If multiple selections list -->
+        <ng-container *ngIf="item.lista.moduloListaOccMin !== item.lista.moduloListaOccMax">
+          <mat-select [formControl]="item?.voceControl" multiple class="input-font" [matTooltip]="item.moduloVoceHint"
+            matTooltipPosition="above" matTooltipClass="style-tooltip" [matTooltipDisabled]="!item.moduloVoceHint">
+            <mat-option *ngFor="let item of item.lista?.valori" [value]="item.moduloListaValoreCod" class="input-font">
+              {{item.moduloListaValoreDesc}}
+            </mat-option>
+          </mat-select>
+        </ng-container>
+        <!-- If one selection list -->
+        <ng-container *ngIf="item.lista.moduloListaOccMin === item.lista.moduloListaOccMax">
+          <mat-select [formControl]="item?.voceControl" class="input-font" [matTooltip]="item.moduloVoceHint"
+            matTooltipPosition="above" matTooltipClass="style-tooltip" [matTooltipDisabled]="!item.moduloVoceHint">
+            <mat-option *ngFor="let item of item.lista?.valori" [value]="item.moduloListaValoreCod" class="input-font">
+              {{item.moduloListaValoreDesc}}
+            </mat-option>
+          </mat-select>
+          <!-- ERRORE -->
+        </ng-container>
+        <mat-error class="pt-3">
+          <app-error-test [voce]="item"></app-error-test>
+        </mat-error>
+      </mat-form-field>
+    </ng-container>
+    <ng-container *ngIf="item.moduloVoceTipoDati === enum.EMAIL">
+      <mat-form-field appearance="outline" [class]="styleMatFormField">
+        <mat-label class="mat-label">{{item.moduloVoceDesc}}</mat-label>
+        <input matInput type="text" placeholder="example@domain.com" [formControl]="item?.voceControl"
+          class="input-font" [matTooltip]="item.moduloVoceHint" matTooltipPosition="above"
+          matTooltipClass="style-tooltip" [matTooltipDisabled]="!item.moduloVoceHint">
+        <!-- ERRORE -->
+        <mat-error class="pt-3">
+          <app-error-test [voce]="item"></app-error-test>
+        </mat-error>
+      </mat-form-field>
+    </ng-container>
+    <ng-container *ngIf="item.moduloVoceTipoDati === enum.TEL">
+      <mat-form-field appearance="outline" [class]="styleMatFormField">
+        <mat-label class="mat-label">{{item.moduloVoceDesc}}</mat-label>
+        <span matPrefix>+39 &nbsp;&nbsp;</span>
+        <input matInput type="tel" placeholder="000-000-0000" [formControl]="item?.voceControl" class="input-font"
+          [matTooltip]="item.moduloVoceHint" matTooltipPosition="above" matTooltipClass="style-tooltip"
+          [matTooltipDisabled]="!item.moduloVoceHint">
+        <!-- ERRORE -->
+        <mat-error class="pt-3">
+          <app-error-test [voce]="item"></app-error-test>
+        </mat-error>
+      </mat-form-field>
+    </ng-container>
+    <ng-container *ngIf="item.moduloVoceTipoDati === enum.DATE">
+      <mat-form-field appearance="outline" [class]="styleMatFormField">
+        <mat-label class="mat-label">{{item.moduloVoceDesc}}</mat-label>
+        <input matInput [matDatepicker]="picker" [formControl]="item?.voceControl" class="input-font"
+          [matTooltip]="item.moduloVoceHint" matTooltipPosition="above" matTooltipClass="style-tooltip"
+          [matTooltipDisabled]="!item.moduloVoceHint">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker [disabled]="client.disabilitaCampi"></mat-datepicker>
+        <!-- ERRORE -->
+        <mat-error class="pt-3">
+          <app-error-test [voce]="item"></app-error-test>
+        </mat-error>
+      </mat-form-field>
+    </ng-container>
+    <ng-container *ngIf="item.moduloVoceTipoDati === enum.DATETIME">
+      <div class="container-fluid m-0 p-0">
+        <div class="row m-0 p-0">
+          <div class="col-12 col-lg-6 m-0 p-0">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label class="mat-label">{{item.moduloVoceDesc}}</mat-label>
+              <input matInput [matDatepicker]="picker" [formControl]="item?.voceControl" class="input-font"
+                [matTooltip]="item.moduloVoceHint" matTooltipPosition="above" matTooltipClass="style-tooltip"
+                [matTooltipDisabled]="!item.moduloVoceHint">
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker [disabled]="client.disabilitaCampi"></mat-datepicker>
+              <!-- ERRORE -->
+              <mat-error class="pt-3">
+                <app-error-test [voce]="item"></app-error-test>
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div class="col-12 col-lg-6 m-0 p-0">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{item.moduloVoceDesc}}</mat-label>
+              <input matInput name="selected_time_B" [format]="formatTimePicket" [formControl]="item?.voceControlTime"
+                [ngxMatTimepicker]="pickerB" readonly class="input-font" />
+              <mat-icon matSuffix (click)="pickerB.open()">watch_later</mat-icon>
+              <!-- error -->
+              <mat-error class="pt-3">
+                <app-error-test [voce]="item"></app-error-test>
+              </mat-error>
+            </mat-form-field>
+            <ngx-mat-timepicker color="accent" #pickerB></ngx-mat-timepicker>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <!-- <ng-container *ngIf="item.moduloVoceTipoDati === enum.TIME">
+      <mat-form-field appearance="outline" [class]="styleMatFormField">
+        <mat-label class="mat-label">{{item.moduloVoceDesc}}</mat-label>
+        <input matInput name="selected_time_B" [format]="formatTimePicket" [formControl]="item?.voceControlTime"
+          [ngxMatTimepicker]="pickerB" readonly class="input-font" />
+        <mat-icon matSuffix (click)="pickerB.open()">watch_later</mat-icon>
+
+        <mat-error class="pt-3">
+          <app-error-test [voce]="item"></app-error-test>
+        </mat-error>
+      </mat-form-field>
+      <ngx-mat-timepicker color="accent" #pickerB></ngx-mat-timepicker>
+    </ng-container> -->
+  </div>
+  <ng-container *ngIf="item?.moduloVoceDescCheck">
+    <div [class]="styleCheckColonna">
+      <h3 class="lead mb-0">{{item.moduloVoceDescCheck}}</h3>
+      <mat-checkbox [formControl]="item.flgCheck" class="mr-2" [disabled]="client.disabilitaCampi"></mat-checkbox>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="item.moduloVoceTipoDati !== enum.FILE; else file">
+    <div [class]="styleSecondaColonna">
+      <mat-form-field appearance="outline" [class]="styleMatFormField">
+        <mat-label class="mat-label">Note</mat-label>
+        <textarea matInput cdkTextareaAutosize [(ngModel)]="item.note"
+          [disabled]="item?.voceControl.value === '' || item?.voceControl.value === null || client.disabilitaCampi || item?.voceControl.value === false || !checkSceltaMultipla(item)"
+          class="input-font"></textarea>
+      </mat-form-field>
+    </div>
+  </ng-container>
+  <ng-template #file>
+    <div class="col-12 pt-2" *ngIf="item.fileGruppo !== null">
+      <mat-accordion class="w-100">
+        <mat-expansion-panel hideToggle [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{item.moduloVoceDesc}}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <ng-container *ngFor="let file of item.fileGruppo.fileTipi; let i = index">
+            <div class="row pb-1">
+              <div [class]="stylePrimaColonnaNotCheck">
+                <!-- TEST NUOVO FILE -->
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label class="mat-label">{{file.fileTipoDesc ? file.fileTipoDesc : 'File'}}</mat-label>
+                  <input matInput type="text" (click)="f_input.click()" readonly [formControl]="file.voceControl"
+                    class="input-font" style="width: 85%;" />
+                  <input hidden type="file" #f_input (change)="onFileSelected($event, file, item)"
+                    [id]="'fileInput_' + item.id" [disabled]="client.disabilitaCampi">
+                  <mat-icon (click)="openFile(file.fileId)" *ngIf="file.fileId"><span
+                      class="bi bi-file-arrow-down biDownloadFile" title="scarica documento"></span></mat-icon>
+                  <mat-icon (click)="openFileNewTab(file.fileId)" *ngIf="file.fileId"><span
+                      class="bi bi-box-arrow-up-right biNewTabFile ml-1" title="apri documento"></span></mat-icon>
+                  <!-- ERRORE -->
+                  <mat-error class="pt-3">
+                    <span class="input-font"><strong>ATTENZIONE!</strong> File obbligatorio</span>
+                  </mat-error>
+                </mat-form-field>
+              </div>
+              <!-- NOTA FILE -->
+              <div [class]="styleSecondaColonna">
+                <mat-form-field appearance="outline" [class]="styleMatFormField">
+                  <mat-label class="mat-label">Note</mat-label>
+                  <textarea matInput cdkTextareaAutosize [(ngModel)]="file.note"
+                    [disabled]="client.disabilitaCampi || !file.fileId" class="input-font"></textarea>
+                </mat-form-field>
+              </div>
+            </div>
+          </ng-container>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  </ng-template>
+</div>

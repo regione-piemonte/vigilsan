@@ -1,0 +1,97 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<div class="d-flex justify-content-center" *ngIf="isSpinEmitter">
+  <div class="spinner-border text-primary spin-emitter-style" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+<ng-container *ngIf="!isSpinEmitter">
+  <div class="row" *ngIf="client.listaDocumentazioniCompilabili && client.listaDocumentazioniCompilabili.length > 0">
+    <div class="col-md-6"></div>
+    <div class="col-md-6 d-flex justify-content-end" *ngIf="!client.warningModulo">
+      <div ngbDropdown placement="bottom-right" class="d-inline-block" *ngIf="client.checkAzioni('vigil_doc') === 'W'">
+        <button class="btn btn-primary mb-3 button-basic" id="dropdownBasic2" ngbDropdownToggle>AGGIUNGI</button>
+        <div ngbDropdownMenu aria-labelledby="dropdownBasic2">
+          <button ngbDropdownItem *ngFor="let doc of client.listaDocumentazioniCompilabili; index as i"
+            (click)="showAddDocumentazione(doc)">
+            <span class="text-dropdown">
+              {{ doc.moduloConfigDesc ? doc.moduloConfigDesc : ''}} {{ doc.docFlgObbligatorio ? '*' : '' }}
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="d-flex justify-content-center">
+      <div class="spinner-border text-primary spin-emitter-style" role="status" *ngIf="isSpinEmitterSelection">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
+  </div>
+  <ng-container *ngIf="!isSpinEmitterSelection">
+    <ng-container
+      *ngIf="client.listaDocumentazioniCompilate && client.listaDocumentazioniCompilate.length > 0; else elseTemplateTableDoc">
+      <table class="table table-hover">
+        <caption>Tabella delle documentazioni</caption>
+        <thead>
+          <tr style="background-color: #0381d6;">
+            <td>
+              <h2 class="text-white display-1 text-bold m-0 p-0">Tipo documento</h2>
+            </td>
+            <td>
+              <h2 class="text-white display-1 text-bold text-nowrap m-0 p-0">Aggiornato il</h2>
+            </td>
+            <td>
+              <h2 class="text-white display-1 text-bold m-0 p-0">Dati</h2>
+            </td>
+            <td *ngIf="client.checkAzioni('vigil_doc-verif') !== 'null'">
+              <h2 class="text-white display-1 text-bold text-center m-0 p-0">Verifica</h2>
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let doc of client.listaDocumentazioniCompilate; index as i"
+            style="font-size: 15px;cursor: pointer;">
+            <td (click)="showDettaglioDocumentazione(doc)" ><span class="text-break">{{ doc.modulo.moduloDesc | uppercase
+                }}</span></td>
+            <td (click)="showDettaglioDocumentazione(doc)" >{{ doc.dataoraDocumentazione | date : 'dd/MM/yyyy' }}</td>
+            <td (click)="showDettaglioDocumentazione(doc)" >
+              <p *ngFor="let item of getDescVociCompilate(doc); let i = index">
+                {{ item }}
+              </p>
+            </td>
+            <td class="text-center" *ngIf="client.checkAzioni('vigil_doc-verif') !== 'null'"
+              (mouseenter)="onMouseEnter(i)" (mouseleave)="onMouseLeave(i)"
+              [ngClass]="{'highlight-border': isHighlighted(i)}" (click)="showVerifica(doc)"  style="min-height: 140px;">
+              <div class="text-center">
+                <ng-container *ngIf="doc.verificaDocumentazione.dataoraVerifica; else elseTemplate">
+                  <span class="text-nowrap mr-1 mb-1">{{ doc.verificaDocumentazione.dataoraVerifica ?
+                    (doc.verificaDocumentazione.dataoraVerifica | date : 'dd/MM/yyyy HH:mm') : '-' }}</span><br>
+                  <em class="bi bi-check2-circle vigilsan-icon-style"
+                    [ngStyle]="{ 'color': doc.verificaDocumentazione.esitoVerifica ? 'green' : 'red' }"></em>
+                </ng-container>
+                <ng-template #elseTemplate>
+                  <em class="bi bi-circle vigilsan-icon-style-grigio"></em>
+                </ng-template>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-container>
+    <ng-template #elseTemplateTableDoc>
+      <p class="ml-2" style="font-size: 18px;">Nessun documento...</p>
+    </ng-template>
+    <div class="row flex-row-reverse">
+      <div class="col-auto">
+        <button type="button" class="btn btn-primary button-basic px-4" (click)="inviaNotifica()"
+          *ngIf="client.checkAzioni('vigil_doc-verif') === 'W'">INVIA
+          NOTIFICA</button>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>

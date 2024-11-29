@@ -1,0 +1,96 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<h1 mat-dialog-title>Nuovo movimento ospite</h1>
+<div mat-dialog-content>
+  <div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Data movimento</mat-label>
+        <input matInput [matDatepicker]="picker" [(ngModel)]="dataMovimento" disabled>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker disabled="false"></mat-datepicker>
+      </mat-form-field>
+    </div>
+    <div class="col-md-1"></div>
+  </div>
+  <div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Tipo movimento</mat-label>
+        <mat-select [(ngModel)]="tipoMovimentoSelezionato">
+          <mat-option *ngFor="let movimentoTipo of client.listaMovimentiTipo" [value]="movimentoTipo">
+            {{movimentoTipo.ospiteMovimentoTipoDesc}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-md-1"></div>
+  </div>
+  <div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Condizioni</mat-label>
+        <mat-select [(ngModel)]="condizioneSelezionata">
+          <mat-option *ngFor="let condizione of client.listaCondizioni" [value]="condizione">
+            {{condizione.ospiteCondizioniDesc}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-md-1"></div>
+  </div>
+  <div class="row" *ngIf="client.loggedUser && client.loggedUser.struttura && client.loggedUser.struttura.categorie && client.loggedUser.struttura.categorie.length > 0">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Categorie</mat-label>
+        <mat-select [(ngModel)]="categoriaSelezionata">
+          <mat-option *ngFor="let categoria of client.loggedUser.struttura.categorie" [value]="categoria">
+            {{categoria.strutturaCategoriaDesc}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-md-1"></div>
+  </div>
+  <div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+      <mat-form-field class="w-100" appearance="outline">
+        <mat-label>Nota movimento</mat-label>
+        <textarea matInput [(ngModel)]="note"></textarea>
+      </mat-form-field>
+    </div>
+    <div class="col-md-1"></div>
+  </div>
+  <!-- <div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+      <mat-form-field class="example-full-width" appearance="outline" class="w-100">
+        <mat-label>Struttura</mat-label>
+        <input type="text" matInput [matAutocomplete]="auto" (input)="onInputChange($event)">
+        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" >
+          <mat-option *ngFor="let option of optionsFiltered" [value]="option">
+            {{option}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+    <div class="col-md-1"></div>
+  </div> -->
+</div>
+<div mat-dialog-actions>
+  <button mat-button mat-dialog-close>CHIUDI</button>
+  <button type="button" class="btn btn-primary button-basic mt-2 ml-auto" (click)="salvaMovimento()"
+    [disabled]="!dataMovimento || !tipoMovimentoSelezionato"
+    matTooltip="I campi 'Data movimento' e 'Tipo movimento' sono obbligatori" matTooltipPosition="above"
+    matTooltipClass="style-tooltip" [matTooltipDisabled]="dataMovimento !== null && tipoMovimentoSelezionato!==null">
+    SALVA
+  </button>
+</div>

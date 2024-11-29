@@ -1,0 +1,23 @@
+<!--
+  - Copyright Regione Piemonte - 2024
+  - SPDX-License-Identifier: EUPL-1.2
+  -->
+
+<h1 mat-dialog-title>Conferma elimina movimento</h1>
+<div mat-dialog-content>
+  <div class="d-flex justify-content-center" *ngIf="isSpinEmmitterDelete">
+    <div class="spinner-border text-primary spin-emitter-style" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+  <div *ngIf="!isSpinEmmitterDelete">
+    <p>Sei sicuro di voler eliminare il movimento per l'ospite?</p>
+  </div>
+</div>
+<div mat-dialog-actions>
+  <button mat-button mat-dialog-close>CHIUDI</button>
+  <button type="button" class="btn btn-primary button-basic mt-2 ml-auto" (click)="eliminaMovimento()">
+    ELIMINA
+  </button>
+</div>
+
