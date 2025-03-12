@@ -3,20 +3,20 @@
 # More info at https://github.com/italia/publiccode.yml
 
 publiccodeYmlVersion: '0.2'
+applicationSuite: Piattaforma regionale della residenzialità
 categories:
   - erp
 description:
   it:
     features:
-      - |-
+      - >-
         servizi di rilevazione e vigilanza sanitaria per la pubblica
         amministrazione piemontese
-    genericName: vigilsan
+    genericName: Piattaforma regionale della residenzialità
     localisedName: |-
       Piattaforma residenzialità
-    longDescription: |2
-       
-TO DO
+    longDescription: > 
+    la piattaforma vigilsan ..
     shortDescription: |-
       VIGILSAN (Rilevazioni e Vigilanza sanitaria)
 developmentStatus: stable
