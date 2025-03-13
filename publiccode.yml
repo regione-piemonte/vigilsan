@@ -13,10 +13,8 @@ description:
         servizi di rilevazione e vigilanza sanitaria per la pubblica
         amministrazione piemontese
     genericName: vigilsan
-    localisedName: |-
-      Piattaforma residenzialità
-    longDescription: |2
-    
+    localisedName: Piattaforma residenzialità
+    longDescription: |    
 La Piattaforma Regionale della Residenzialità raggiungibile attraverso il Portale Unico di Accesso dei servizi sanitari rivolta ai referenti delle strutture residenziali permette di:
 effettuare le rilevazioni settimanali e giornaliere delle disponibilità e delle occupazioni della struttura
 raccogliere la documentazione relativa agli adempimenti previsti dal servizio di Vigilanza.
