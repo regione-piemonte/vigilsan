@@ -6,18 +6,10 @@ publiccodeYmlVersion: '0.2'
 applicationSuite: Piattaforma regionale della residenzialità
 categories:
   - erp
-dependsOn:
-  open:
-    - name: PostgreSQL
-      version: "15.4"
-      optional: false
-      versionMax: ''
-      versionMin: ''
 description:
   it:
     features:
-      - >-
-        servizi di rilevazione e vigilanza sanitaria per la pubblica
+      - Servizi di rilevazione e vigilanza sanitaria per la pubblica
         amministrazione piemontese
     genericName: vigilsan
     localisedName: Piattaforma residenzialità
