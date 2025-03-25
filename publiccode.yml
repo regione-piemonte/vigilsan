@@ -30,7 +30,7 @@ it:
     lineeGuidaDesign: true
     misureMinimeSicurezza: true
     modelloInteroperabilita: true
-    countryExtensionVersion: '0.2'
+  countryExtensionVersion: '0.2'
   piattaforme:
     anpr: false
     cie: true
